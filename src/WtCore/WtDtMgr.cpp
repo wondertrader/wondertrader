@@ -199,7 +199,12 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 				WTSBarStruct* lastBar = kData->at(-1);
 				//_engine->on_bar(code, speriod.c_str(), times, lastBar);
 				//更新完K线以后, 统一通知交易引擎
-				_bar_notifies.emplace_back(NotifyItem(code, speriod, times*kData->times(), lastBar));
+				if (kData->period() == KP_Half)
+					_bar_notifies.emplace_back(NotifyItem(code, 'f', 1, lastBar));
+				else if (kData->period() == KP_Hour)
+					_bar_notifies.emplace_back(NotifyItem(code, 'h', 1, lastBar));
+				else
+					_bar_notifies.emplace_back(NotifyItem(code, speriod, times*kData->times(), lastBar));
 			}
 		}
 		else
@@ -404,10 +409,10 @@ constexpr inline const char* format_period(WTSKlinePeriod period)
 		return "min1";
 	case KP_Minute5:
 		return "min5";
-	case KP_Week:
-		return "week";
-	case KP_Month:
-		return "month";
+	case KP_Half:
+		return "half";
+	case KP_Hour:
+		return "hour";
 	default:
 		return "unknown";
 	}

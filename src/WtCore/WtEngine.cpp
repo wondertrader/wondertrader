@@ -619,6 +619,16 @@ WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, cons
 		else
 			kp = KP_Minute1;
 	}
+	else if (strcmp(period, "h") == 0)	//小时线
+	{
+		kp = KP_Minute5;
+		times = PERIOD_TIMES_HOUR;
+	}
+	else if (strcmp(period, "f") == 0)	//半小时线
+	{
+		kp = KP_Minute5;
+		times = PERIOD_TIMES_HALF;
+	}
 	else
 	{
 		kp = KP_DAY;

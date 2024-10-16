@@ -62,6 +62,10 @@ WTSBarStruct* WTSDataFactory::updateKlineData(WTSKlineData* klineData, WTSBarStr
 		return updateMin1Data(sInfo, klineData, newBasicBar, bAlignSec);
 	case KP_Minute5:
 		return updateMin5Data(sInfo, klineData, newBasicBar, bAlignSec);
+	case KP_Hour:
+		return updateHourData(sInfo, klineData, newBasicBar);
+	case KP_Half:
+		return updateHalfData(sInfo, klineData, newBasicBar);
 	default:
 		return NULL;
 	}
@@ -504,6 +508,166 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 	}
 }
 
+WTSBarStruct* WTSDataFactory::updateHourData(WTSSessionInfo* sInfo, WTSKlineData* klineData, WTSBarStruct* newBasicBar)
+{
+	if (sInfo == NULL)
+		return NULL;
+
+	uint32_t uTradingDate = newBasicBar->date;
+	uint32_t uYYYYMMDD = TimeUtils::minBarToDate(newBasicBar->time);
+	if (uYYYYMMDD == 19900000)
+		uYYYYMMDD = uTradingDate;
+	uint32_t uHHMM = TimeUtils::minBarToTime(newBasicBar->time);
+	uint32_t uHH = uHHMM / 100;
+	uint32_t uMM = uHHMM % 100;
+	if (uMM != 0)
+	{
+		uHH += 1;
+		if (uHH == 24)
+		{
+			uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
+			uHH = 0;
+		}
+	}
+
+	uHHMM = uHH * 100;
+	uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHHMM);
+
+	WTSBarStruct* lastBar = NULL;
+	if (klineData->size() > 0)
+	{
+		lastBar = klineData->at(klineData->size() - 1);
+	}
+
+	bool bNewBar = false;
+	if (lastBar == NULL || lastBar->time != uBarTime)
+	{
+
+		//只要日期和时间都不符,则认为已经是一条新的bar了
+		lastBar = new WTSBarStruct();
+		bNewBar = true;
+
+		memcpy(lastBar, newBasicBar, sizeof(WTSBarStruct));
+		lastBar->date = uTradingDate;
+		lastBar->time = uBarTime;
+	}
+	else
+	{
+		bNewBar = false;
+
+		lastBar->high = max(lastBar->high, newBasicBar->high);
+		lastBar->low = min(lastBar->low, newBasicBar->low);
+		lastBar->close = newBasicBar->close;
+		lastBar->settle = newBasicBar->settle;
+
+		lastBar->vol += newBasicBar->vol;
+		lastBar->money += newBasicBar->money;
+		lastBar->add += newBasicBar->add;
+		lastBar->hold = newBasicBar->hold;
+	}
+
+	if (lastBar->time > newBasicBar->time)
+	{
+		klineData->setClosed(false);
+	}
+	else
+	{
+		klineData->setClosed(true);
+	}
+
+	if (bNewBar)
+	{
+		klineData->appendBar(*lastBar);
+		delete lastBar;
+
+		return klineData->at(-1);
+	}
+
+	return NULL;
+}
+
+WTSBarStruct* WTSDataFactory::updateHalfData(WTSSessionInfo* sInfo, WTSKlineData* klineData, WTSBarStruct* newBasicBar)
+{
+	uint32_t uTradingDate = newBasicBar->date;
+	uint32_t uYYYYMMDD = TimeUtils::minBarToDate(newBasicBar->time);
+	if (uYYYYMMDD == 19900000)
+		uYYYYMMDD = uTradingDate;
+	uint32_t uHHMM = TimeUtils::minBarToTime(newBasicBar->time);
+	uint32_t uHH = uHHMM / 100;
+	uint32_t uMM = uHHMM % 100;
+	if (0 < uMM && uMM <= 30)
+		uMM = 30;
+	else
+	{
+		if (uMM != 0)
+		{
+			uHH += 1;
+			if (uHH == 24)
+			{
+				uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
+				uHH = 0;
+			}
+		}
+
+		uMM = 0;
+	}
+
+	uHHMM = uHH * 100 + uMM;
+
+	uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHHMM);
+
+	WTSBarStruct* lastBar = NULL;
+	if (klineData->size() > 0)
+	{
+		lastBar = klineData->at(klineData->size() - 1);
+	}
+
+	bool bNewBar = false;
+	if (lastBar == NULL || lastBar->time != uBarTime)
+	{
+		//只要日期和时间都不符,则认为已经是一条新的bar了
+		lastBar = new WTSBarStruct();
+		bNewBar = true;
+
+		memcpy(lastBar, newBasicBar, sizeof(WTSBarStruct));
+		lastBar->date = uTradingDate;
+		lastBar->time = uBarTime;
+	}
+	else
+	{
+		bNewBar = false;
+
+		lastBar->high = max(lastBar->high, newBasicBar->high);
+		lastBar->low = min(lastBar->low, newBasicBar->low);
+		lastBar->close = newBasicBar->close;
+		lastBar->settle = newBasicBar->settle;
+
+		lastBar->vol += newBasicBar->vol;
+		lastBar->money += newBasicBar->money;
+		lastBar->add += newBasicBar->add;
+		lastBar->hold = newBasicBar->hold;
+	}
+
+	if (lastBar->time > newBasicBar->time)
+	{
+		klineData->setClosed(false);
+	}
+	else
+	{
+		klineData->setClosed(true);
+	}
+
+	if (bNewBar)
+	{
+		klineData->appendBar(*lastBar);
+		delete lastBar;
+
+		return klineData->at(-1);
+	}
+
+	return NULL;
+}
+
 WTSBarStruct* WTSDataFactory::updateDayData(WTSSessionInfo* sInfo, WTSKlineData* klineData, WTSTickData* tick)
 {
 	uint32_t curDate = tick->tradingdate();
@@ -627,7 +791,12 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSKlineSlice* baseKline, WTSKlin
 	}
 	else if(period == KP_Minute5)
 	{
-		return extractMin5Data(baseKline, times, sInfo, bIncludeOpen, bAlignSec);
+		if (times == PERIOD_TIMES_HOUR)
+			return extractHourData(baseKline, sInfo, bIncludeOpen);
+		else if (times == PERIOD_TIMES_HALF)
+			return extractHalfData(baseKline, sInfo, bIncludeOpen);
+		else
+			return extractMin5Data(baseKline, times, sInfo, bIncludeOpen, bAlignSec);
 	}
 	
 	return NULL;
@@ -858,6 +1027,198 @@ WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineSlice* baseKline, uint32_t
 		}
 
 		if(bNewBar)
+		{
+			ret->appendBar(*lastBar);
+			delete lastBar;
+		}
+	}
+
+	//检查最后一条数据
+	{
+		WTSBarStruct* lastRawBar = baseKline->at(-1);
+		WTSBarStruct* lastDesBar = ret->at(-1);
+		//如果目标K线的最后一条数据的日期或者时间大于原始K线最后一条的日期或时间
+		if (lastDesBar->date > lastRawBar->date || lastDesBar->time > lastRawBar->time)
+		{
+			if (!bIncludeOpen)
+				ret->getDataRef().resize(ret->size() - 1);
+			else
+				ret->setClosed(false);
+		}
+	}
+
+	return ret;
+}
+
+WTSKlineData* WTSDataFactory::extractHourData(WTSKlineSlice* baseKline, WTSSessionInfo* sInfo, bool bIncludeOpen /* = true */)
+{
+	if (sInfo == NULL)
+		return NULL;
+
+	auto secMins = sInfo->getSecMinList();
+
+	WTSKlineData* ret = WTSKlineData::create(baseKline->code(), 0);
+	ret->setPeriod(KP_Hour, 1);
+
+	for (auto i = 0; i < baseKline->size(); i++)
+	{
+		const WTSBarStruct& curBar = *baseKline->at(i);
+
+		uint32_t uTradingDate = curBar.date;
+		uint32_t uYYYYMMDD = TimeUtils::minBarToDate(curBar.time);
+		if (uYYYYMMDD == 19900000)
+			uYYYYMMDD = uTradingDate;
+		uint32_t uHHMM = TimeUtils::minBarToTime(curBar.time);
+		uint32_t uHH = uHHMM / 100;
+		uint32_t uMM = uHHMM % 100;
+		if (uMM != 0)
+		{
+			uHH += 1;
+			if (uHH == 24)
+			{
+				uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
+				uHH = 0;
+			}
+		}
+
+		uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHH*100);
+
+		WTSBarStruct* lastBar = NULL;
+		if (ret->size() > 0)
+		{
+			lastBar = ret->at(ret->size() - 1);
+		}
+
+		bool bNewBar = false;
+		if (lastBar == NULL || lastBar->time != uBarTime)
+		{
+			//只要日期和时间都不符,则认为已经是一条新的bar了
+			lastBar = new WTSBarStruct();
+			bNewBar = true;
+
+			memcpy(lastBar, &curBar, sizeof(WTSBarStruct));
+			lastBar->date = uTradingDate;
+			lastBar->time = uBarTime;
+		}
+		else
+		{
+			bNewBar = false;
+
+			lastBar->high = max(lastBar->high, curBar.high);
+			lastBar->low = min(lastBar->low, curBar.low);
+			lastBar->close = curBar.close;
+			lastBar->settle = curBar.settle;
+
+			lastBar->vol += curBar.vol;
+			lastBar->money += curBar.money;
+			lastBar->add += curBar.add;
+			lastBar->hold = curBar.hold;
+		}
+
+		if (bNewBar)
+		{
+			ret->appendBar(*lastBar);
+			delete lastBar;
+		}
+	}
+
+	//检查最后一条数据
+	{
+		WTSBarStruct* lastRawBar = baseKline->at(-1);
+		WTSBarStruct* lastDesBar = ret->at(-1);
+		//如果目标K线的最后一条数据的日期或者时间大于原始K线最后一条的日期或时间
+		if (lastDesBar->date > lastRawBar->date || lastDesBar->time > lastRawBar->time)
+		{
+			if (!bIncludeOpen)
+				ret->getDataRef().resize(ret->size() - 1);
+			else
+				ret->setClosed(false);
+		}
+	}
+
+	return ret;
+}
+
+WTSKlineData* WTSDataFactory::extractHalfData(WTSKlineSlice* baseKline, WTSSessionInfo* sInfo, bool bIncludeOpen /* = true */)
+{
+	if (sInfo == NULL)
+		return NULL;
+
+	/*
+	 *	By Wesley @ 2023.05.31
+	 *	要增加一个按照小节对齐的重采样方式
+	 *	一般逻辑就是每个小节开始重新计算条数，然后在小节结束时，强制对齐
+	 */
+	auto secMins = sInfo->getSecMinList();
+
+	WTSKlineData* ret = WTSKlineData::create(baseKline->code(), 0);
+	ret->setPeriod(KP_Half, 1);
+
+	for (auto i = 0; i < baseKline->size(); i++)
+	{
+		const WTSBarStruct& curBar = *baseKline->at(i);
+
+		uint32_t uTradingDate = curBar.date;
+		uint32_t uYYYYMMDD = TimeUtils::minBarToDate(curBar.time);
+		if (uYYYYMMDD == 19900000)
+			uYYYYMMDD = uTradingDate;
+		uint32_t uHHMM = TimeUtils::minBarToTime(curBar.time);
+		uint32_t uHH = uHHMM / 100;
+		uint32_t uMM = uHHMM % 100;
+		if (0 < uMM && uMM <= 30)
+			uMM = 30;
+		else
+		{
+			if(uMM != 0)
+			{
+				uHH += 1;
+				if (uHH == 24)
+				{
+					uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
+					uHH = 0;
+				}
+			}
+
+			uMM = 0;
+		}
+
+		uHHMM = uHH * 100 + uMM;
+
+		uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHHMM);
+
+		WTSBarStruct* lastBar = NULL;
+		if (ret->size() > 0)
+		{
+			lastBar = ret->at(ret->size() - 1);
+		}
+
+		bool bNewBar = false;
+		if (lastBar == NULL || lastBar->time != uBarTime)
+		{
+			//只要日期和时间都不符,则认为已经是一条新的bar了
+			lastBar = new WTSBarStruct();
+			bNewBar = true;
+
+			memcpy(lastBar, &curBar, sizeof(WTSBarStruct));
+			lastBar->date = uTradingDate;
+			lastBar->time = uBarTime;
+		}
+		else
+		{
+			bNewBar = false;
+
+			lastBar->high = max(lastBar->high, curBar.high);
+			lastBar->low = min(lastBar->low, curBar.low);
+			lastBar->close = curBar.close;
+			lastBar->settle = curBar.settle;
+
+			lastBar->vol += curBar.vol;
+			lastBar->money += curBar.money;
+			lastBar->add += curBar.add;
+			lastBar->hold = curBar.hold;
+		}
+
+		if (bNewBar)
 		{
 			ret->appendBar(*lastBar);
 			delete lastBar;

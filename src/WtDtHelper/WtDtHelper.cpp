@@ -846,6 +846,16 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	{
 		kp = KP_DAY;
 	}
+	else if (period[0] == 'h')
+	{
+		kp = KP_Minute5;
+		times = PERIOD_TIMES_HOUR;
+	}
+	else if (period[0] == 'f')
+	{
+		kp = KP_Minute5;
+		times = PERIOD_TIMES_HALF;
+	}
 	else
 	{
 		if (cbLogger)

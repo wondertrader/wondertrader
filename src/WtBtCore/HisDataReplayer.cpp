@@ -2013,9 +2013,17 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 					if (barTime <= nowTime)
 					{
 						uint32_t times = barsList->_times;
-						if (barsList->_period == KP_Minute5)
-							times *= 5;
-						_listener->handle_bar_close(barsList->_code.c_str(), "m", times, &nextBar);
+						if (times == PERIOD_TIMES_HOUR)
+							_listener->handle_bar_close(barsList->_code.c_str(), "h", 1, &nextBar);
+						else if (times == PERIOD_TIMES_HALF)
+							_listener->handle_bar_close(barsList->_code.c_str(), "f", 1, &nextBar);
+						else
+						{
+							if (barsList->_period == KP_Minute5)
+								times *= 5;
+
+							_listener->handle_bar_close(barsList->_code.c_str(), "m", times, &nextBar);
+						}
 					}
 					else
 					{
@@ -2159,6 +2167,18 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		{
 			kp = KP_Minute1;
 		}
+	}
+	else if (strcmp(period, "h") == 0)	//小时线
+	{
+		kp = KP_Minute5;
+		baseTimes = 5;
+		realTimes = PERIOD_TIMES_HOUR;
+	}
+	else if (strcmp(period, "f") == 0)	//半小时线
+	{
+		kp = KP_Minute5;
+		baseTimes = 5;
+		realTimes = PERIOD_TIMES_HOUR;
 	}
 	else
 		kp = KP_DAY;
