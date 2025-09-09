@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////
-///@company ÉÏº£Ì©çüĞÅÏ¢¿Æ¼¼ÓĞÏŞ¹«Ë¾
+///@company ä¸Šæµ·æ³°ç°ä¿¡æ¯ç§‘æŠ€æœ‰é™å…¬å¸
 ///@file TORATstpUserApiStruct.h
-///@brief ¶¨ÒåÁË¿Í»§¶Ë½Ó¿ÚÊ¹ÓÃµÄÒµÎñÊı¾İ½á¹¹
-///@history 
+///@brief å®šä¹‰äº†å®¢æˆ·ç«¯æ¥å£ä½¿ç”¨çš„ä¸šåŠ¡æ•°æ®ç»“æ„
+///@history
 /////////////////////////////////////////////////////////////////////////
 #ifndef TORATSTPUSERAPISTRUCT_H__
 #define TORATSTPUSERAPISTRUCT_H__
@@ -11,4728 +11,4728 @@
 
 namespace TORASTOCKAPI
 {
-	
-	/// µÇÂ¼ÇëÇó
+
+	/// ç™»å½•è¯·æ±‚
 	struct CTORATstpReqUserLoginField
 	{
-		///µÇÂ¼ÕË»§
-		TTORATstpLogInAccountType	LogInAccount;
-	
-		///µÇÂ¼ÕË»§ÀàĞÍ
-		TTORATstpLogInAccountTypeType	LogInAccountType;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë£¨ÒÔ×Ê½ğÕËºÅ·½Ê½µÇÂ¼Ê±±ØÌî£©
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///ÈÏÖ¤·½Ê½(Ö¸ÎÆ»òÔ¿³×´®ÈÏÖ¤Ê±±ØÌî)
-		TTORATstpAuthModeType	AuthMode;
-	
-		///ÃÜÂë(ÃÜÂëÈÏÖ¤Ê±±ØÌî)
-		TTORATstpPasswordType	Password;
-	
-		///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-		TTORATstpUserProductInfoType	UserProductInfo;
-	
-		///½Ó¿Ú¶Ë²úÆ·ĞÅÏ¢
-		TTORATstpInterfaceProductInfoType	InterfaceProductInfo;
-	
-		///ÖÕ¶Ë²É¼¯ĞÅÏ¢
-		TTORATstpTerminalInfoType	TerminalInfo;
-	
-		///ÄÚÍøIPµØÖ·
-		TTORATstpIPAddressType	InnerIPAddress;
-	
-		///ÍâÍøIPµØÖ·
-		TTORATstpIPAddressType	OuterIPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
-	
-		///½Ó¿ÚÓïÑÔ
-		TTORATstpLangType	Lang;
-	
-		///ÖÕ¶Ë¶¯Ì¬ÃØÔ¿
-		TTORATstpPasswordType	DynamicPassword;
-	
-		///Éè±¸±êÊ¶(Ö¸ÎÆÈÏÖ¤Ê±±ØÌî)
-		TTORATstpDeviceIDType	DeviceID;
-	
-		///ÈÏÖ¤ĞòÁĞºÅ(Ö¸ÎÆ»òÔ¿³×´®ÈÏÖ¤Ê±±ØÌî)
-		TTORATstpCertSerialType	CertSerial;
-	
-		///Éè±¸Àà±ğ(Ö¸ÎÆ»òÔ¿³×´®ÈÏÖ¤Ê±±ØÌî)
-		TTORATstpDeviceTypeType	DeviceType;
+		/// ç™»å½•è´¦æˆ·
+		TTORATstpLogInAccountType LogInAccount;
+
+		/// ç™»å½•è´¦æˆ·ç±»å‹
+		TTORATstpLogInAccountTypeType LogInAccountType;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç ï¼ˆä»¥èµ„é‡‘è´¦å·æ–¹å¼ç™»å½•æ—¶å¿…å¡«ï¼‰
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// è®¤è¯æ–¹å¼(æŒ‡çº¹æˆ–é’¥åŒ™ä¸²è®¤è¯æ—¶å¿…å¡«)
+		TTORATstpAuthModeType AuthMode;
+
+		/// å¯†ç (å¯†ç è®¤è¯æ—¶å¿…å¡«)
+		TTORATstpPasswordType Password;
+
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TTORATstpUserProductInfoType UserProductInfo;
+
+		/// æ¥å£ç«¯äº§å“ä¿¡æ¯
+		TTORATstpInterfaceProductInfoType InterfaceProductInfo;
+
+		/// ç»ˆç«¯é‡‡é›†ä¿¡æ¯
+		TTORATstpTerminalInfoType TerminalInfo;
+
+		/// å†…ç½‘IPåœ°å€
+		TTORATstpIPAddressType InnerIPAddress;
+
+		/// å¤–ç½‘IPåœ°å€
+		TTORATstpIPAddressType OuterIPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
+
+		/// æ¥å£è¯­è¨€
+		TTORATstpLangType Lang;
+
+		/// ç»ˆç«¯åŠ¨æ€ç§˜é’¥
+		TTORATstpPasswordType DynamicPassword;
+
+		/// è®¾å¤‡æ ‡è¯†(æŒ‡çº¹è®¤è¯æ—¶å¿…å¡«)
+		TTORATstpDeviceIDType DeviceID;
+
+		/// è®¤è¯åºåˆ—å·(æŒ‡çº¹æˆ–é’¥åŒ™ä¸²è®¤è¯æ—¶å¿…å¡«)
+		TTORATstpCertSerialType CertSerial;
+
+		/// è®¾å¤‡ç±»åˆ«(æŒ‡çº¹æˆ–é’¥åŒ™ä¸²è®¤è¯æ—¶å¿…å¡«)
+		TTORATstpDeviceTypeType DeviceType;
 	};
-	
-	/// µÇÂ¼ÏìÓ¦
+
+	/// ç™»å½•å“åº”
 	struct CTORATstpRspUserLoginField
 	{
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///µÇÂ¼ÕË»§
-		TTORATstpLogInAccountType	LogInAccount;
-	
-		///µÇÂ¼ÕË»§ÀàĞÍ
-		TTORATstpLogInAccountTypeType	LogInAccountType;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///×î´ó±¨µ¥ÒıÓÃ
-		TTORATstpOrderRefType	MaxOrderRef;
-	
-		///Ë½ÓĞÁ÷³¤¶È
-		TTORATstpVolumeType	PrivateFlowCount;
-	
-		///¹«ÓĞÁ÷³¤¶È
-		TTORATstpVolumeType	PublicFlowCount;
-	
-		///µÇÂ¼Ê±¼ä
-		TTORATstpTimeType	LoginTime;
-	
-		///½»Ò×ÏµÍ³Ãû³Æ
-		TTORATstpSystemNameType	SystemName;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
-	
-		///ÓÃ»§Ãû³Æ
-		TTORATstpUserNameType	UserName;
-	
-		///ÓÃ»§ÀàĞÍ
-		TTORATstpUserTypeType	UserType;
-	
-		///±¨µ¥Á÷¿Ø
-		TTORATstpCommFluxType	OrderInsertCommFlux;
-	
-		///³·µ¥Á÷¿Ø
-		TTORATstpCommFluxType	OrderActionCommFlux;
-	
-		///ÃÜÂëµ½ÆÚÈÕÆÚ
-		TTORATstpDateType	PasswordExpiryDate;
-	
-		///ÊÇ·ñĞèÒª¸ÄÃÜ
-		TTORATstpBoolType	NeedUpdatePassword;
-	
-		///ÈÏÖ¤ĞòÁĞºÅ
-		TTORATstpCertSerialType	CertSerial;
-	
-		///ÄÚÍøIPµØÖ·
-		TTORATstpIPAddressType	InnerIPAddress;
-	
-		///ÍâÍøIPµØÖ·
-		TTORATstpIPAddressType	OuterIPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// ç™»å½•è´¦æˆ·
+		TTORATstpLogInAccountType LogInAccount;
+
+		/// ç™»å½•è´¦æˆ·ç±»å‹
+		TTORATstpLogInAccountTypeType LogInAccountType;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// æœ€å¤§æŠ¥å•å¼•ç”¨
+		TTORATstpOrderRefType MaxOrderRef;
+
+		/// ç§æœ‰æµé•¿åº¦
+		TTORATstpVolumeType PrivateFlowCount;
+
+		/// å…¬æœ‰æµé•¿åº¦
+		TTORATstpVolumeType PublicFlowCount;
+
+		/// ç™»å½•æ—¶é—´
+		TTORATstpTimeType LoginTime;
+
+		/// äº¤æ˜“ç³»ç»Ÿåç§°
+		TTORATstpSystemNameType SystemName;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
+
+		/// ç”¨æˆ·åç§°
+		TTORATstpUserNameType UserName;
+
+		/// ç”¨æˆ·ç±»å‹
+		TTORATstpUserTypeType UserType;
+
+		/// æŠ¥å•æµæ§
+		TTORATstpCommFluxType OrderInsertCommFlux;
+
+		/// æ’¤å•æµæ§
+		TTORATstpCommFluxType OrderActionCommFlux;
+
+		/// å¯†ç åˆ°æœŸæ—¥æœŸ
+		TTORATstpDateType PasswordExpiryDate;
+
+		/// æ˜¯å¦éœ€è¦æ”¹å¯†
+		TTORATstpBoolType NeedUpdatePassword;
+
+		/// è®¤è¯åºåˆ—å·
+		TTORATstpCertSerialType CertSerial;
+
+		/// å†…ç½‘IPåœ°å€
+		TTORATstpIPAddressType InnerIPAddress;
+
+		/// å¤–ç½‘IPåœ°å€
+		TTORATstpIPAddressType OuterIPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
 	};
-	
-	/// ÏìÓ¦ĞÅÏ¢
+
+	/// å“åº”ä¿¡æ¯
 	struct CTORATstpRspInfoField
 	{
-		///´íÎó´úÂë
-		TTORATstpErrorIDType	ErrorID;
-	
-		///´íÎóĞÅÏ¢
-		TTORATstpErrorMsgType	ErrorMsg;
+		/// é”™è¯¯ä»£ç 
+		TTORATstpErrorIDType ErrorID;
+
+		/// é”™è¯¯ä¿¡æ¯
+		TTORATstpErrorMsgType ErrorMsg;
 	};
-	
-	/// ÓÃ»§µÇ³ö
+
+	/// ç”¨æˆ·ç™»å‡º
 	struct CTORATstpUserLogoutField
 	{
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
 	};
-	
-	/// ĞŞ¸ÄÓÃ»§ÃÜÂë
+
+	/// ä¿®æ”¹ç”¨æˆ·å¯†ç 
 	struct CTORATstpUserPasswordUpdateField
 	{
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
-	
-		///¾ÉÃÜÂë
-		TTORATstpPasswordType	OldPassword;
-	
-		///ĞÂÃÜÂë
-		TTORATstpPasswordType	NewPassword;
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
+
+		/// æ—§å¯†ç 
+		TTORATstpPasswordType OldPassword;
+
+		/// æ–°å¯†ç 
+		TTORATstpPasswordType NewPassword;
 	};
-	
-	/// ÇëÇóÂ¼ÈëÉè±¸ĞòÁĞ
+
+	/// è¯·æ±‚å½•å…¥è®¾å¤‡åºåˆ—
 	struct CTORATstpReqInputDeviceSerialField
 	{
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
-	
-		///Éè±¸±êÊ¶
-		TTORATstpDeviceIDType	DeviceID;
-	
-		///Éè±¸ĞòÁĞºÅ
-		TTORATstpCertSerialType	CertSerial;
-	
-		///Éè±¸Àà±ğ
-		TTORATstpDeviceTypeType	DeviceType;
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
+
+		/// è®¾å¤‡æ ‡è¯†
+		TTORATstpDeviceIDType DeviceID;
+
+		/// è®¾å¤‡åºåˆ—å·
+		TTORATstpCertSerialType CertSerial;
+
+		/// è®¾å¤‡ç±»åˆ«
+		TTORATstpDeviceTypeType DeviceType;
 	};
-	
-	/// Â¼ÈëÉè±¸ĞòÁĞÏìÓ¦
+
+	/// å½•å…¥è®¾å¤‡åºåˆ—å“åº”
 	struct CTORATstpRspInputDeviceSerialField
 	{
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
 	};
-	
-	/// ÊäÈë±¨µ¥
+
+	/// è¾“å…¥æŠ¥å•
 	struct CTORATstpInputOrderField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///¼Û¸ñ
-		TTORATstpPriceType	LimitPrice;
-	
-		///ÊıÁ¿
-		TTORATstpVolumeType	VolumeTotalOriginal;
-	
-		///±¨µ¥¼Û¸ñÌõ¼ş
-		TTORATstpOrderPriceTypeType	OrderPriceType;
-	
-		///ÓĞĞ§ÆÚÀàĞÍ
-		TTORATstpTimeConditionType	TimeCondition;
-	
-		///³É½»Á¿ÀàĞÍ
-		TTORATstpVolumeConditionType	VolumeCondition;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///±¨µ¥ÒıÓÃ
-		TTORATstpOrderRefType	OrderRef;
-	
-		///¸Û¹ÉÍ¨¶©µ¥ÊıÁ¿ÀàĞÍ
-		TTORATstpLotTypeType	LotType;
-	
-		///ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///Ìõ¼ş¼ì²é
-		TTORATstpCondCheckType	CondCheck;
-	
-		///ÓĞĞ§ÈÕÆÚ
-		TTORATstpDateType	GTDate;
-	
-		///Ç¿Æ½Ô­Òò(Á½ÈÚ×¨ÓÃ)
-		TTORATstpForceCloseReasonType	ForceCloseReason;
-	
-		///Ö¸¶¨³¥»¹µÄĞÅÓÃ¸ºÕ®±àºÅ£¨¸Ã×Ö¶ÎÖÃ¿Õ±íÊ¾²»Ö¸¶¨³¥»¹£©(Á½ÈÚ×¨ÓÃ)
-		TTORATstpCreditDebtIDType	CreditDebtID;
-	
-		///Í·´çÀàĞÍ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpCreditQuotaTypeType	CreditQuotaType;
-	
-		///·ÑÏ¢ÕÛ¿ÛÈ¯±àºÅ£¨0±íÊ¾²»Ê¹ÓÃÕÛ¿ÛÈ¯£©(Á½ÈÚ×¨ÓÃ)
-		TTORATstpIntSerialType	DiscountCouponID;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// ä»·æ ¼
+		TTORATstpPriceType LimitPrice;
+
+		/// æ•°é‡
+		TTORATstpVolumeType VolumeTotalOriginal;
+
+		/// æŠ¥å•ä»·æ ¼æ¡ä»¶
+		TTORATstpOrderPriceTypeType OrderPriceType;
+
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TTORATstpTimeConditionType TimeCondition;
+
+		/// æˆäº¤é‡ç±»å‹
+		TTORATstpVolumeConditionType VolumeCondition;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// æŠ¥å•å¼•ç”¨
+		TTORATstpOrderRefType OrderRef;
+
+		/// æ¸¯è‚¡é€šè®¢å•æ•°é‡ç±»å‹
+		TTORATstpLotTypeType LotType;
+
+		/// ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// æ¡ä»¶æ£€æŸ¥
+		TTORATstpCondCheckType CondCheck;
+
+		/// æœ‰æ•ˆæ—¥æœŸ
+		TTORATstpDateType GTDate;
+
+		/// å¼ºå¹³åŸå› (ä¸¤èä¸“ç”¨)
+		TTORATstpForceCloseReasonType ForceCloseReason;
+
+		/// æŒ‡å®šå¿è¿˜çš„ä¿¡ç”¨è´Ÿå€ºç¼–å·ï¼ˆè¯¥å­—æ®µç½®ç©ºè¡¨ç¤ºä¸æŒ‡å®šå¿è¿˜ï¼‰(ä¸¤èä¸“ç”¨)
+		TTORATstpCreditDebtIDType CreditDebtID;
+
+		/// å¤´å¯¸ç±»å‹(ä¸¤èä¸“ç”¨)
+		TTORATstpCreditQuotaTypeType CreditQuotaType;
+
+		/// è´¹æ¯æŠ˜æ‰£åˆ¸ç¼–å·ï¼ˆ0è¡¨ç¤ºä¸ä½¿ç”¨æŠ˜æ‰£åˆ¸ï¼‰(ä¸¤èä¸“ç”¨)
+		TTORATstpIntSerialType DiscountCouponID;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
 	};
-	
-	/// ±¨µ¥
+
+	/// æŠ¥å•
 	struct CTORATstpOrderField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///±¨µ¥¼Û¸ñÌõ¼ş
-		TTORATstpOrderPriceTypeType	OrderPriceType;
-	
-		///ÓĞĞ§ÆÚÀàĞÍ
-		TTORATstpTimeConditionType	TimeCondition;
-	
-		///³É½»Á¿ÀàĞÍ
-		TTORATstpVolumeConditionType	VolumeCondition;
-	
-		///¼Û¸ñ
-		TTORATstpPriceType	LimitPrice;
-	
-		///ÊıÁ¿
-		TTORATstpVolumeType	VolumeTotalOriginal;
-	
-		///¸Û¹ÉÍ¨¶©µ¥ÊıÁ¿ÀàĞÍ
-		TTORATstpLotTypeType	LotType;
-	
-		///ÓĞĞ§ÈÕÆÚ
-		TTORATstpDateType	GTDate;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///Ìõ¼ş¼ì²é
-		TTORATstpCondCheckType	CondCheck;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
-	
-		///ÇëÇó±àºÅ
-		TTORATstpRequestIDType	RequestID;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///±¨µ¥ÒıÓÃ
-		TTORATstpOrderRefType	OrderRef;
-	
-		///±¾µØ±¨µ¥±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///±¨µ¥×´Ì¬
-		TTORATstpOrderStatusType	OrderStatus;
-	
-		///±¨µ¥Ìá½»×´Ì¬
-		TTORATstpOrderSubmitStatusType	OrderSubmitStatus;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
-	
-		///ÒÑ³É½»ÊıÁ¿
-		TTORATstpVolumeType	VolumeTraded;
-	
-		///ÒÑ³·ÏúÊıÁ¿
-		TTORATstpVolumeType	VolumeCanceled;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///Éê±¨ÓÃ»§
-		TTORATstpUserIDType	InsertUser;
-	
-		///Éê±¨ÈÕÆÚ
-		TTORATstpDateType	InsertDate;
-	
-		///Éê±¨Ê±¼ä
-		TTORATstpTimeType	InsertTime;
-	
-		///½»Ò×Ëù½ÓÊÕÊ±¼ä
-		TTORATstpTimeType	AcceptTime;
-	
-		///³·ÏúÓÃ»§
-		TTORATstpUserIDType	CancelUser;
-	
-		///³·ÏúÊ±¼ä
-		TTORATstpTimeType	CancelTime;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///½»Ò×µ¥Ôª´úÂë
-		TTORATstpPbuIDType	PbuID;
-	
-		///³É½»½ğ¶î
-		TTORATstpMoneyType	Turnover;
-	
-		///±¨µ¥ÀàĞÍ
-		TTORATstpOrderTypeType	OrderType;
-	
-		///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-		TTORATstpUserProductInfoType	UserProductInfo;
-	
-		///Ç¿Æ½Ô­Òò(Á½ÈÚ×¨ÓÃ)
-		TTORATstpForceCloseReasonType	ForceCloseReason;
-	
-		///ĞÅÓÃÍ·´ç±àºÅ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpQuotaIDType	CreditQuotaID;
-	
-		///Í·´çÀàĞÍ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpCreditQuotaTypeType	CreditQuotaType;
-	
-		///ĞÅÓÃ¸ºÕ®±àºÅ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpCreditDebtIDType	CreditDebtID;
-	
-		///IPµØÖ·
-		TTORATstpIPAddressType	IPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
-	
-		///»Ø±¨¸½¼Ó¸¡µãĞÍÊı¾İĞÅÏ¢
-		TTORATstpFloatInfoType	RtnFloatInfo;
-	
-		///»Ø±¨¸½¼ÓÕûĞÍÊı¾İ
-		TTORATstpIntInfoType	RtnIntInfo;
-	
-		///»Ø±¨¸½¼Ó¸¡µãĞÍÊı¾İ1
-		TTORATstpFloatInfoType	RtnFloatInfo1;
-	
-		///»Ø±¨¸½¼Ó¸¡µãĞÍÊı¾İ2
-		TTORATstpFloatInfoType	RtnFloatInfo2;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// æŠ¥å•ä»·æ ¼æ¡ä»¶
+		TTORATstpOrderPriceTypeType OrderPriceType;
+
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TTORATstpTimeConditionType TimeCondition;
+
+		/// æˆäº¤é‡ç±»å‹
+		TTORATstpVolumeConditionType VolumeCondition;
+
+		/// ä»·æ ¼
+		TTORATstpPriceType LimitPrice;
+
+		/// æ•°é‡
+		TTORATstpVolumeType VolumeTotalOriginal;
+
+		/// æ¸¯è‚¡é€šè®¢å•æ•°é‡ç±»å‹
+		TTORATstpLotTypeType LotType;
+
+		/// æœ‰æ•ˆæ—¥æœŸ
+		TTORATstpDateType GTDate;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// æ¡ä»¶æ£€æŸ¥
+		TTORATstpCondCheckType CondCheck;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
+
+		/// è¯·æ±‚ç¼–å·
+		TTORATstpRequestIDType RequestID;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// æŠ¥å•å¼•ç”¨
+		TTORATstpOrderRefType OrderRef;
+
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// æŠ¥å•çŠ¶æ€
+		TTORATstpOrderStatusType OrderStatus;
+
+		/// æŠ¥å•æäº¤çŠ¶æ€
+		TTORATstpOrderSubmitStatusType OrderSubmitStatus;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
+
+		/// å·²æˆäº¤æ•°é‡
+		TTORATstpVolumeType VolumeTraded;
+
+		/// å·²æ’¤é”€æ•°é‡
+		TTORATstpVolumeType VolumeCanceled;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// ç”³æŠ¥ç”¨æˆ·
+		TTORATstpUserIDType InsertUser;
+
+		/// ç”³æŠ¥æ—¥æœŸ
+		TTORATstpDateType InsertDate;
+
+		/// ç”³æŠ¥æ—¶é—´
+		TTORATstpTimeType InsertTime;
+
+		/// äº¤æ˜“æ‰€æ¥æ”¶æ—¶é—´
+		TTORATstpTimeType AcceptTime;
+
+		/// æ’¤é”€ç”¨æˆ·
+		TTORATstpUserIDType CancelUser;
+
+		/// æ’¤é”€æ—¶é—´
+		TTORATstpTimeType CancelTime;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// äº¤æ˜“å•å…ƒä»£ç 
+		TTORATstpPbuIDType PbuID;
+
+		/// æˆäº¤é‡‘é¢
+		TTORATstpMoneyType Turnover;
+
+		/// æŠ¥å•ç±»å‹
+		TTORATstpOrderTypeType OrderType;
+
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TTORATstpUserProductInfoType UserProductInfo;
+
+		/// å¼ºå¹³åŸå› (ä¸¤èä¸“ç”¨)
+		TTORATstpForceCloseReasonType ForceCloseReason;
+
+		/// ä¿¡ç”¨å¤´å¯¸ç¼–å·(ä¸¤èä¸“ç”¨)
+		TTORATstpQuotaIDType CreditQuotaID;
+
+		/// å¤´å¯¸ç±»å‹(ä¸¤èä¸“ç”¨)
+		TTORATstpCreditQuotaTypeType CreditQuotaType;
+
+		/// ä¿¡ç”¨è´Ÿå€ºç¼–å·(ä¸¤èä¸“ç”¨)
+		TTORATstpCreditDebtIDType CreditDebtID;
+
+		/// IPåœ°å€
+		TTORATstpIPAddressType IPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
+
+		/// å›æŠ¥é™„åŠ æµ®ç‚¹å‹æ•°æ®ä¿¡æ¯
+		TTORATstpFloatInfoType RtnFloatInfo;
+
+		/// å›æŠ¥é™„åŠ æ•´å‹æ•°æ®
+		TTORATstpIntInfoType RtnIntInfo;
+
+		/// å›æŠ¥é™„åŠ æµ®ç‚¹å‹æ•°æ®1
+		TTORATstpFloatInfoType RtnFloatInfo1;
+
+		/// å›æŠ¥é™„åŠ æµ®ç‚¹å‹æ•°æ®2
+		TTORATstpFloatInfoType RtnFloatInfo2;
 	};
-	
-	/// ÓÃ»§±êÊ¶
+
+	/// ç”¨æˆ·æ ‡è¯†
 	struct CTORATstpUserRefField
 	{
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
 	};
-	
-	/// ³É½»
+
+	/// æˆäº¤
 	struct CTORATstpTradeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///³É½»±àºÅ
-		TTORATstpTradeIDType	TradeID;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///±¾µØ±¨µ¥±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///³É½»¼Û¸ñ
-		TTORATstpPriceType	Price;
-	
-		///³É½»ÊıÁ¿
-		TTORATstpVolumeType	Volume;
-	
-		///³É½»ÈÕÆÚ
-		TTORATstpDateType	TradeDate;
-	
-		///³É½»Ê±¼ä
-		TTORATstpTimeType	TradeTime;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///½»Ò×µ¥Ôª´úÂë
-		TTORATstpPbuIDType	PbuID;
-	
-		///±¨µ¥ÒıÓÃ
-		TTORATstpOrderRefType	OrderRef;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// æˆäº¤ç¼–å·
+		TTORATstpTradeIDType TradeID;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// æˆäº¤ä»·æ ¼
+		TTORATstpPriceType Price;
+
+		/// æˆäº¤æ•°é‡
+		TTORATstpVolumeType Volume;
+
+		/// æˆäº¤æ—¥æœŸ
+		TTORATstpDateType TradeDate;
+
+		/// æˆäº¤æ—¶é—´
+		TTORATstpTimeType TradeTime;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// äº¤æ˜“å•å…ƒä»£ç 
+		TTORATstpPbuIDType PbuID;
+
+		/// æŠ¥å•å¼•ç”¨
+		TTORATstpOrderRefType OrderRef;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
 	};
-	
-	/// ÊäÈë³·µ¥²Ù×÷
+
+	/// è¾“å…¥æ’¤å•æ“ä½œ
 	struct CTORATstpInputOrderActionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///±»³·±¨µ¥Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///±»³·±¨µ¥»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///±»³·±¨µ¥ÒıÓÃ
-		TTORATstpOrderRefType	OrderRef;
-	
-		///±»³·±¨µ¥ÏµÍ³±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///²Ù×÷±êÖ¾
-		TTORATstpActionFlagType	ActionFlag;
-	
-		///±¨µ¥²Ù×÷ÒıÓÃ
-		TTORATstpOrderRefType	OrderActionRef;
-	
-		///ÏµÍ³³·µ¥±àºÅ
-		TTORATstpOrderSysIDType	CancelOrderSysID;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¢«æ’¤æŠ¥å•å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// è¢«æ’¤æŠ¥å•ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// è¢«æ’¤æŠ¥å•å¼•ç”¨
+		TTORATstpOrderRefType OrderRef;
+
+		/// è¢«æ’¤æŠ¥å•ç³»ç»Ÿç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// æ“ä½œæ ‡å¿—
+		TTORATstpActionFlagType ActionFlag;
+
+		/// æŠ¥å•æ“ä½œå¼•ç”¨
+		TTORATstpOrderRefType OrderActionRef;
+
+		/// ç³»ç»Ÿæ’¤å•ç¼–å·
+		TTORATstpOrderSysIDType CancelOrderSysID;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
 	};
-	
-	/// Ìõ¼şµ¥Â¼ÈëÓò
+
+	/// æ¡ä»¶å•å½•å…¥åŸŸ
 	struct CTORATstpInputCondOrderField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///¼Û¸ñÀàĞÍ
-		TTORATstpOrderPriceTypeType	OrderPriceType;
-	
-		///ÓĞĞ§ÆÚÀàĞÍ
-		TTORATstpTimeConditionType	TimeCondition;
-	
-		///³É½»Á¿ÀàĞÍ
-		TTORATstpVolumeConditionType	VolumeCondition;
-	
-		///±¨µ¥¼Û¸ñ
-		TTORATstpPriceType	LimitPrice;
-	
-		///±¨µ¥ÊıÁ¿
-		TTORATstpVolumeType	VolumeTotalOriginal;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///¸Û¹ÉÍ¨¶©µ¥ÊıÁ¿ÀàĞÍ
-		TTORATstpLotTypeType	LotType;
-	
-		///Ìõ¼ş¼ì²é
-		TTORATstpCondCheckType	CondCheck;
-	
-		///ÓĞĞ§ÈÕÆÚ
-		TTORATstpDateType	GTDate;
-	
-		///Ç¿Æ½Ô­Òò(Á½ÈÚ×¨ÓÃ)
-		TTORATstpForceCloseReasonType	ForceCloseReason;
-	
-		///Ö¸¶¨³¥»¹µÄĞÅÓÃ¸ºÕ®±àºÅ£¨¸Ã×Ö¶ÎÖÃ¿Õ±íÊ¾²»Ö¸¶¨³¥»¹£©(Á½ÈÚ×¨ÓÃ)
-		TTORATstpCreditDebtIDType	CreditDebtID;
-	
-		///Í·´çÀàĞÍ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpCreditQuotaTypeType	CreditQuotaType;
-	
-		///·ÑÏ¢ÕÛ¿ÛÈ¯±àºÅ£¨0±íÊ¾²»Ê¹ÓÃÕÛ¿ÛÈ¯£©(Á½ÈÚ×¨ÓÃ)
-		TTORATstpIntSerialType	DiscountCouponID;
-	
-		///Ìõ¼ş±¨µ¥ÒıÓÃ
-		TTORATstpOrderRefType	CondOrderRef;
-	
-		///Ìõ¼ş±¨µ¥±àºÅ
-		TTORATstpCondOrderIDType	CondOrderID;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
-	
-		///´¥·¢»ù×¼ÊıÁ¿ÀàĞÍ
-		TTORATstpTriggerOrderVolumeTypeType	TriggerOrderVolumeType;
-	
-		///´¥·¢»ù×¼¼ÛÀàĞÍ
-		TTORATstpTriggerOrderPriceTypeType	TriggerOrderPriceType;
-	
-		///Ìõ¼şµ¥´¥·¢Ìõ¼ş
-		TTORATstpContingentConditionType	ContingentCondition;
-	
-		///Ìõ¼ş¼Û
-		TTORATstpPriceType	ConditionPrice;
-	
-		///¼Û¸ñ¸¡¶¯tickÊı
-		TTORATstpVolumeType	PriceTicks;
-	
-		///ÊıÁ¿¸¡¶¯±¶Êı
-		TTORATstpVolumeMultipleType	VolumeMultiple;
-	
-		///Ïà¹ØÇ°ÖÃ±àºÅ
-		TTORATstpFrontIDType	RelativeFrontID;
-	
-		///Ïà¹Ø»á»°±àºÅ
-		TTORATstpSessionIDType	RelativeSessionID;
-	
-		///Ïà¹ØÌõ¼ş²ÎÊı
-		TTORATstpRelativeCondParamType	RelativeParam;
-	
-		///¸½¼ÓÌõ¼şµ¥´¥·¢Ìõ¼ş
-		TTORATstpContingentConditionType	AppendContingentCondition;
-	
-		///¸½¼ÓÌõ¼ş¼Û
-		TTORATstpPriceType	AppendConditionPrice;
-	
-		///¸½¼ÓÏà¹ØÇ°ÖÃ±àºÅ
-		TTORATstpFrontIDType	AppendRelativeFrontID;
-	
-		///¸½¼ÓÏà¹Ø»á»°±àºÅ
-		TTORATstpSessionIDType	AppendRelativeSessionID;
-	
-		///¸½¼ÓÏà¹ØÌõ¼ş²ÎÊı
-		TTORATstpRelativeCondParamType	AppendRelativeParam;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// ä»·æ ¼ç±»å‹
+		TTORATstpOrderPriceTypeType OrderPriceType;
+
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TTORATstpTimeConditionType TimeCondition;
+
+		/// æˆäº¤é‡ç±»å‹
+		TTORATstpVolumeConditionType VolumeCondition;
+
+		/// æŠ¥å•ä»·æ ¼
+		TTORATstpPriceType LimitPrice;
+
+		/// æŠ¥å•æ•°é‡
+		TTORATstpVolumeType VolumeTotalOriginal;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// æ¸¯è‚¡é€šè®¢å•æ•°é‡ç±»å‹
+		TTORATstpLotTypeType LotType;
+
+		/// æ¡ä»¶æ£€æŸ¥
+		TTORATstpCondCheckType CondCheck;
+
+		/// æœ‰æ•ˆæ—¥æœŸ
+		TTORATstpDateType GTDate;
+
+		/// å¼ºå¹³åŸå› (ä¸¤èä¸“ç”¨)
+		TTORATstpForceCloseReasonType ForceCloseReason;
+
+		/// æŒ‡å®šå¿è¿˜çš„ä¿¡ç”¨è´Ÿå€ºç¼–å·ï¼ˆè¯¥å­—æ®µç½®ç©ºè¡¨ç¤ºä¸æŒ‡å®šå¿è¿˜ï¼‰(ä¸¤èä¸“ç”¨)
+		TTORATstpCreditDebtIDType CreditDebtID;
+
+		/// å¤´å¯¸ç±»å‹(ä¸¤èä¸“ç”¨)
+		TTORATstpCreditQuotaTypeType CreditQuotaType;
+
+		/// è´¹æ¯æŠ˜æ‰£åˆ¸ç¼–å·ï¼ˆ0è¡¨ç¤ºä¸ä½¿ç”¨æŠ˜æ‰£åˆ¸ï¼‰(ä¸¤èä¸“ç”¨)
+		TTORATstpIntSerialType DiscountCouponID;
+
+		/// æ¡ä»¶æŠ¥å•å¼•ç”¨
+		TTORATstpOrderRefType CondOrderRef;
+
+		/// æ¡ä»¶æŠ¥å•ç¼–å·
+		TTORATstpCondOrderIDType CondOrderID;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
+
+		/// è§¦å‘åŸºå‡†æ•°é‡ç±»å‹
+		TTORATstpTriggerOrderVolumeTypeType TriggerOrderVolumeType;
+
+		/// è§¦å‘åŸºå‡†ä»·ç±»å‹
+		TTORATstpTriggerOrderPriceTypeType TriggerOrderPriceType;
+
+		/// æ¡ä»¶å•è§¦å‘æ¡ä»¶
+		TTORATstpContingentConditionType ContingentCondition;
+
+		/// æ¡ä»¶ä»·
+		TTORATstpPriceType ConditionPrice;
+
+		/// ä»·æ ¼æµ®åŠ¨tickæ•°
+		TTORATstpVolumeType PriceTicks;
+
+		/// æ•°é‡æµ®åŠ¨å€æ•°
+		TTORATstpVolumeMultipleType VolumeMultiple;
+
+		/// ç›¸å…³å‰ç½®ç¼–å·
+		TTORATstpFrontIDType RelativeFrontID;
+
+		/// ç›¸å…³ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType RelativeSessionID;
+
+		/// ç›¸å…³æ¡ä»¶å‚æ•°
+		TTORATstpRelativeCondParamType RelativeParam;
+
+		/// é™„åŠ æ¡ä»¶å•è§¦å‘æ¡ä»¶
+		TTORATstpContingentConditionType AppendContingentCondition;
+
+		/// é™„åŠ æ¡ä»¶ä»·
+		TTORATstpPriceType AppendConditionPrice;
+
+		/// é™„åŠ ç›¸å…³å‰ç½®ç¼–å·
+		TTORATstpFrontIDType AppendRelativeFrontID;
+
+		/// é™„åŠ ç›¸å…³ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType AppendRelativeSessionID;
+
+		/// é™„åŠ ç›¸å…³æ¡ä»¶å‚æ•°
+		TTORATstpRelativeCondParamType AppendRelativeParam;
 	};
-	
-	/// Ìõ¼şµ¥Óò
+
+	/// æ¡ä»¶å•åŸŸ
 	struct CTORATstpConditionOrderField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///¼Û¸ñÀàĞÍ
-		TTORATstpOrderPriceTypeType	OrderPriceType;
-	
-		///ÓĞĞ§ÆÚÀàĞÍ
-		TTORATstpTimeConditionType	TimeCondition;
-	
-		///³É½»Á¿ÀàĞÍ
-		TTORATstpVolumeConditionType	VolumeCondition;
-	
-		///±¨µ¥¼Û¸ñ
-		TTORATstpPriceType	LimitPrice;
-	
-		///±¨µ¥ÊıÁ¿
-		TTORATstpVolumeType	VolumeTotalOriginal;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///¸Û¹ÉÍ¨¶©µ¥ÊıÁ¿ÀàĞÍ
-		TTORATstpLotTypeType	LotType;
-	
-		///Ìõ¼ş¼ì²é
-		TTORATstpCondCheckType	CondCheck;
-	
-		///ÓĞĞ§ÈÕÆÚ
-		TTORATstpDateType	GTDate;
-	
-		///Ç¿Æ½Ô­Òò(Á½ÈÚ×¨ÓÃ)
-		TTORATstpForceCloseReasonType	ForceCloseReason;
-	
-		///Ö¸¶¨³¥»¹µÄĞÅÓÃ¸ºÕ®±àºÅ£¨¸Ã×Ö¶ÎÖÃ¿Õ±íÊ¾²»Ö¸¶¨³¥»¹£©(Á½ÈÚ×¨ÓÃ)
-		TTORATstpCreditDebtIDType	CreditDebtID;
-	
-		///Í·´çÀàĞÍ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpCreditQuotaTypeType	CreditQuotaType;
-	
-		///·ÑÏ¢ÕÛ¿ÛÈ¯±àºÅ£¨0±íÊ¾²»Ê¹ÓÃÕÛ¿ÛÈ¯£©(Á½ÈÚ×¨ÓÃ)
-		TTORATstpIntSerialType	DiscountCouponID;
-	
-		///Ìõ¼ş±¨µ¥ÒıÓÃ
-		TTORATstpOrderRefType	CondOrderRef;
-	
-		///±¨µ¥±àºÅ
-		TTORATstpCondOrderIDType	CondOrderID;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
-	
-		///´¥·¢»ù×¼ÊıÁ¿ÀàĞÍ
-		TTORATstpTriggerOrderVolumeTypeType	TriggerOrderVolumeType;
-	
-		///´¥·¢»ù×¼¼ÛÀàĞÍ
-		TTORATstpTriggerOrderPriceTypeType	TriggerOrderPriceType;
-	
-		///Ìõ¼şµ¥´¥·¢Ìõ¼ş
-		TTORATstpContingentConditionType	ContingentCondition;
-	
-		///Ìõ¼ş¼Û
-		TTORATstpPriceType	ConditionPrice;
-	
-		///¼Û¸ñ¸¡¶¯tickÊı
-		TTORATstpVolumeType	PriceTicks;
-	
-		///ÊıÁ¿¸¡¶¯±¶Êı
-		TTORATstpVolumeMultipleType	VolumeMultiple;
-	
-		///Ïà¹ØÇ°ÖÃ±àºÅ
-		TTORATstpFrontIDType	RelativeFrontID;
-	
-		///Ïà¹Ø»á»°±àºÅ
-		TTORATstpSessionIDType	RelativeSessionID;
-	
-		///Ïà¹ØÌõ¼ş²ÎÊı
-		TTORATstpRelativeCondParamType	RelativeParam;
-	
-		///¸½¼ÓÌõ¼şµ¥´¥·¢Ìõ¼ş
-		TTORATstpContingentConditionType	AppendContingentCondition;
-	
-		///¸½¼ÓÌõ¼ş¼Û
-		TTORATstpPriceType	AppendConditionPrice;
-	
-		///¸½¼ÓÏà¹ØÇ°ÖÃ±àºÅ
-		TTORATstpFrontIDType	AppendRelativeFrontID;
-	
-		///¸½¼ÓÏà¹Ø»á»°±àºÅ
-		TTORATstpSessionIDType	AppendRelativeSessionID;
-	
-		///¸½¼ÓÏà¹ØÌõ¼ş²ÎÊı
-		TTORATstpRelativeCondParamType	AppendRelativeParam;
-	
-		///ÇëÇó±àºÅ
-		TTORATstpRequestIDType	RequestID;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///Ìõ¼şµ¥×´Ì¬
-		TTORATstpCondOrderStatusType	CondOrderStatus;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
-	
-		///Éê±¨ÓÃ»§
-		TTORATstpUserIDType	InsertUser;
-	
-		///Éê±¨ÈÕÆÚ
-		TTORATstpDateType	InsertDate;
-	
-		///Éê±¨Ê±¼ä
-		TTORATstpTimeType	InsertTime;
-	
-		///´¥·¢ÈÕÆÚ
-		TTORATstpDateType	ActiveDate;
-	
-		///´¥·¢Ê±¼ä
-		TTORATstpTimeType	ActiveTime;
-	
-		///³·ÏúÓÃ»§
-		TTORATstpUserIDType	CancelUser;
-	
-		///³·ÏúÊ±¼ä
-		TTORATstpTimeType	CancelTime;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-		TTORATstpUserProductInfoType	UserProductInfo;
-	
-		///IPµØÖ·
-		TTORATstpIPAddressType	IPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// ä»·æ ¼ç±»å‹
+		TTORATstpOrderPriceTypeType OrderPriceType;
+
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TTORATstpTimeConditionType TimeCondition;
+
+		/// æˆäº¤é‡ç±»å‹
+		TTORATstpVolumeConditionType VolumeCondition;
+
+		/// æŠ¥å•ä»·æ ¼
+		TTORATstpPriceType LimitPrice;
+
+		/// æŠ¥å•æ•°é‡
+		TTORATstpVolumeType VolumeTotalOriginal;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// æ¸¯è‚¡é€šè®¢å•æ•°é‡ç±»å‹
+		TTORATstpLotTypeType LotType;
+
+		/// æ¡ä»¶æ£€æŸ¥
+		TTORATstpCondCheckType CondCheck;
+
+		/// æœ‰æ•ˆæ—¥æœŸ
+		TTORATstpDateType GTDate;
+
+		/// å¼ºå¹³åŸå› (ä¸¤èä¸“ç”¨)
+		TTORATstpForceCloseReasonType ForceCloseReason;
+
+		/// æŒ‡å®šå¿è¿˜çš„ä¿¡ç”¨è´Ÿå€ºç¼–å·ï¼ˆè¯¥å­—æ®µç½®ç©ºè¡¨ç¤ºä¸æŒ‡å®šå¿è¿˜ï¼‰(ä¸¤èä¸“ç”¨)
+		TTORATstpCreditDebtIDType CreditDebtID;
+
+		/// å¤´å¯¸ç±»å‹(ä¸¤èä¸“ç”¨)
+		TTORATstpCreditQuotaTypeType CreditQuotaType;
+
+		/// è´¹æ¯æŠ˜æ‰£åˆ¸ç¼–å·ï¼ˆ0è¡¨ç¤ºä¸ä½¿ç”¨æŠ˜æ‰£åˆ¸ï¼‰(ä¸¤èä¸“ç”¨)
+		TTORATstpIntSerialType DiscountCouponID;
+
+		/// æ¡ä»¶æŠ¥å•å¼•ç”¨
+		TTORATstpOrderRefType CondOrderRef;
+
+		/// æŠ¥å•ç¼–å·
+		TTORATstpCondOrderIDType CondOrderID;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
+
+		/// è§¦å‘åŸºå‡†æ•°é‡ç±»å‹
+		TTORATstpTriggerOrderVolumeTypeType TriggerOrderVolumeType;
+
+		/// è§¦å‘åŸºå‡†ä»·ç±»å‹
+		TTORATstpTriggerOrderPriceTypeType TriggerOrderPriceType;
+
+		/// æ¡ä»¶å•è§¦å‘æ¡ä»¶
+		TTORATstpContingentConditionType ContingentCondition;
+
+		/// æ¡ä»¶ä»·
+		TTORATstpPriceType ConditionPrice;
+
+		/// ä»·æ ¼æµ®åŠ¨tickæ•°
+		TTORATstpVolumeType PriceTicks;
+
+		/// æ•°é‡æµ®åŠ¨å€æ•°
+		TTORATstpVolumeMultipleType VolumeMultiple;
+
+		/// ç›¸å…³å‰ç½®ç¼–å·
+		TTORATstpFrontIDType RelativeFrontID;
+
+		/// ç›¸å…³ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType RelativeSessionID;
+
+		/// ç›¸å…³æ¡ä»¶å‚æ•°
+		TTORATstpRelativeCondParamType RelativeParam;
+
+		/// é™„åŠ æ¡ä»¶å•è§¦å‘æ¡ä»¶
+		TTORATstpContingentConditionType AppendContingentCondition;
+
+		/// é™„åŠ æ¡ä»¶ä»·
+		TTORATstpPriceType AppendConditionPrice;
+
+		/// é™„åŠ ç›¸å…³å‰ç½®ç¼–å·
+		TTORATstpFrontIDType AppendRelativeFrontID;
+
+		/// é™„åŠ ç›¸å…³ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType AppendRelativeSessionID;
+
+		/// é™„åŠ ç›¸å…³æ¡ä»¶å‚æ•°
+		TTORATstpRelativeCondParamType AppendRelativeParam;
+
+		/// è¯·æ±‚ç¼–å·
+		TTORATstpRequestIDType RequestID;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// æ¡ä»¶å•çŠ¶æ€
+		TTORATstpCondOrderStatusType CondOrderStatus;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
+
+		/// ç”³æŠ¥ç”¨æˆ·
+		TTORATstpUserIDType InsertUser;
+
+		/// ç”³æŠ¥æ—¥æœŸ
+		TTORATstpDateType InsertDate;
+
+		/// ç”³æŠ¥æ—¶é—´
+		TTORATstpTimeType InsertTime;
+
+		/// è§¦å‘æ—¥æœŸ
+		TTORATstpDateType ActiveDate;
+
+		/// è§¦å‘æ—¶é—´
+		TTORATstpTimeType ActiveTime;
+
+		/// æ’¤é”€ç”¨æˆ·
+		TTORATstpUserIDType CancelUser;
+
+		/// æ’¤é”€æ—¶é—´
+		TTORATstpTimeType CancelTime;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TTORATstpUserProductInfoType UserProductInfo;
+
+		/// IPåœ°å€
+		TTORATstpIPAddressType IPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
 	};
-	
-	/// Ìõ¼şµ¥²Ù×÷Â¼Èë
+
+	/// æ¡ä»¶å•æ“ä½œå½•å…¥
 	struct CTORATstpInputCondOrderActionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///±»³·Ìõ¼şµ¥Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///±»³·Ìõ¼şµ¥»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///±»³·Ìõ¼şµ¥ÒıÓÃ
-		TTORATstpOrderRefType	CondOrderRef;
-	
-		///±»³·Ìõ¼şµ¥±àºÅ
-		TTORATstpCondOrderIDType	CondOrderID;
-	
-		///²Ù×÷±êÖ¾
-		TTORATstpActionFlagType	ActionFlag;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///Ìõ¼şµ¥²Ù×÷ÒıÓÃ
-		TTORATstpOrderRefType	CondOrderActionRef;
-	
-		///Ìõ¼şµ¥³·µ¥±àºÅ
-		TTORATstpCondOrderIDType	CancelCondOrderID;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¢«æ’¤æ¡ä»¶å•å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// è¢«æ’¤æ¡ä»¶å•ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// è¢«æ’¤æ¡ä»¶å•å¼•ç”¨
+		TTORATstpOrderRefType CondOrderRef;
+
+		/// è¢«æ’¤æ¡ä»¶å•ç¼–å·
+		TTORATstpCondOrderIDType CondOrderID;
+
+		/// æ“ä½œæ ‡å¿—
+		TTORATstpActionFlagType ActionFlag;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// æ¡ä»¶å•æ“ä½œå¼•ç”¨
+		TTORATstpOrderRefType CondOrderActionRef;
+
+		/// æ¡ä»¶å•æ’¤å•ç¼–å·
+		TTORATstpCondOrderIDType CancelCondOrderID;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
 	};
-	
-	/// ÊäÈë±¨µ¥
+
+	/// è¾“å…¥æŠ¥å•
 	struct CTORATstpInputNegoOrderField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///¼Û¸ñ
-		TTORATstpPriceType	LimitPrice;
-	
-		///ÊıÁ¿
-		TTORATstpVolumeType	VolumeTotalOriginal;
-	
-		///ÁªÏµÈË(ÒâÏòÉê±¨Ê±±ØÌî)
-		TTORATstpNegoContractorType	Contractor;
-	
-		///ÁªÏµ·½Ê½(ÒâÏòÉê±¨Ê±±ØÌî)
-		TTORATstpNegoContractorInfoType	ContractorInfo;
-	
-		///Ô¼¶¨ºÅ(³É½»Éê±¨Ê±±ØÌî)
-		TTORATstpNegoConfirmIDType	ConfirmID;
-	
-		///¶ÔÊÖ·½Ï¯Î»ºÅ(³É½»Éê±¨Ê±±ØÌî)
-		TTORATstpPbuIDType	CounterpartyPbuID;
-	
-		///ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// ä»·æ ¼
+		TTORATstpPriceType LimitPrice;
+
+		/// æ•°é‡
+		TTORATstpVolumeType VolumeTotalOriginal;
+
+		/// è”ç³»äºº(æ„å‘ç”³æŠ¥æ—¶å¿…å¡«)
+		TTORATstpNegoContractorType Contractor;
+
+		/// è”ç³»æ–¹å¼(æ„å‘ç”³æŠ¥æ—¶å¿…å¡«)
+		TTORATstpNegoContractorInfoType ContractorInfo;
+
+		/// çº¦å®šå·(æˆäº¤ç”³æŠ¥æ—¶å¿…å¡«)
+		TTORATstpNegoConfirmIDType ConfirmID;
+
+		/// å¯¹æ‰‹æ–¹å¸­ä½å·(æˆäº¤ç”³æŠ¥æ—¶å¿…å¡«)
+		TTORATstpPbuIDType CounterpartyPbuID;
+
+		/// ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
 	};
-	
-	/// Ğ­Òé½»Ò×±¨µ¥
+
+	/// åè®®äº¤æ˜“æŠ¥å•
 	struct CTORATstpNegoOrderField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///¼Û¸ñ
-		TTORATstpPriceType	LimitPrice;
-	
-		///ÊıÁ¿
-		TTORATstpVolumeType	VolumeTotalOriginal;
-	
-		///ÁªÏµÈË
-		TTORATstpNegoContractorType	Contractor;
-	
-		///ÁªÏµ·½Ê½
-		TTORATstpNegoContractorInfoType	ContractorInfo;
-	
-		///Ô¼¶¨ºÅ
-		TTORATstpNegoConfirmIDType	ConfirmID;
-	
-		///¶ÔÊÖ·½Ï¯Î»ºÅ
-		TTORATstpPbuIDType	CounterpartyPbuID;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
-	
-		///ÇëÇó±àºÅ
-		TTORATstpRequestIDType	RequestID;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///±¾µØ±¨µ¥±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///±¨µ¥×´Ì¬
-		TTORATstpOrderStatusType	OrderStatus;
-	
-		///±¨µ¥Ìá½»×´Ì¬
-		TTORATstpOrderSubmitStatusType	OrderSubmitStatus;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
-	
-		///ÒÑ³É½»ÊıÁ¿
-		TTORATstpVolumeType	VolumeTraded;
-	
-		///ÒÑ³·ÏúÊıÁ¿
-		TTORATstpVolumeType	VolumeCanceled;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///Éê±¨ÓÃ»§
-		TTORATstpUserIDType	InsertUser;
-	
-		///Éê±¨ÈÕÆÚ
-		TTORATstpDateType	InsertDate;
-	
-		///Éê±¨Ê±¼ä
-		TTORATstpTimeType	InsertTime;
-	
-		///½»Ò×Ëù½ÓÊÕÊ±¼ä
-		TTORATstpTimeType	AcceptTime;
-	
-		///³·ÏúÓÃ»§
-		TTORATstpUserIDType	CancelUser;
-	
-		///³·ÏúÊ±¼ä
-		TTORATstpTimeType	CancelTime;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///½»Ò×µ¥Ôª´úÂë
-		TTORATstpPbuIDType	PbuID;
-	
-		///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-		TTORATstpUserProductInfoType	UserProductInfo;
-	
-		///IPµØÖ·
-		TTORATstpIPAddressType	IPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// ä»·æ ¼
+		TTORATstpPriceType LimitPrice;
+
+		/// æ•°é‡
+		TTORATstpVolumeType VolumeTotalOriginal;
+
+		/// è”ç³»äºº
+		TTORATstpNegoContractorType Contractor;
+
+		/// è”ç³»æ–¹å¼
+		TTORATstpNegoContractorInfoType ContractorInfo;
+
+		/// çº¦å®šå·
+		TTORATstpNegoConfirmIDType ConfirmID;
+
+		/// å¯¹æ‰‹æ–¹å¸­ä½å·
+		TTORATstpPbuIDType CounterpartyPbuID;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
+
+		/// è¯·æ±‚ç¼–å·
+		TTORATstpRequestIDType RequestID;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// æŠ¥å•çŠ¶æ€
+		TTORATstpOrderStatusType OrderStatus;
+
+		/// æŠ¥å•æäº¤çŠ¶æ€
+		TTORATstpOrderSubmitStatusType OrderSubmitStatus;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
+
+		/// å·²æˆäº¤æ•°é‡
+		TTORATstpVolumeType VolumeTraded;
+
+		/// å·²æ’¤é”€æ•°é‡
+		TTORATstpVolumeType VolumeCanceled;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// ç”³æŠ¥ç”¨æˆ·
+		TTORATstpUserIDType InsertUser;
+
+		/// ç”³æŠ¥æ—¥æœŸ
+		TTORATstpDateType InsertDate;
+
+		/// ç”³æŠ¥æ—¶é—´
+		TTORATstpTimeType InsertTime;
+
+		/// äº¤æ˜“æ‰€æ¥æ”¶æ—¶é—´
+		TTORATstpTimeType AcceptTime;
+
+		/// æ’¤é”€ç”¨æˆ·
+		TTORATstpUserIDType CancelUser;
+
+		/// æ’¤é”€æ—¶é—´
+		TTORATstpTimeType CancelTime;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// äº¤æ˜“å•å…ƒä»£ç 
+		TTORATstpPbuIDType PbuID;
+
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TTORATstpUserProductInfoType UserProductInfo;
+
+		/// IPåœ°å€
+		TTORATstpIPAddressType IPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
 	};
-	
-	/// Ğ­Òé½»Ò×³É½»
+
+	/// åè®®äº¤æ˜“æˆäº¤
 	struct CTORATstpNegoTradeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///³É½»±àºÅ
-		TTORATstpTradeIDType	TradeID;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///±¾µØ±¨µ¥±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///³É½»¼Û¸ñ
-		TTORATstpPriceType	Price;
-	
-		///³É½»ÊıÁ¿
-		TTORATstpVolumeType	Volume;
-	
-		///³É½»ÈÕÆÚ
-		TTORATstpDateType	TradeDate;
-	
-		///³É½»Ê±¼ä
-		TTORATstpTimeType	TradeTime;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///½»Ò×µ¥Ôª´úÂë
-		TTORATstpPbuIDType	PbuID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///¶ÔÊÖ·½½»Ò×µ¥Ôª´úÂë
-		TTORATstpPbuIDType	CounterpartyPbuID;
-	
-		///¶ÔÊÖ·½¹É¶«ÕËºÅ
-		TTORATstpShareholderIDType	CounterpartyShareholderID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// æˆäº¤ç¼–å·
+		TTORATstpTradeIDType TradeID;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// æˆäº¤ä»·æ ¼
+		TTORATstpPriceType Price;
+
+		/// æˆäº¤æ•°é‡
+		TTORATstpVolumeType Volume;
+
+		/// æˆäº¤æ—¥æœŸ
+		TTORATstpDateType TradeDate;
+
+		/// æˆäº¤æ—¶é—´
+		TTORATstpTimeType TradeTime;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// äº¤æ˜“å•å…ƒä»£ç 
+		TTORATstpPbuIDType PbuID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// å¯¹æ‰‹æ–¹äº¤æ˜“å•å…ƒä»£ç 
+		TTORATstpPbuIDType CounterpartyPbuID;
+
+		/// å¯¹æ‰‹æ–¹è‚¡ä¸œè´¦å·
+		TTORATstpShareholderIDType CounterpartyShareholderID;
 	};
-	
-	/// ÊäÈëĞ­Òé½»Ò×³·µ¥²Ù×÷
+
+	/// è¾“å…¥åè®®äº¤æ˜“æ’¤å•æ“ä½œ
 	struct CTORATstpInputNegoOrderActionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///±»³·±¨µ¥ÏµÍ³±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///²Ù×÷±êÖ¾
-		TTORATstpActionFlagType	ActionFlag;
-	
-		///ÏµÍ³³·µ¥±àºÅ
-		TTORATstpOrderSysIDType	CancelOrderSysID;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¢«æ’¤æŠ¥å•ç³»ç»Ÿç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// æ“ä½œæ ‡å¿—
+		TTORATstpActionFlagType ActionFlag;
+
+		/// ç³»ç»Ÿæ’¤å•ç¼–å·
+		TTORATstpOrderSysIDType CancelOrderSysID;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
 	};
-	
-	/// ÊĞ³¡×´Ì¬
+
+	/// å¸‚åœºçŠ¶æ€
 	struct CTORATstpMarketStatusField
 	{
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///ÊĞ³¡×´Ì¬
-		TTORATstpMarketStatusType	MarketStatus;
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// å¸‚åœºçŠ¶æ€
+		TTORATstpMarketStatusType MarketStatus;
 	};
-	
-	/// ×Ê½ğ×ªÒÆ
+
+	/// èµ„é‡‘è½¬ç§»
 	struct CTORATstpInputTransferFundField
 	{
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///ÉêÇëÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	ApplySerial;
-	
-		///×ªÒÆ·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///×ªÒÆ½ğ¶î
-		TTORATstpMoneyType	Amount;
-	
-		///ÒøĞĞ´úÂë(ÒøÖ¤×ªÕËÊ±±ØÌî)
-		TTORATstpBankIDType	BankID;
-	
-		///×Ê½ğÃÜÂë(Ö¤È¯×ªÒøĞĞÊ±±ØÌî)
-		TTORATstpPasswordType	AccountPassword;
-	
-		///ÒøĞĞÃÜÂë(ÒøĞĞ×ªÖ¤È¯Ê±±ØÌî)
-		TTORATstpPasswordType	BankPassword;
-	
-		///Íâ²¿½ÚµãºÅ(½Úµã¼ä×Ê½ğµ÷²¦Ê±±ØÌî)
-		TTORATstpNodeIDType	ExternalNodeID;
-	
-		///Ö¸¶¨³¥»¹µÄĞÅÓÃ¸ºÕ®±àºÅ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpCreditDebtIDType	CreditDebtID;
-	
-		///Ç¿Æ½Ô­Òò(Á½ÈÚ×¨ÓÃ)
-		TTORATstpForceCloseReasonType	ForceCloseReason;
-	
-		///Êµ¼Ê³¥»¹½ğ¶î(·µ»Ø)(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	RealAmount;
-	
-		///Ç¿ÖÆ±êÊ¶(Ö¤È¯×ªÒøĞĞÊ±ÓĞĞ§)
-		TTORATstpBoolType	ForceFlag;
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// ç”³è¯·æµæ°´å·
+		TTORATstpIntSerialType ApplySerial;
+
+		/// è½¬ç§»æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// è½¬ç§»é‡‘é¢
+		TTORATstpMoneyType Amount;
+
+		/// é“¶è¡Œä»£ç (é“¶è¯è½¬è´¦æ—¶å¿…å¡«)
+		TTORATstpBankIDType BankID;
+
+		/// èµ„é‡‘å¯†ç (è¯åˆ¸è½¬é“¶è¡Œæ—¶å¿…å¡«)
+		TTORATstpPasswordType AccountPassword;
+
+		/// é“¶è¡Œå¯†ç (é“¶è¡Œè½¬è¯åˆ¸æ—¶å¿…å¡«)
+		TTORATstpPasswordType BankPassword;
+
+		/// å¤–éƒ¨èŠ‚ç‚¹å·(èŠ‚ç‚¹é—´èµ„é‡‘è°ƒæ‹¨æ—¶å¿…å¡«)
+		TTORATstpNodeIDType ExternalNodeID;
+
+		/// æŒ‡å®šå¿è¿˜çš„ä¿¡ç”¨è´Ÿå€ºç¼–å·(ä¸¤èä¸“ç”¨)
+		TTORATstpCreditDebtIDType CreditDebtID;
+
+		/// å¼ºå¹³åŸå› (ä¸¤èä¸“ç”¨)
+		TTORATstpForceCloseReasonType ForceCloseReason;
+
+		/// å®é™…å¿è¿˜é‡‘é¢(è¿”å›)(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType RealAmount;
+
+		/// å¼ºåˆ¶æ ‡è¯†(è¯åˆ¸è½¬é“¶è¡Œæ—¶æœ‰æ•ˆ)
+		TTORATstpBoolType ForceFlag;
 	};
-	
-	/// ×Ê½ğ×ªÒÆ»Ø±¨
+
+	/// èµ„é‡‘è½¬ç§»å›æŠ¥
 	struct CTORATstpTransferFundField
 	{
-		///×ªÒÆÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	FundSerial;
-	
-		///ÉêÇëÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	ApplySerial;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///×ªÒÆ·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///×ªÒÆ½ğ¶î
-		TTORATstpMoneyType	Amount;
-	
-		///×ªÒÆ×´Ì¬
-		TTORATstpTransferStatusType	TransferStatus;
-	
-		///²Ù×÷ÈËÔ±
-		TTORATstpUserIDType	OperatorID;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	OperateDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	OperateTime;
-	
-		///Ç©Ô¼ÒøĞĞÕË»§
-		TTORATstpBankAccountIDType	BankAccountID;
-	
-		///ÒøĞĞ´úÂë
-		TTORATstpBankIDType	BankID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Íâ²¿½ÚµãºÅ
-		TTORATstpNodeIDType	ExternalNodeID;
-	
-		///Ç¿Æ½Ô­Òò(Á½ÈÚ×¨ÓÃ)
-		TTORATstpForceCloseReasonType	ForceCloseReason;
-	
-		///IPµØÖ·
-		TTORATstpIPAddressType	IPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
+		/// è½¬ç§»æµæ°´å·
+		TTORATstpIntSerialType FundSerial;
+
+		/// ç”³è¯·æµæ°´å·
+		TTORATstpIntSerialType ApplySerial;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// è½¬ç§»æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// è½¬ç§»é‡‘é¢
+		TTORATstpMoneyType Amount;
+
+		/// è½¬ç§»çŠ¶æ€
+		TTORATstpTransferStatusType TransferStatus;
+
+		/// æ“ä½œäººå‘˜
+		TTORATstpUserIDType OperatorID;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType OperateDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType OperateTime;
+
+		/// ç­¾çº¦é“¶è¡Œè´¦æˆ·
+		TTORATstpBankAccountIDType BankAccountID;
+
+		/// é“¶è¡Œä»£ç 
+		TTORATstpBankIDType BankID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// å¤–éƒ¨èŠ‚ç‚¹å·
+		TTORATstpNodeIDType ExternalNodeID;
+
+		/// å¼ºå¹³åŸå› (ä¸¤èä¸“ç”¨)
+		TTORATstpForceCloseReasonType ForceCloseReason;
+
+		/// IPåœ°å€
+		TTORATstpIPAddressType IPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
 	};
-	
-	/// ²ÖÎ»×ªÒÆ
+
+	/// ä»“ä½è½¬ç§»
 	struct CTORATstpInputTransferPositionField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÉêÇëÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	ApplySerial;
-	
-		///×ªÒÆ·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///ÊıÁ¿
-		TTORATstpVolumeType	Volume;
-	
-		///×ªÒÆ³Ö²ÖÀàĞÍ
-		TTORATstpTransferPositionTypeType	TransferPositionType;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///Íâ²¿½Úµã±àºÅ(Íâ²¿ÏµÍ³×ª²ÖÊ±±ØÌî)
-		TTORATstpNodeIDType	ExternalNodeID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ç”³è¯·æµæ°´å·
+		TTORATstpIntSerialType ApplySerial;
+
+		/// è½¬ç§»æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// æ•°é‡
+		TTORATstpVolumeType Volume;
+
+		/// è½¬ç§»æŒä»“ç±»å‹
+		TTORATstpTransferPositionTypeType TransferPositionType;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// å¤–éƒ¨èŠ‚ç‚¹ç¼–å·(å¤–éƒ¨ç³»ç»Ÿè½¬ä»“æ—¶å¿…å¡«)
+		TTORATstpNodeIDType ExternalNodeID;
 	};
-	
-	/// ²ÖÎ»×ªÒÆ»Ø±¨
+
+	/// ä»“ä½è½¬ç§»å›æŠ¥
 	struct CTORATstpTransferPositionField
 	{
-		///²ÖÎ»×ªÒÆÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	PositionSerial;
-	
-		///ÉêÇëÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	ApplySerial;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///×ªÒÆ·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///×ªÒÆ³Ö²ÖÀàĞÍ
-		TTORATstpTransferPositionTypeType	TransferPositionType;
-	
-		///×òÈÕ³Ö²ÖÊıÁ¿
-		TTORATstpVolumeType	HistoryVolume;
-	
-		///½ñÈÕÂòÂô³Ö²ÖÊıÁ¿
-		TTORATstpVolumeType	TodayBSVolume;
-	
-		///½ñÈÕÉêÊê³Ö²ÖÊıÁ¿
-		TTORATstpVolumeType	TodayPRVolume;
-	
-		///½ñÈÕ²ğ·ÖºÏ²¢³Ö²ÖÊıÁ¿
-		TTORATstpVolumeType	TodaySMVolume;
-	
-		///×ªÒÆ×´Ì¬
-		TTORATstpTransferStatusType	TransferStatus;
-	
-		///²Ù×÷ÈËÔ±
-		TTORATstpUserIDType	OperatorID;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	OperateDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	OperateTime;
-	
-		///IPµØÖ·
-		TTORATstpIPAddressType	IPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
-	
-		///Íâ²¿½Úµã±àºÅ
-		TTORATstpNodeIDType	ExternalNodeID;
+		/// ä»“ä½è½¬ç§»æµæ°´å·
+		TTORATstpIntSerialType PositionSerial;
+
+		/// ç”³è¯·æµæ°´å·
+		TTORATstpIntSerialType ApplySerial;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// è½¬ç§»æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// è½¬ç§»æŒä»“ç±»å‹
+		TTORATstpTransferPositionTypeType TransferPositionType;
+
+		/// æ˜¨æ—¥æŒä»“æ•°é‡
+		TTORATstpVolumeType HistoryVolume;
+
+		/// ä»Šæ—¥ä¹°å–æŒä»“æ•°é‡
+		TTORATstpVolumeType TodayBSVolume;
+
+		/// ä»Šæ—¥ç”³èµæŒä»“æ•°é‡
+		TTORATstpVolumeType TodayPRVolume;
+
+		/// ä»Šæ—¥æ‹†åˆ†åˆå¹¶æŒä»“æ•°é‡
+		TTORATstpVolumeType TodaySMVolume;
+
+		/// è½¬ç§»çŠ¶æ€
+		TTORATstpTransferStatusType TransferStatus;
+
+		/// æ“ä½œäººå‘˜
+		TTORATstpUserIDType OperatorID;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType OperateDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType OperateTime;
+
+		/// IPåœ°å€
+		TTORATstpIPAddressType IPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
+
+		/// å¤–éƒ¨èŠ‚ç‚¹ç¼–å·
+		TTORATstpNodeIDType ExternalNodeID;
 	};
-	
-	/// ÍâÎ§ÏµÍ³²ÖÎ»×ªÒÆ»Ø±¨
+
+	/// å¤–å›´ç³»ç»Ÿä»“ä½è½¬ç§»å›æŠ¥
 	struct CTORATstpPeripheryTransferPositionField
 	{
-		///²ÖÎ»µ÷²¦Á÷Ë®ºÅ
-		TTORATstpIntSerialType	PositionSerial;
-	
-		///²ÖÎ»µ÷²¦ÇëÇóÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	ApplySerial;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///²ÖÎ»µ÷²¦·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½ñÈÕÂòÂô²ÖÎ»×ªÈë×ª³öÊıÁ¿
-		TTORATstpVolumeType	TodayBSPos;
-	
-		///½ñÈÕÉêÊê²ÖÎ»×ªÈëÊıÁ¿
-		TTORATstpVolumeType	TodayPRPos;
-	
-		///×òÈÕ²ÖÎ»×ªÈëÊıÁ¿
-		TTORATstpVolumeType	HistoryPos;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///²ÖÎ»µ÷²¦Ô­Òò
-		TTORATstpTransferReasonType	TransferReason;
-	
-		///×ªÒÆ×´Ì¬
-		TTORATstpTransferStatusType	TransferStatus;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	OperateDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	OperateTime;
-	
-		///³åÕıÈÕÆÚ
-		TTORATstpDateType	RepealDate;
-	
-		///³åÕıÊ±¼ä
-		TTORATstpTimeType	RepealTime;
-	
-		///³åÕıÔ­Òò
-		TTORATstpTransferReasonType	RepealReason;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
-	
-		///½ñÈÕ²ğ·ÖºÏ²¢²ÖÎ»×ªÈëÊıÁ¿
-		TTORATstpVolumeType	TodaySMPos;
+		/// ä»“ä½è°ƒæ‹¨æµæ°´å·
+		TTORATstpIntSerialType PositionSerial;
+
+		/// ä»“ä½è°ƒæ‹¨è¯·æ±‚æµæ°´å·
+		TTORATstpIntSerialType ApplySerial;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// ä»“ä½è°ƒæ‹¨æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä»Šæ—¥ä¹°å–ä»“ä½è½¬å…¥è½¬å‡ºæ•°é‡
+		TTORATstpVolumeType TodayBSPos;
+
+		/// ä»Šæ—¥ç”³èµä»“ä½è½¬å…¥æ•°é‡
+		TTORATstpVolumeType TodayPRPos;
+
+		/// æ˜¨æ—¥ä»“ä½è½¬å…¥æ•°é‡
+		TTORATstpVolumeType HistoryPos;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// ä»“ä½è°ƒæ‹¨åŸå› 
+		TTORATstpTransferReasonType TransferReason;
+
+		/// è½¬ç§»çŠ¶æ€
+		TTORATstpTransferStatusType TransferStatus;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType OperateDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType OperateTime;
+
+		/// å†²æ­£æ—¥æœŸ
+		TTORATstpDateType RepealDate;
+
+		/// å†²æ­£æ—¶é—´
+		TTORATstpTimeType RepealTime;
+
+		/// å†²æ­£åŸå› 
+		TTORATstpTransferReasonType RepealReason;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
+
+		/// ä»Šæ—¥æ‹†åˆ†åˆå¹¶ä»“ä½è½¬å…¥æ•°é‡
+		TTORATstpVolumeType TodaySMPos;
 	};
-	
-	/// ÍâÎ§ÏµÍ³×Ê½ğ×ªÒÆ»Ø±¨
+
+	/// å¤–å›´ç³»ç»Ÿèµ„é‡‘è½¬ç§»å›æŠ¥
 	struct CTORATstpPeripheryTransferFundField
 	{
-		///×Ê½ğµ÷²¦Á÷Ë®ºÅ
-		TTORATstpIntSerialType	FundSerial;
-	
-		///×Ê½ğµ÷²¦ÇëÇóÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	ApplySerial;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///×Ê½ğµ÷²¦·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///×ªÒÆ½ğ¶î
-		TTORATstpMoneyType	Amount;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///×Ê½ğµ÷²¦Ô­Òò
-		TTORATstpTransferReasonType	TransferReason;
-	
-		///×ªÒÆ×´Ì¬
-		TTORATstpTransferStatusType	TransferStatus;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	OperateDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	OperateTime;
-	
-		///³åÕıÈÕÆÚ
-		TTORATstpDateType	RepealDate;
-	
-		///³åÕıÊ±¼ä
-		TTORATstpTimeType	RepealTime;
-	
-		///³åÕıÔ­Òò
-		TTORATstpTransferReasonType	RepealReason;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
+		/// èµ„é‡‘è°ƒæ‹¨æµæ°´å·
+		TTORATstpIntSerialType FundSerial;
+
+		/// èµ„é‡‘è°ƒæ‹¨è¯·æ±‚æµæ°´å·
+		TTORATstpIntSerialType ApplySerial;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// èµ„é‡‘è°ƒæ‹¨æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// è½¬ç§»é‡‘é¢
+		TTORATstpMoneyType Amount;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// èµ„é‡‘è°ƒæ‹¨åŸå› 
+		TTORATstpTransferReasonType TransferReason;
+
+		/// è½¬ç§»çŠ¶æ€
+		TTORATstpTransferStatusType TransferStatus;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType OperateDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType OperateTime;
+
+		/// å†²æ­£æ—¥æœŸ
+		TTORATstpDateType RepealDate;
+
+		/// å†²æ­£æ—¶é—´
+		TTORATstpTimeType RepealTime;
+
+		/// å†²æ­£åŸå› 
+		TTORATstpTransferReasonType RepealReason;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
 	};
-	
-	/// ²éÑ¯¼¯ÖĞ½»Ò×ÏµÍ³×Ê½ğÇëÇó
+
+	/// æŸ¥è¯¢é›†ä¸­äº¤æ˜“ç³»ç»Ÿèµ„é‡‘è¯·æ±‚
 	struct CTORATstpReqInquiryJZFundField
 	{
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
 	};
-	
-	/// ²éÑ¯¼¯ÖĞ½»Ò×ÏµÍ³×Ê½ğÏìÓ¦
+
+	/// æŸ¥è¯¢é›†ä¸­äº¤æ˜“ç³»ç»Ÿèµ„é‡‘å“åº”
 	struct CTORATstpRspInquiryJZFundField
 	{
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///¿ÉÓÃ½ğ¶î
-		TTORATstpMoneyType	UsefulMoney;
-	
-		///¿ÉÈ¡¶î¶È
-		TTORATstpMoneyType	FetchLimit;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// å¯ç”¨é‡‘é¢
+		TTORATstpMoneyType UsefulMoney;
+
+		/// å¯å–é¢åº¦
+		TTORATstpMoneyType FetchLimit;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
 	};
-	
-	/// ²éÑ¯ÒøĞĞÕË»§Óà¶îÇëÇó
+
+	/// æŸ¥è¯¢é“¶è¡Œè´¦æˆ·ä½™é¢è¯·æ±‚
 	struct CTORATstpReqInquiryBankAccountFundField
 	{
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///ÒøĞĞ´úÂë
-		TTORATstpBankIDType	BankID;
-	
-		///ÒøĞĞÃÜÂë
-		TTORATstpPasswordType	BankPassword;
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// é“¶è¡Œä»£ç 
+		TTORATstpBankIDType BankID;
+
+		/// é“¶è¡Œå¯†ç 
+		TTORATstpPasswordType BankPassword;
 	};
-	
-	/// ²éÑ¯ÒøĞĞÕË»§Óà¶îÏìÓ¦
+
+	/// æŸ¥è¯¢é“¶è¡Œè´¦æˆ·ä½™é¢å“åº”
 	struct CTORATstpRspInquiryBankAccountFundField
 	{
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///ÒøĞĞ´úÂë
-		TTORATstpBankIDType	BankID;
-	
-		///Ç©Ô¼ÒøĞĞÕË»§
-		TTORATstpBankAccountIDType	BankAccountID;
-	
-		///ÕË»§Óà¶î
-		TTORATstpMoneyType	Balance;
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// é“¶è¡Œä»£ç 
+		TTORATstpBankIDType BankID;
+
+		/// ç­¾çº¦é“¶è¡Œè´¦æˆ·
+		TTORATstpBankAccountIDType BankAccountID;
+
+		/// è´¦æˆ·ä½™é¢
+		TTORATstpMoneyType Balance;
 	};
-	
-	/// ½»Ò×Í¨Öª
+
+	/// äº¤æ˜“é€šçŸ¥
 	struct CTORATstpTradingNoticeField
 	{
-		///Í¨ÖªÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	NoticeSerial;
-	
-		///Í¨ÖªÈÕÆÚ
-		TTORATstpDateType	InsertDate;
-	
-		///Í¨ÖªÊ±¼ä
-		TTORATstpTimeType	InsertTime;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///Í¨ÖªÏûÏ¢ÄÚÈİ
-		TTORATstpContentType	Content;
-	
-		///²Ù×÷Ô±
-		TTORATstpUserIDType	OperatorID;
+		/// é€šçŸ¥æµæ°´å·
+		TTORATstpIntSerialType NoticeSerial;
+
+		/// é€šçŸ¥æ—¥æœŸ
+		TTORATstpDateType InsertDate;
+
+		/// é€šçŸ¥æ—¶é—´
+		TTORATstpTimeType InsertTime;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// é€šçŸ¥æ¶ˆæ¯å†…å®¹
+		TTORATstpContentType Content;
+
+		/// æ“ä½œå‘˜
+		TTORATstpUserIDType OperatorID;
 	};
-	
-	/// ²éÑ¯×î´ó±¨µ¥Á¿ÇëÇó
+
+	/// æŸ¥è¯¢æœ€å¤§æŠ¥å•é‡è¯·æ±‚
 	struct CTORATstpReqInquiryMaxOrderVolumeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///±¨µ¥¼Û¸ñÌõ¼ş
-		TTORATstpOrderPriceTypeType	OrderPriceType;
-	
-		///ÓĞĞ§ÆÚÀàĞÍ
-		TTORATstpTimeConditionType	TimeCondition;
-	
-		///³É½»Á¿ÀàĞÍ
-		TTORATstpVolumeConditionType	VolumeCondition;
-	
-		///¼Û¸ñ
-		TTORATstpPriceType	LimitPrice;
-	
-		///¸Û¹ÉÍ¨¶©µ¥ÊıÁ¿ÀàĞÍ
-		TTORATstpLotTypeType	LotType;
-	
-		///×î´óÎ¯ÍĞÊÖÊı
-		TTORATstpVolumeType	MaxVolume;
-	
-		///Ö¸¶¨³¥»¹µÄĞÅÓÃ¸ºÕ®±àºÅ£¨¸Ã×Ö¶ÎÖÃ¿Õ±íÊ¾²»Ö¸¶¨³¥»¹£©£¨Á½ÈÚ×¨ÓÃ£©
-		TTORATstpCreditDebtIDType	CreditDebtID;
-	
-		///Í·´çÀàĞÍ£¨Á½ÈÚ×¨ÓÃ£©
-		TTORATstpCreditQuotaTypeType	CreditQuotaType;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// æŠ¥å•ä»·æ ¼æ¡ä»¶
+		TTORATstpOrderPriceTypeType OrderPriceType;
+
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TTORATstpTimeConditionType TimeCondition;
+
+		/// æˆäº¤é‡ç±»å‹
+		TTORATstpVolumeConditionType VolumeCondition;
+
+		/// ä»·æ ¼
+		TTORATstpPriceType LimitPrice;
+
+		/// æ¸¯è‚¡é€šè®¢å•æ•°é‡ç±»å‹
+		TTORATstpLotTypeType LotType;
+
+		/// æœ€å¤§å§”æ‰˜æ‰‹æ•°
+		TTORATstpVolumeType MaxVolume;
+
+		/// æŒ‡å®šå¿è¿˜çš„ä¿¡ç”¨è´Ÿå€ºç¼–å·ï¼ˆè¯¥å­—æ®µç½®ç©ºè¡¨ç¤ºä¸æŒ‡å®šå¿è¿˜ï¼‰ï¼ˆä¸¤èä¸“ç”¨ï¼‰
+		TTORATstpCreditDebtIDType CreditDebtID;
+
+		/// å¤´å¯¸ç±»å‹ï¼ˆä¸¤èä¸“ç”¨ï¼‰
+		TTORATstpCreditQuotaTypeType CreditQuotaType;
 	};
-	
-	/// ²éÑ¯×î´ó±¨µ¥Á¿ÏìÓ¦
+
+	/// æŸ¥è¯¢æœ€å¤§æŠ¥å•é‡å“åº”
 	struct CTORATstpRspInquiryMaxOrderVolumeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///±¨µ¥¼Û¸ñÌõ¼ş
-		TTORATstpOrderPriceTypeType	OrderPriceType;
-	
-		///ÓĞĞ§ÆÚÀàĞÍ
-		TTORATstpTimeConditionType	TimeCondition;
-	
-		///³É½»Á¿ÀàĞÍ
-		TTORATstpVolumeConditionType	VolumeCondition;
-	
-		///¼Û¸ñ
-		TTORATstpPriceType	LimitPrice;
-	
-		///¸Û¹ÉÍ¨¶©µ¥ÊıÁ¿ÀàĞÍ
-		TTORATstpLotTypeType	LotType;
-	
-		///×î´óÎ¯ÍĞÊÖÊı
-		TTORATstpVolumeType	MaxVolume;
-	
-		///Ö¸¶¨³¥»¹µÄĞÅÓÃ¸ºÕ®±àºÅ£¨¸Ã×Ö¶ÎÖÃ¿Õ±íÊ¾²»Ö¸¶¨³¥»¹£©£¨Á½ÈÚ×¨ÓÃ£©
-		TTORATstpCreditDebtIDType	CreditDebtID;
-	
-		///Í·´çÀàĞÍ£¨Á½ÈÚ×¨ÓÃ£©
-		TTORATstpCreditQuotaTypeType	CreditQuotaType;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// æŠ¥å•ä»·æ ¼æ¡ä»¶
+		TTORATstpOrderPriceTypeType OrderPriceType;
+
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TTORATstpTimeConditionType TimeCondition;
+
+		/// æˆäº¤é‡ç±»å‹
+		TTORATstpVolumeConditionType VolumeCondition;
+
+		/// ä»·æ ¼
+		TTORATstpPriceType LimitPrice;
+
+		/// æ¸¯è‚¡é€šè®¢å•æ•°é‡ç±»å‹
+		TTORATstpLotTypeType LotType;
+
+		/// æœ€å¤§å§”æ‰˜æ‰‹æ•°
+		TTORATstpVolumeType MaxVolume;
+
+		/// æŒ‡å®šå¿è¿˜çš„ä¿¡ç”¨è´Ÿå€ºç¼–å·ï¼ˆè¯¥å­—æ®µç½®ç©ºè¡¨ç¤ºä¸æŒ‡å®šå¿è¿˜ï¼‰ï¼ˆä¸¤èä¸“ç”¨ï¼‰
+		TTORATstpCreditDebtIDType CreditDebtID;
+
+		/// å¤´å¯¸ç±»å‹ï¼ˆä¸¤èä¸“ç”¨ï¼‰
+		TTORATstpCreditQuotaTypeType CreditQuotaType;
 	};
-	
-	/// ½»Ò×³É½»¼¯ÖĞ¶È
+
+	/// äº¤æ˜“æˆäº¤é›†ä¸­åº¦
 	struct CTORATstpInquiryTradeConcentrationField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Í¶×ÊÕß³É½»Á¿/³É½»×ÜÁ¿
-		TTORATstpRatioType	ConcentrationRatio1;
-	
-		///Í¶×ÊÕß³É½»½ğ¶î/³É½»×Ü½ğ¶î
-		TTORATstpRatioType	ConcentrationRatio2;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æŠ•èµ„è€…æˆäº¤é‡/æˆäº¤æ€»é‡
+		TTORATstpRatioType ConcentrationRatio1;
+
+		/// æŠ•èµ„è€…æˆäº¤é‡‘é¢/æˆäº¤æ€»é‡‘é¢
+		TTORATstpRatioType ConcentrationRatio2;
 	};
-	
-	/// ÇëÇóĞŞ¸Ä¿ª²Ö³É±¾
+
+	/// è¯·æ±‚ä¿®æ”¹å¼€ä»“æˆæœ¬
 	struct CTORATstpReqModifyOpenPosCostField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///¿ª²Ö³É±¾
-		TTORATstpMoneyType	OpenPosCost;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// å¼€ä»“æˆæœ¬
+		TTORATstpMoneyType OpenPosCost;
 	};
-	
-	/// Â¼Èë½Úµã×Ê½ğ·ÖÅäĞÅÏ¢
+
+	/// å½•å…¥èŠ‚ç‚¹èµ„é‡‘åˆ†é…ä¿¡æ¯
 	struct CTORATstpInputNodeFundAssignmentField
 	{
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕËºÅ
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½Úµã±àºÅ1
-		TTORATstpNodeIDType	NodeID1;
-	
-		///×Ê½ğ±ÈÀı1
-		TTORATstpRatioType	AmtRatio1;
-	
-		///½Úµã±àºÅ2
-		TTORATstpNodeIDType	NodeID2;
-	
-		///×Ê½ğ±ÈÀı2
-		TTORATstpRatioType	AmtRatio2;
-	
-		///½Úµã±àºÅ3
-		TTORATstpNodeIDType	NodeID3;
-	
-		///×Ê½ğ±ÈÀı3
-		TTORATstpRatioType	AmtRatio3;
-	
-		///½Úµã±àºÅ4
-		TTORATstpNodeIDType	NodeID4;
-	
-		///×Ê½ğ±ÈÀı4
-		TTORATstpRatioType	AmtRatio4;
-	
-		///½Úµã±àºÅ5
-		TTORATstpNodeIDType	NodeID5;
-	
-		///×Ê½ğ±ÈÀı5
-		TTORATstpRatioType	AmtRatio5;
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦å·
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// èŠ‚ç‚¹ç¼–å·1
+		TTORATstpNodeIDType NodeID1;
+
+		/// èµ„é‡‘æ¯”ä¾‹1
+		TTORATstpRatioType AmtRatio1;
+
+		/// èŠ‚ç‚¹ç¼–å·2
+		TTORATstpNodeIDType NodeID2;
+
+		/// èµ„é‡‘æ¯”ä¾‹2
+		TTORATstpRatioType AmtRatio2;
+
+		/// èŠ‚ç‚¹ç¼–å·3
+		TTORATstpNodeIDType NodeID3;
+
+		/// èµ„é‡‘æ¯”ä¾‹3
+		TTORATstpRatioType AmtRatio3;
+
+		/// èŠ‚ç‚¹ç¼–å·4
+		TTORATstpNodeIDType NodeID4;
+
+		/// èµ„é‡‘æ¯”ä¾‹4
+		TTORATstpRatioType AmtRatio4;
+
+		/// èŠ‚ç‚¹ç¼–å·5
+		TTORATstpNodeIDType NodeID5;
+
+		/// èµ„é‡‘æ¯”ä¾‹5
+		TTORATstpRatioType AmtRatio5;
 	};
-	
-	/// ²éÑ¯½Úµã×Ê½ğ·ÖÅä±ÈÀıÇëÇó
+
+	/// æŸ¥è¯¢èŠ‚ç‚¹èµ„é‡‘åˆ†é…æ¯”ä¾‹è¯·æ±‚
 	struct CTORATstpReqInquiryNodeFundAssignmentField
 	{
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕËºÅ
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///½Úµã±àºÅ
-		TTORATstpNodeIDType	NodeID;
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦å·
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// èŠ‚ç‚¹ç¼–å·
+		TTORATstpNodeIDType NodeID;
 	};
-	
-	/// ²éÑ¯½Úµã×Ê½ğ·ÖÅä±ÈÀıÏìÓ¦
+
+	/// æŸ¥è¯¢èŠ‚ç‚¹èµ„é‡‘åˆ†é…æ¯”ä¾‹å“åº”
 	struct CTORATstpRspInquiryNodeFundAssignmentField
 	{
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕËºÅ
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½Úµã±àºÅ1
-		TTORATstpNodeIDType	NodeID1;
-	
-		///×Ê½ğ±ÈÀı1
-		TTORATstpRatioType	AmtRatio1;
-	
-		///½Úµã±àºÅ2
-		TTORATstpNodeIDType	NodeID2;
-	
-		///×Ê½ğ±ÈÀı2
-		TTORATstpRatioType	AmtRatio2;
-	
-		///½Úµã±àºÅ3
-		TTORATstpNodeIDType	NodeID3;
-	
-		///×Ê½ğ±ÈÀı3
-		TTORATstpRatioType	AmtRatio3;
-	
-		///½Úµã±àºÅ4
-		TTORATstpNodeIDType	NodeID4;
-	
-		///×Ê½ğ±ÈÀı4
-		TTORATstpRatioType	AmtRatio4;
-	
-		///½Úµã±àºÅ5
-		TTORATstpNodeIDType	NodeID5;
-	
-		///×Ê½ğ±ÈÀı5
-		TTORATstpRatioType	AmtRatio5;
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦å·
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// èŠ‚ç‚¹ç¼–å·1
+		TTORATstpNodeIDType NodeID1;
+
+		/// èµ„é‡‘æ¯”ä¾‹1
+		TTORATstpRatioType AmtRatio1;
+
+		/// èŠ‚ç‚¹ç¼–å·2
+		TTORATstpNodeIDType NodeID2;
+
+		/// èµ„é‡‘æ¯”ä¾‹2
+		TTORATstpRatioType AmtRatio2;
+
+		/// èŠ‚ç‚¹ç¼–å·3
+		TTORATstpNodeIDType NodeID3;
+
+		/// èµ„é‡‘æ¯”ä¾‹3
+		TTORATstpRatioType AmtRatio3;
+
+		/// èŠ‚ç‚¹ç¼–å·4
+		TTORATstpNodeIDType NodeID4;
+
+		/// èµ„é‡‘æ¯”ä¾‹4
+		TTORATstpRatioType AmtRatio4;
+
+		/// èŠ‚ç‚¹ç¼–å·5
+		TTORATstpNodeIDType NodeID5;
+
+		/// èµ„é‡‘æ¯”ä¾‹5
+		TTORATstpRatioType AmtRatio5;
 	};
-	
-	/// ²éÑ¯½»Ò×Ëù
+
+	/// æŸ¥è¯¢äº¤æ˜“æ‰€
 	struct CTORATstpQryExchangeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
 	};
-	
-	/// ½»Ò×Ëù
+
+	/// äº¤æ˜“æ‰€
 	struct CTORATstpExchangeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///½»Ò×ËùÃû³Æ
-		TTORATstpNameType	ExchangeName;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///Êı¾İÍ¬²½×´Ì¬
-		TTORATstpDataSyncStatusType	DataSyncStatus;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// äº¤æ˜“æ‰€åç§°
+		TTORATstpNameType ExchangeName;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// æ•°æ®åŒæ­¥çŠ¶æ€
+		TTORATstpDataSyncStatusType DataSyncStatus;
 	};
-	
-	/// ²éÑ¯Ö¤È¯ĞÅÏ¢
+
+	/// æŸ¥è¯¢è¯åˆ¸ä¿¡æ¯
 	struct CTORATstpQrySecurityField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///²úÆ·´úÂë
-		TTORATstpProductIDType	ProductID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº§å“ä»£ç 
+		TTORATstpProductIDType ProductID;
 	};
-	
-	/// Ö¤È¯ĞÅÏ¢
+
+	/// è¯åˆ¸ä¿¡æ¯
 	struct CTORATstpSecurityField
 	{
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///Ö¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///Ö¤È¯Ãû³Æ(¶Ì)
-		TTORATstpSecurityNameType	ShortSecurityName;
-	
-		///»ù´¡Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	UnderlyingSecurityID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///²úÆ·´úÂë
-		TTORATstpProductIDType	ProductID;
-	
-		///Ö¤È¯Àà±ğ
-		TTORATstpSecurityTypeType	SecurityType;
-	
-		///Éê±¨µ¥Î»
-		TTORATstpOrderUnitType	OrderUnit;
-	
-		///ÏŞ¼ÛÂòÈë½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	LimitBuyTradingUnit;
-	
-		///ÏŞ¼Ûµ¥Âò×î´óÏÂµ¥Á¿
-		TTORATstpVolumeType	MaxLimitOrderBuyVolume;
-	
-		///ÏŞ¼Ûµ¥Âò×îĞ¡ÏÂµ¥Á¿
-		TTORATstpVolumeType	MinLimitOrderBuyVolume;
-	
-		///ÏŞ¼ÛÂô³ö½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	LimitSellTradingUnit;
-	
-		///ÏŞ¼Ûµ¥Âô×î´óÏÂµ¥Á¿
-		TTORATstpVolumeType	MaxLimitOrderSellVolume;
-	
-		///ÏŞ¼Ûµ¥Âô×îĞ¡ÏÂµ¥Á¿
-		TTORATstpVolumeType	MinLimitOrderSellVolume;
-	
-		///ÊĞ¼ÛÂòÈë½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	MarketBuyTradingUnit;
-	
-		///ÊĞ¼Ûµ¥Âò×î´óÏÂµ¥Á¿
-		TTORATstpVolumeType	MaxMarketOrderBuyVolume;
-	
-		///ÊĞ¼Ûµ¥Âò×îĞ¡ÏÂµ¥Á¿
-		TTORATstpVolumeType	MinMarketOrderBuyVolume;
-	
-		///ÊĞ¼ÛÂô³ö½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	MarketSellTradingUnit;
-	
-		///ÊĞ¼Ûµ¥Âô×î´óÏÂµ¥Á¿
-		TTORATstpVolumeType	MaxMarketOrderSellVolume;
-	
-		///ÊĞ¼Ûµ¥Âô×îĞ¡ÏÂµ¥Á¿
-		TTORATstpVolumeType	MinMarketOrderSellVolume;
-	
-		///ÅÌºó¶¨¼ÛÂòÈë½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	FixPriceBuyTradingUnit;
-	
-		///ÅÌºó¶¨¼ÛÂò×î´óÏÂµ¥Á¿
-		TTORATstpVolumeType	MaxFixPriceOrderBuyVolume;
-	
-		///ÅÌºó¶¨¼ÛÂò×îĞ¡ÏÂµ¥Á¿
-		TTORATstpVolumeType	MinFixPriceOrderBuyVolume;
-	
-		///ÅÌºó¶¨¼ÛÂô³ö½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	FixPriceSellTradingUnit;
-	
-		///ÅÌºó¶¨¼ÛÂô×î´óÏÂµ¥Á¿
-		TTORATstpVolumeType	MaxFixPriceOrderSellVolume;
-	
-		///ÅÌºó¶¨¼ÛÂô×îĞ¡ÏÂµ¥Á¿
-		TTORATstpVolumeType	MinFixPriceOrderSellVolume;
-	
-		///ÊıÁ¿³ËÊı
-		TTORATstpVolumeMultipleType	VolumeMultiple;
-	
-		///×îĞ¡±ä¶¯¼ÛÎ»
-		TTORATstpPriceTickType	PriceTick;
-	
-		///ÉÏÊĞÈÕ
-		TTORATstpDateType	OpenDate;
-	
-		///ÃæÖµ
-		TTORATstpParValueType	ParValue;
-	
-		///Ö¤È¯×´Ì¬
-		TTORATstpSecurityStatusType	SecurityStatus;
-	
-		///Õ®È¯Ó¦¼ÆÀûÏ¢
-		TTORATstpInterestType	BondInterest;
-	
-		///ÕÛËãÂÊ
-		TTORATstpRatioType	ConversionRate;
-	
-		///×Ü¹É±¾
-		TTORATstpLargeVolumeType	TotalEquity;
-	
-		///Á÷Í¨¹É±¾
-		TTORATstpLargeVolumeType	CirculationEquity;
-	
-		///ÊÇ·ñÏŞÖÆÕÇµøÍ£°å¼Û
-		TTORATstpBoolType	bPriceLimit;
-	
-		///×òÊÕÅÌ¼Û
-		TTORATstpPriceType	PreClosePrice;
-	
-		///ÕÇÍ£°å¼Û
-		TTORATstpPriceType	UpperLimitPrice;
-	
-		///µøÍ£°å¼Û
-		TTORATstpPriceType	LowerLimitPrice;
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// è¯åˆ¸åç§°(çŸ­)
+		TTORATstpSecurityNameType ShortSecurityName;
+
+		/// åŸºç¡€è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType UnderlyingSecurityID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// äº§å“ä»£ç 
+		TTORATstpProductIDType ProductID;
+
+		/// è¯åˆ¸ç±»åˆ«
+		TTORATstpSecurityTypeType SecurityType;
+
+		/// ç”³æŠ¥å•ä½
+		TTORATstpOrderUnitType OrderUnit;
+
+		/// é™ä»·ä¹°å…¥äº¤æ˜“å•ä½
+		TTORATstpTradingUnitType LimitBuyTradingUnit;
+
+		/// é™ä»·å•ä¹°æœ€å¤§ä¸‹å•é‡
+		TTORATstpVolumeType MaxLimitOrderBuyVolume;
+
+		/// é™ä»·å•ä¹°æœ€å°ä¸‹å•é‡
+		TTORATstpVolumeType MinLimitOrderBuyVolume;
+
+		/// é™ä»·å–å‡ºäº¤æ˜“å•ä½
+		TTORATstpTradingUnitType LimitSellTradingUnit;
+
+		/// é™ä»·å•å–æœ€å¤§ä¸‹å•é‡
+		TTORATstpVolumeType MaxLimitOrderSellVolume;
+
+		/// é™ä»·å•å–æœ€å°ä¸‹å•é‡
+		TTORATstpVolumeType MinLimitOrderSellVolume;
+
+		/// å¸‚ä»·ä¹°å…¥äº¤æ˜“å•ä½
+		TTORATstpTradingUnitType MarketBuyTradingUnit;
+
+		/// å¸‚ä»·å•ä¹°æœ€å¤§ä¸‹å•é‡
+		TTORATstpVolumeType MaxMarketOrderBuyVolume;
+
+		/// å¸‚ä»·å•ä¹°æœ€å°ä¸‹å•é‡
+		TTORATstpVolumeType MinMarketOrderBuyVolume;
+
+		/// å¸‚ä»·å–å‡ºäº¤æ˜“å•ä½
+		TTORATstpTradingUnitType MarketSellTradingUnit;
+
+		/// å¸‚ä»·å•å–æœ€å¤§ä¸‹å•é‡
+		TTORATstpVolumeType MaxMarketOrderSellVolume;
+
+		/// å¸‚ä»·å•å–æœ€å°ä¸‹å•é‡
+		TTORATstpVolumeType MinMarketOrderSellVolume;
+
+		/// ç›˜åå®šä»·ä¹°å…¥äº¤æ˜“å•ä½
+		TTORATstpTradingUnitType FixPriceBuyTradingUnit;
+
+		/// ç›˜åå®šä»·ä¹°æœ€å¤§ä¸‹å•é‡
+		TTORATstpVolumeType MaxFixPriceOrderBuyVolume;
+
+		/// ç›˜åå®šä»·ä¹°æœ€å°ä¸‹å•é‡
+		TTORATstpVolumeType MinFixPriceOrderBuyVolume;
+
+		/// ç›˜åå®šä»·å–å‡ºäº¤æ˜“å•ä½
+		TTORATstpTradingUnitType FixPriceSellTradingUnit;
+
+		/// ç›˜åå®šä»·å–æœ€å¤§ä¸‹å•é‡
+		TTORATstpVolumeType MaxFixPriceOrderSellVolume;
+
+		/// ç›˜åå®šä»·å–æœ€å°ä¸‹å•é‡
+		TTORATstpVolumeType MinFixPriceOrderSellVolume;
+
+		/// æ•°é‡ä¹˜æ•°
+		TTORATstpVolumeMultipleType VolumeMultiple;
+
+		/// æœ€å°å˜åŠ¨ä»·ä½
+		TTORATstpPriceTickType PriceTick;
+
+		/// ä¸Šå¸‚æ—¥
+		TTORATstpDateType OpenDate;
+
+		/// é¢å€¼
+		TTORATstpParValueType ParValue;
+
+		/// è¯åˆ¸çŠ¶æ€
+		TTORATstpSecurityStatusType SecurityStatus;
+
+		/// å€ºåˆ¸åº”è®¡åˆ©æ¯
+		TTORATstpInterestType BondInterest;
+
+		/// æŠ˜ç®—ç‡
+		TTORATstpRatioType ConversionRate;
+
+		/// æ€»è‚¡æœ¬
+		TTORATstpLargeVolumeType TotalEquity;
+
+		/// æµé€šè‚¡æœ¬
+		TTORATstpLargeVolumeType CirculationEquity;
+
+		/// æ˜¯å¦é™åˆ¶æ¶¨è·Œåœæ¿ä»·
+		TTORATstpBoolType bPriceLimit;
+
+		/// æ˜¨æ”¶ç›˜ä»·
+		TTORATstpPriceType PreClosePrice;
+
+		/// æ¶¨åœæ¿ä»·
+		TTORATstpPriceType UpperLimitPrice;
+
+		/// è·Œåœæ¿ä»·
+		TTORATstpPriceType LowerLimitPrice;
 	};
-	
-	/// ²éÑ¯ĞÂ¹ÉĞÅÏ¢
+
+	/// æŸ¥è¯¢æ–°è‚¡ä¿¡æ¯
 	struct CTORATstpQryIPOInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Éê¹º´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// ç”³è´­ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// ĞÂ¹ÉĞÅÏ¢
+
+	/// æ–°è‚¡ä¿¡æ¯
 	struct CTORATstpIPOInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Éê¹º´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///²úÆ·´úÂë
-		TTORATstpProductIDType	ProductID;
-	
-		///Ö¤È¯Àà±ğ´úÂë
-		TTORATstpSecurityTypeType	SecurityType;
-	
-		///×îĞ¡Éê¹º¼Û¸ñ
-		TTORATstpPriceType	MinPrice;
-	
-		///±ÒÖÖ´úÂë
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///Éê¹ºÖ¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///ĞÂ¹ÉÖ¤È¯´úÂë
-		TTORATstpSecurityIDType	UnderlyingSecurityID;
-	
-		///ĞÂ¹ÉÖ¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	UnderlyingSecurityName;
-	
-		///ÍøÉÏÉê¹º×îĞ¡ÊıÁ¿
-		TTORATstpVolumeType	MinVolume;
-	
-		///ÍøÉÏÉê¹º×î´óÊıÁ¿
-		TTORATstpVolumeType	MaxVolume;
-	
-		///ÍøÉÏÉê¹ºµ¥Î»ÊıÁ¿
-		TTORATstpVolumeType	VolumeUnit;
-	
-		///·¢ĞĞ·½Ê½
-		TTORATstpIssueModeType	IssueMode;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///×î´óÉê¹º¼Û¸ñ
-		TTORATstpPriceType	MaxPrice;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// ç”³è´­ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// äº§å“ä»£ç 
+		TTORATstpProductIDType ProductID;
+
+		/// è¯åˆ¸ç±»åˆ«ä»£ç 
+		TTORATstpSecurityTypeType SecurityType;
+
+		/// æœ€å°ç”³è´­ä»·æ ¼
+		TTORATstpPriceType MinPrice;
+
+		/// å¸ç§ä»£ç 
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// ç”³è´­è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// æ–°è‚¡è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType UnderlyingSecurityID;
+
+		/// æ–°è‚¡è¯åˆ¸åç§°
+		TTORATstpSecurityNameType UnderlyingSecurityName;
+
+		/// ç½‘ä¸Šç”³è´­æœ€å°æ•°é‡
+		TTORATstpVolumeType MinVolume;
+
+		/// ç½‘ä¸Šç”³è´­æœ€å¤§æ•°é‡
+		TTORATstpVolumeType MaxVolume;
+
+		/// ç½‘ä¸Šç”³è´­å•ä½æ•°é‡
+		TTORATstpVolumeType VolumeUnit;
+
+		/// å‘è¡Œæ–¹å¼
+		TTORATstpIssueModeType IssueMode;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// æœ€å¤§ç”³è´­ä»·æ ¼
+		TTORATstpPriceType MaxPrice;
 	};
-	
-	/// ²éÑ¯ÓÃ»§
+
+	/// æŸ¥è¯¢ç”¨æˆ·
 	struct CTORATstpQryUserField
 	{
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
-	
-		///ÓÃ»§ÀàĞÍ
-		TTORATstpUserTypeType	UserType;
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
+
+		/// ç”¨æˆ·ç±»å‹
+		TTORATstpUserTypeType UserType;
 	};
-	
-	/// ÓÃ»§
+
+	/// ç”¨æˆ·
 	struct CTORATstpUserField
 	{
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
-	
-		///ÓÃ»§Ãû³Æ
-		TTORATstpUserNameType	UserName;
-	
-		///ÓÃ»§ÀàĞÍ
-		TTORATstpUserTypeType	UserType;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///µÇÂ¼ÏŞÖÆÊı
-		TTORATstpLoginLimitType	LoginLimit;
-	
-		///µÇÂ¼×´Ì¬
-		TTORATstpLoginStatusType	LoginStatus;
-	
-		///¿ª»§ÈÕÆÚ
-		TTORATstpDateType	OpenDate;
-	
-		///Ïú»§ÈÕÆÚ
-		TTORATstpDateType	CloseDate;
-	
-		///±¨µ¥Á÷¿Ø
-		TTORATstpCommFluxType	OrderInsertCommFlux;
-	
-		///³·µ¥Á÷¿Ø
-		TTORATstpCommFluxType	OrderActionCommFlux;
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
+
+		/// ç”¨æˆ·åç§°
+		TTORATstpUserNameType UserName;
+
+		/// ç”¨æˆ·ç±»å‹
+		TTORATstpUserTypeType UserType;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// ç™»å½•é™åˆ¶æ•°
+		TTORATstpLoginLimitType LoginLimit;
+
+		/// ç™»å½•çŠ¶æ€
+		TTORATstpLoginStatusType LoginStatus;
+
+		/// å¼€æˆ·æ—¥æœŸ
+		TTORATstpDateType OpenDate;
+
+		/// é”€æˆ·æ—¥æœŸ
+		TTORATstpDateType CloseDate;
+
+		/// æŠ¥å•æµæ§
+		TTORATstpCommFluxType OrderInsertCommFlux;
+
+		/// æ’¤å•æµæ§
+		TTORATstpCommFluxType OrderActionCommFlux;
 	};
-	
-	/// ²éÑ¯Í¶×ÊÕß
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…
 	struct CTORATstpQryInvestorField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
 	};
-	
-	/// Í¶×ÊÕß
+
+	/// æŠ•èµ„è€…
 	struct CTORATstpInvestorField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×ÊÕßÀàĞÍ
-		TTORATstpInvestorTypeType	InvestorType;
-	
-		///Í¶×ÊÕßÃû³Æ
-		TTORATstpInvestorNameType	InvestorName;
-	
-		///Ö¤¼şÀàĞÍ
-		TTORATstpIdCardTypeType	IdCardType;
-	
-		///Ö¤¼şºÅÂë
-		TTORATstpIdCardNoType	IdCardNo;
-	
-		///¿ª»§ÈÕÆÚ
-		TTORATstpDateType	OpenDate;
-	
-		///Ïú»§ÈÕÆÚ
-		TTORATstpDateType	CloseDate;
-	
-		///½»Ò××´Ì¬
-		TTORATstpTradingStatusType	TradingStatus;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwaysType	Operways;
-	
-		///ÊÖ»ú
-		TTORATstpMobileType	Mobile;
-	
-		///ÁªÏµµç»°
-		TTORATstpTelephoneType	Telephone;
-	
-		///µç×ÓÓÊ¼ş
-		TTORATstpEmailType	Email;
-	
-		///´«Õæ
-		TTORATstpFaxType	Fax;
-	
-		///Í¨Ñ¶µØÖ·
-		TTORATstpAddressType	Address;
-	
-		///ÓÊÕş±àÂë
-		TTORATstpZipCodeType	ZipCode;
-	
-		///×¨ÒµÍ¶×ÊÕßÀà±ğ
-		TTORATstpProfInvestorTypeType	ProfInvestorType;
-	
-		///Ì×²ÍÀàĞÍ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpPlanTypeType	PlanType;
-	
-		///ÊÇ·ñÔÊĞíÍ¶×ÊÕß×ÔÇĞÌ×²Í(Á½ÈÚ×¨ÓÃ)
-		TTORATstpBoolType	AllowSelfSwitchPlan;
-	
-		///±¸×¢
-		TTORATstpRemarkType	Remark;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„è€…ç±»å‹
+		TTORATstpInvestorTypeType InvestorType;
+
+		/// æŠ•èµ„è€…åç§°
+		TTORATstpInvestorNameType InvestorName;
+
+		/// è¯ä»¶ç±»å‹
+		TTORATstpIdCardTypeType IdCardType;
+
+		/// è¯ä»¶å·ç 
+		TTORATstpIdCardNoType IdCardNo;
+
+		/// å¼€æˆ·æ—¥æœŸ
+		TTORATstpDateType OpenDate;
+
+		/// é”€æˆ·æ—¥æœŸ
+		TTORATstpDateType CloseDate;
+
+		/// äº¤æ˜“çŠ¶æ€
+		TTORATstpTradingStatusType TradingStatus;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwaysType Operways;
+
+		/// æ‰‹æœº
+		TTORATstpMobileType Mobile;
+
+		/// è”ç³»ç”µè¯
+		TTORATstpTelephoneType Telephone;
+
+		/// ç”µå­é‚®ä»¶
+		TTORATstpEmailType Email;
+
+		/// ä¼ çœŸ
+		TTORATstpFaxType Fax;
+
+		/// é€šè®¯åœ°å€
+		TTORATstpAddressType Address;
+
+		/// é‚®æ”¿ç¼–ç 
+		TTORATstpZipCodeType ZipCode;
+
+		/// ä¸“ä¸šæŠ•èµ„è€…ç±»åˆ«
+		TTORATstpProfInvestorTypeType ProfInvestorType;
+
+		/// å¥—é¤ç±»å‹(ä¸¤èä¸“ç”¨)
+		TTORATstpPlanTypeType PlanType;
+
+		/// æ˜¯å¦å…è®¸æŠ•èµ„è€…è‡ªåˆ‡å¥—é¤(ä¸¤èä¸“ç”¨)
+		TTORATstpBoolType AllowSelfSwitchPlan;
+
+		/// å¤‡æ³¨
+		TTORATstpRemarkType Remark;
 	};
-	
-	/// ²éÑ¯½»Ò×¹É¶«ÕË»§
+
+	/// æŸ¥è¯¢äº¤æ˜“è‚¡ä¸œè´¦æˆ·
 	struct CTORATstpQryShareholderAccountField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¹É¶«ÕË»§ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///¹É¶«ÕË»§ÀàĞÍ
-		TTORATstpShareholderIDTypeType	ShareholderIDType;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è‚¡ä¸œè´¦æˆ·è´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è‚¡ä¸œè´¦æˆ·ç±»å‹
+		TTORATstpShareholderIDTypeType ShareholderIDType;
 	};
-	
-	/// ½»Ò×¹É¶«ÕË»§
+
+	/// äº¤æ˜“è‚¡ä¸œè´¦æˆ·
 	struct CTORATstpShareholderAccountField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///¿Í»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///¹É¶«ÕË»§ÀàĞÍ
-		TTORATstpShareholderIDTypeType	ShareholderIDType;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///ÆÕÍ¨ÂòÂô°×Ãûµ¥¿ØÖÆ±êÖ¾(Á½ÈÚ×¨ÓÃ)
-		TTORATstpBoolType	BSWhiteListCtl;
-	
-		///Ö÷ÕË»§±êÊ¶
-		TTORATstpBoolType	MainFlag;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å®¢æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è‚¡ä¸œè´¦æˆ·ç±»å‹
+		TTORATstpShareholderIDTypeType ShareholderIDType;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// æ™®é€šä¹°å–ç™½åå•æ§åˆ¶æ ‡å¿—(ä¸¤èä¸“ç”¨)
+		TTORATstpBoolType BSWhiteListCtl;
+
+		/// ä¸»è´¦æˆ·æ ‡è¯†
+		TTORATstpBoolType MainFlag;
 	};
-	
-	/// ²éÑ¯Åä¹ÉÅäÕ®ĞÅÏ¢
+
+	/// æŸ¥è¯¢é…è‚¡é…å€ºä¿¡æ¯
 	struct CTORATstpQryRationalInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Åä¹ÉÅäÕ®´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// é…è‚¡é…å€ºä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// Åä¹ÉÅäÕ®ĞÅÏ¢
+
+	/// é…è‚¡é…å€ºä¿¡æ¯
 	struct CTORATstpRationalInfoField
 	{
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Éê¹º´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///Åä¹ÉÅäÕ®¼Û¸ñ
-		TTORATstpPriceType	Price;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///Ö¤È¯Æ·ÖÖ´úÂë
-		TTORATstpProductIDType	ProductID;
-	
-		///Ö¤È¯Àà±ğ´úÂë
-		TTORATstpSecurityTypeType	SecurityType;
-	
-		///Åä¹ÉÃû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///»ù´¡Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	UnderlyingSecurityID;
-	
-		///»ù´¡Ö¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	UnderlyingSecurityName;
-	
-		///Åä¹ÉÅäÕ®×îĞ¡ÊıÁ¿
-		TTORATstpVolumeType	MinVolume;
-	
-		///Åä¹ÉÅäÕ®×î´óÊıÁ¿
-		TTORATstpVolumeType	MaxVolume;
-	
-		///Åä¹ÉÅäÕ®µ¥Î»ÊıÁ¿
-		TTORATstpVolumeType	VolumeUnit;
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// ç”³è´­ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// é…è‚¡é…å€ºä»·æ ¼
+		TTORATstpPriceType Price;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è¯åˆ¸å“ç§ä»£ç 
+		TTORATstpProductIDType ProductID;
+
+		/// è¯åˆ¸ç±»åˆ«ä»£ç 
+		TTORATstpSecurityTypeType SecurityType;
+
+		/// é…è‚¡åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// åŸºç¡€è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType UnderlyingSecurityID;
+
+		/// åŸºç¡€è¯åˆ¸åç§°
+		TTORATstpSecurityNameType UnderlyingSecurityName;
+
+		/// é…è‚¡é…å€ºæœ€å°æ•°é‡
+		TTORATstpVolumeType MinVolume;
+
+		/// é…è‚¡é…å€ºæœ€å¤§æ•°é‡
+		TTORATstpVolumeType MaxVolume;
+
+		/// é…è‚¡é…å€ºå•ä½æ•°é‡
+		TTORATstpVolumeType VolumeUnit;
 	};
-	
-	/// ²éÑ¯±¨µ¥
+
+	/// æŸ¥è¯¢æŠ¥å•
 	struct CTORATstpQryOrderField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///Insert Time
-		TTORATstpTimeType	InsertTimeStart;
-	
-		///Insert Time
-		TTORATstpTimeType	InsertTimeEnd;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
-	
-		///ÊÇ·ñ¿É³·
-		TTORATstpBoolType	IsCancel;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// Insert Time
+		TTORATstpTimeType InsertTimeStart;
+
+		/// Insert Time
+		TTORATstpTimeType InsertTimeEnd;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
+
+		/// æ˜¯å¦å¯æ’¤
+		TTORATstpBoolType IsCancel;
 	};
-	
-	/// ²éÑ¯³·µ¥
+
+	/// æŸ¥è¯¢æ’¤å•
 	struct CTORATstpQryOrderActionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///±¾µØ±¨µ¥±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///±¾µØ³·µ¥±àºÅ
-		TTORATstpOrderLocalIDType	CancelOrderLocalID;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·è´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// æœ¬åœ°æ’¤å•ç¼–å·
+		TTORATstpOrderLocalIDType CancelOrderLocalID;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
 	};
-	
-	/// ³·µ¥
+
+	/// æ’¤å•
 	struct CTORATstpOrderActionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///±»³·±¨µ¥Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///±»³·±¨µ¥»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///±»³·±¨µ¥ÒıÓÃ
-		TTORATstpOrderRefType	OrderRef;
-	
-		///±»³·±¨µ¥ÏµÍ³±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///²Ù×÷±êÖ¾
-		TTORATstpActionFlagType	ActionFlag;
-	
-		///±¾µØ³·µ¥±àºÅ
-		TTORATstpOrderLocalIDType	CancelOrderLocalID;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///±»³·±¨µ¥±¾µØ±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///²Ù×÷ÓÃ»§
-		TTORATstpUserIDType	ActionUser;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	ActionDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	ActionTime;
-	
-		///³·µ¥×´Ì¬
-		TTORATstpCancelOrderStatusType	CancelOrderStatus;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
-	
-		///ÇëÇó±àºÅ
-		TTORATstpRequestIDType	RequestID;
-	
-		///³·µ¥Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	ActionFrontID;
-	
-		///³·µ¥»á»°±àºÅ
-		TTORATstpSessionIDType	ActionSessionID;
-	
-		///³·µ¥ÒıÓÃ
-		TTORATstpOrderRefType	OrderActionRef;
-	
-		///±¾µØ³·µ¥ÏµÍ³±àºÅ
-		TTORATstpOrderSysIDType	CancelOrderSysID;
-	
-		///³·µ¥ÀàĞÍ
-		TTORATstpCancelOrderTypeType	CancelOrderType;
-	
-		///½»Ò×µ¥Ôª´úÂë
-		TTORATstpPbuIDType	PbuID;
-	
-		///IPµØÖ·
-		TTORATstpIPAddressType	IPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¢«æ’¤æŠ¥å•å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// è¢«æ’¤æŠ¥å•ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// è¢«æ’¤æŠ¥å•å¼•ç”¨
+		TTORATstpOrderRefType OrderRef;
+
+		/// è¢«æ’¤æŠ¥å•ç³»ç»Ÿç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// æ“ä½œæ ‡å¿—
+		TTORATstpActionFlagType ActionFlag;
+
+		/// æœ¬åœ°æ’¤å•ç¼–å·
+		TTORATstpOrderLocalIDType CancelOrderLocalID;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¢«æ’¤æŠ¥å•æœ¬åœ°ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// æ“ä½œç”¨æˆ·
+		TTORATstpUserIDType ActionUser;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType ActionDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType ActionTime;
+
+		/// æ’¤å•çŠ¶æ€
+		TTORATstpCancelOrderStatusType CancelOrderStatus;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
+
+		/// è¯·æ±‚ç¼–å·
+		TTORATstpRequestIDType RequestID;
+
+		/// æ’¤å•å‰ç½®ç¼–å·
+		TTORATstpFrontIDType ActionFrontID;
+
+		/// æ’¤å•ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType ActionSessionID;
+
+		/// æ’¤å•å¼•ç”¨
+		TTORATstpOrderRefType OrderActionRef;
+
+		/// æœ¬åœ°æ’¤å•ç³»ç»Ÿç¼–å·
+		TTORATstpOrderSysIDType CancelOrderSysID;
+
+		/// æ’¤å•ç±»å‹
+		TTORATstpCancelOrderTypeType CancelOrderType;
+
+		/// äº¤æ˜“å•å…ƒä»£ç 
+		TTORATstpPbuIDType PbuID;
+
+		/// IPåœ°å€
+		TTORATstpIPAddressType IPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
 	};
-	
-	/// ²éÑ¯³É½»
+
+	/// æŸ¥è¯¢æˆäº¤
 	struct CTORATstpQryTradeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///³É½»±àºÅ
-		TTORATstpTradeIDType	TradeID;
-	
-		///Insert Time
-		TTORATstpTimeType	TradeTimeStart;
-	
-		///Insert Time
-		TTORATstpTimeType	TradeTimeEnd;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æˆäº¤ç¼–å·
+		TTORATstpTradeIDType TradeID;
+
+		/// Insert Time
+		TTORATstpTimeType TradeTimeStart;
+
+		/// Insert Time
+		TTORATstpTimeType TradeTimeEnd;
 	};
-	
-	/// ²éÑ¯×Ê½ğÕË»§
+
+	/// æŸ¥è¯¢èµ„é‡‘è´¦æˆ·
 	struct CTORATstpQryTradingAccountField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///×Ê½ğÕË»§ÀàĞÍ
-		TTORATstpAccountTypeType	AccountType;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// èµ„é‡‘è´¦æˆ·ç±»å‹
+		TTORATstpAccountTypeType AccountType;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
 	};
-	
-	/// ×Ê½ğÕË»§
+
+	/// èµ„é‡‘è´¦æˆ·
 	struct CTORATstpTradingAccountField
 	{
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ´úÂë
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///ÉÏÈÕ½á´æ
-		TTORATstpMoneyType	PreDeposit;
-	
-		///¿ÉÓÃ×Ê½ğ
-		TTORATstpMoneyType	UsefulMoney;
-	
-		///¿ÉÈ¡×Ê½ğ
-		TTORATstpMoneyType	FetchLimit;
-	
-		///ÉÏÈÕÎ´½»ÊÕ½ğ¶î(¸Û¹ÉÍ¨×¨ÓÃ×Ö¶Î)
-		TTORATstpMoneyType	PreUnDeliveredMoney;
-	
-		///¿ÉÓÃÎ´½»ÊÕ½ğ¶î(¸Û¹ÉÍ¨×¨ÓÃ×Ö¶Î)
-		TTORATstpMoneyType	UnDeliveredMoney;
-	
-		///µ±ÈÕÈë½ğ½ğ¶î
-		TTORATstpMoneyType	Deposit;
-	
-		///µ±ÈÕ³ö½ğ½ğ¶î
-		TTORATstpMoneyType	Withdraw;
-	
-		///¶³½áµÄ×Ê½ğ(¸Û¹ÉÍ¨¸Ã×Ö¶Î²»°üÀ¨Î´½»ÊÕ²¿·Ö¶³½á×Ê½ğ)
-		TTORATstpMoneyType	FrozenCash;
-	
-		///¶³½áÎ´½»ÊÕ½ğ¶î(¸Û¹ÉÍ¨×¨ÓÃ)
-		TTORATstpMoneyType	UnDeliveredFrozenCash;
-	
-		///¶³½áµÄÊÖĞø·Ñ(¸Û¹ÉÍ¨¸Ã×Ö¶Î²»°üÀ¨Î´½»ÊÕ²¿·Ö¶³½áÊÖĞø·Ñ)
-		TTORATstpMoneyType	FrozenCommission;
-	
-		///¶³½áÎ´½»ÊÕÊÖĞø·Ñ(¸Û¹ÉÍ¨×¨ÓÃ)
-		TTORATstpMoneyType	UnDeliveredFrozenCommission;
-	
-		///ÊÖĞø·Ñ(¸Û¹ÉÍ¨¸Ã×Ö¶Î²»°üÀ¨Î´½»ÊÕ²¿·ÖÊÖĞø·Ñ)
-		TTORATstpMoneyType	Commission;
-	
-		///Õ¼ÓÃÎ´½»ÊÕÊÖĞø·Ñ(¸Û¹ÉÍ¨×¨ÓÃ)
-		TTORATstpMoneyType	UnDeliveredCommission;
-	
-		///×Ê½ğÕË»§ÀàĞÍ
-		TTORATstpAccountTypeType	AccountType;
-	
-		///×Ê½ğÕË»§ËùÊôÍ¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///ÒøĞĞ´úÂë
-		TTORATstpBankIDType	BankID;
-	
-		///ÒøĞĞÕË»§
-		TTORATstpBankAccountIDType	BankAccountID;
-	
-		///È¨Àû½ğÊÕÈë(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	RoyaltyIn;
-	
-		///È¨Àû½ğÖ§³ö(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	RoyaltyOut;
-	
-		///ÈÚÈ¯Âô³ö½ğ¶î(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditSellAmount;
-	
-		///ÈÚÈ¯Âô³öÊ¹ÓÃ½ğ¶î(ÓÃÓÚ³¥»¹ÈÚ×Ê¸ºÕ®»òÂòÌØÊâÆ·ÖÖµÄ½ğ¶î)(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditSellUseAmount;
-	
-		///ĞéÄâ×Ê²ú(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	VirtualAssets;
-	
-		///ÈÚÈ¯Âô³ö½ğ¶î¶³½á(ÓÃÓÚ³¥»¹ÈÚ×Ê¸ºÕ®»òÂòÌØÊâÆ·ÖÖµÄÎ´³É½»¶³½á½ğ¶î)(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditSellFrozenAmount;
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§ä»£ç 
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// ä¸Šæ—¥ç»“å­˜
+		TTORATstpMoneyType PreDeposit;
+
+		/// å¯ç”¨èµ„é‡‘
+		TTORATstpMoneyType UsefulMoney;
+
+		/// å¯å–èµ„é‡‘
+		TTORATstpMoneyType FetchLimit;
+
+		/// ä¸Šæ—¥æœªäº¤æ”¶é‡‘é¢(æ¸¯è‚¡é€šä¸“ç”¨å­—æ®µ)
+		TTORATstpMoneyType PreUnDeliveredMoney;
+
+		/// å¯ç”¨æœªäº¤æ”¶é‡‘é¢(æ¸¯è‚¡é€šä¸“ç”¨å­—æ®µ)
+		TTORATstpMoneyType UnDeliveredMoney;
+
+		/// å½“æ—¥å…¥é‡‘é‡‘é¢
+		TTORATstpMoneyType Deposit;
+
+		/// å½“æ—¥å‡ºé‡‘é‡‘é¢
+		TTORATstpMoneyType Withdraw;
+
+		/// å†»ç»“çš„èµ„é‡‘(æ¸¯è‚¡é€šè¯¥å­—æ®µä¸åŒ…æ‹¬æœªäº¤æ”¶éƒ¨åˆ†å†»ç»“èµ„é‡‘)
+		TTORATstpMoneyType FrozenCash;
+
+		/// å†»ç»“æœªäº¤æ”¶é‡‘é¢(æ¸¯è‚¡é€šä¸“ç”¨)
+		TTORATstpMoneyType UnDeliveredFrozenCash;
+
+		/// å†»ç»“çš„æ‰‹ç»­è´¹(æ¸¯è‚¡é€šè¯¥å­—æ®µä¸åŒ…æ‹¬æœªäº¤æ”¶éƒ¨åˆ†å†»ç»“æ‰‹ç»­è´¹)
+		TTORATstpMoneyType FrozenCommission;
+
+		/// å†»ç»“æœªäº¤æ”¶æ‰‹ç»­è´¹(æ¸¯è‚¡é€šä¸“ç”¨)
+		TTORATstpMoneyType UnDeliveredFrozenCommission;
+
+		/// æ‰‹ç»­è´¹(æ¸¯è‚¡é€šè¯¥å­—æ®µä¸åŒ…æ‹¬æœªäº¤æ”¶éƒ¨åˆ†æ‰‹ç»­è´¹)
+		TTORATstpMoneyType Commission;
+
+		/// å ç”¨æœªäº¤æ”¶æ‰‹ç»­è´¹(æ¸¯è‚¡é€šä¸“ç”¨)
+		TTORATstpMoneyType UnDeliveredCommission;
+
+		/// èµ„é‡‘è´¦æˆ·ç±»å‹
+		TTORATstpAccountTypeType AccountType;
+
+		/// èµ„é‡‘è´¦æˆ·æ‰€å±æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// é“¶è¡Œä»£ç 
+		TTORATstpBankIDType BankID;
+
+		/// é“¶è¡Œè´¦æˆ·
+		TTORATstpBankAccountIDType BankAccountID;
+
+		/// æƒåˆ©é‡‘æ”¶å…¥(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType RoyaltyIn;
+
+		/// æƒåˆ©é‡‘æ”¯å‡º(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType RoyaltyOut;
+
+		/// èåˆ¸å–å‡ºé‡‘é¢(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditSellAmount;
+
+		/// èåˆ¸å–å‡ºä½¿ç”¨é‡‘é¢(ç”¨äºå¿è¿˜èèµ„è´Ÿå€ºæˆ–ä¹°ç‰¹æ®Šå“ç§çš„é‡‘é¢)(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditSellUseAmount;
+
+		/// è™šæ‹Ÿèµ„äº§(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType VirtualAssets;
+
+		/// èåˆ¸å–å‡ºé‡‘é¢å†»ç»“(ç”¨äºå¿è¿˜èèµ„è´Ÿå€ºæˆ–ä¹°ç‰¹æ®Šå“ç§çš„æœªæˆäº¤å†»ç»“é‡‘é¢)(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditSellFrozenAmount;
 	};
-	
-	/// ²éÑ¯Í¶×ÊÕß³Ö²Ö
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…æŒä»“
 	struct CTORATstpQryPositionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
 	};
-	
-	/// Í¶×ÊÕß³Ö²Ö
+
+	/// æŠ•èµ„è€…æŒä»“
 	struct CTORATstpPositionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///Ö¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///×ò²Ö
-		TTORATstpVolumeType	HistoryPos;
-	
-		///×ò²Ö¶³½á
-		TTORATstpVolumeType	HistoryPosFrozen;
-	
-		///½ñÂòÂô²Ö
-		TTORATstpVolumeType	TodayBSPos;
-	
-		///½ñÂòÂô²Ö¶³½á
-		TTORATstpVolumeType	TodayBSPosFrozen;
-	
-		///½ñÈÕÉêÊê³Ö²Ö
-		TTORATstpVolumeType	TodayPRPos;
-	
-		///½ñÈÕÉêÊê³Ö²Ö¶³½á
-		TTORATstpVolumeType	TodayPRPosFrozen;
-	
-		///½ñ²ğ·ÖºÏ²¢³Ö²Ö
-		TTORATstpVolumeType	TodaySMPos;
-	
-		///½ñ²ğ·ÖºÏ²¢³Ö²Ö¶³½á
-		TTORATstpVolumeType	TodaySMPosFrozen;
-	
-		///×ò²Ö³É±¾¼Û
-		TTORATstpPriceType	HistoryPosPrice;
-	
-		///³Ö²Ö³É±¾
-		TTORATstpMoneyType	TotalPosCost;
-	
-		///ÉÏ´ÎÓà¶î(ÅÌÖĞ²»±ä)
-		TTORATstpVolumeType	PrePosition;
-	
-		///¹É·İ¿ÉÓÃ
-		TTORATstpVolumeType	AvailablePosition;
-	
-		///¹É·İÓà¶î
-		TTORATstpVolumeType	CurrentPosition;
-	
-		///¿ª²Ö³É±¾
-		TTORATstpMoneyType	OpenPosCost;
-	
-		///ÈÚ×Ê²ÖÎ»(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	CreditBuyPos;
-	
-		///ÈÚÈ¯²ÖÎ»(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	CreditSellPos;
-	
-		///½ñÈÕÈÚÈ¯²ÖÎ»(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	TodayCreditSellPos;
-	
-		///»®³ö²ÖÎ»(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	CollateralOutPos;
-	
-		///»¹È¯Î´³É½»ÊıÁ¿(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	RepayUntradeVolume;
-	
-		///Ö±½Ó»¹È¯Î´³É½»ÊıÁ¿(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	RepayTransferUntradeVolume;
-	
-		///µ£±£Æ·ÂòÈëÎ´³É½»½ğ¶î(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CollateralBuyUntradeAmount;
-	
-		///µ£±£Æ·ÂòÈëÎ´³É½»ÊıÁ¿(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	CollateralBuyUntradeVolume;
-	
-		///ÈÚ×ÊÂòÈë½ğ¶î(°üº¬½»Ò×·ÑÓÃ)(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditBuyAmount;
-	
-		///ÈÚ×ÊÂòÈëÎ´³É½»½ğ¶î(°üº¬½»Ò×·ÑÓÃ)(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditBuyUntradeAmount;
-	
-		///ÈÚ×Ê¶³½á±£Ö¤½ğ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditBuyFrozenMargin;
-	
-		///ÈÚ×ÊÂòÈëÀûÏ¢(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditBuyInterestFee;
-	
-		///ÈÚ×ÊÂòÈëÎ´³É½»ÊıÁ¿(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	CreditBuyUntradeVolume;
-	
-		///ÈÚÈ¯Âô³ö½ğ¶î(ÒÔ³É½»¼Û¼ÆËã)(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditSellAmount;
-	
-		///ÈÚÈ¯Âô³öÎ´³É½»½ğ¶î(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditSellUntradeAmount;
-	
-		///ÈÚÈ¯¶³½á±£Ö¤½ğ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditSellFrozenMargin;
-	
-		///ÈÚÈ¯Âô³öÏ¢·Ñ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditSellInterestFee;
-	
-		///ÈÚÈ¯Âô³öÎ´³É½»ÊıÁ¿(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	CreditSellUntradeVolume;
-	
-		///»®Èë´ıÊÕ²Ö(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	CollateralInPos;
-	
-		///ÈÚ×ÊÁ÷¶¯¶³½á±£Ö¤½ğ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditBuyFrozenCirculateMargin;
-	
-		///ÈÚÈ¯Á÷¶¯¶³½á±£Ö¤½ğ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CreditSellFrozenCirculateMargin;
-	
-		///ÀÛ¼ÆÆ½²ÖÓ¯¿÷(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CloseProfit;
-	
-		///µ±ÈÕÀÛ¼Æ¿ª²ÖÊıÁ¿(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	TodayTotalOpenVolume;
-	
-		///½ñÊÖĞø·Ñ
-		TTORATstpMoneyType	TodayCommission;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// æ˜¨ä»“
+		TTORATstpVolumeType HistoryPos;
+
+		/// æ˜¨ä»“å†»ç»“
+		TTORATstpVolumeType HistoryPosFrozen;
+
+		/// ä»Šä¹°å–ä»“
+		TTORATstpVolumeType TodayBSPos;
+
+		/// ä»Šä¹°å–ä»“å†»ç»“
+		TTORATstpVolumeType TodayBSPosFrozen;
+
+		/// ä»Šæ—¥ç”³èµæŒä»“
+		TTORATstpVolumeType TodayPRPos;
+
+		/// ä»Šæ—¥ç”³èµæŒä»“å†»ç»“
+		TTORATstpVolumeType TodayPRPosFrozen;
+
+		/// ä»Šæ‹†åˆ†åˆå¹¶æŒä»“
+		TTORATstpVolumeType TodaySMPos;
+
+		/// ä»Šæ‹†åˆ†åˆå¹¶æŒä»“å†»ç»“
+		TTORATstpVolumeType TodaySMPosFrozen;
+
+		/// æ˜¨ä»“æˆæœ¬ä»·
+		TTORATstpPriceType HistoryPosPrice;
+
+		/// æŒä»“æˆæœ¬
+		TTORATstpMoneyType TotalPosCost;
+
+		/// ä¸Šæ¬¡ä½™é¢(ç›˜ä¸­ä¸å˜)
+		TTORATstpVolumeType PrePosition;
+
+		/// è‚¡ä»½å¯ç”¨
+		TTORATstpVolumeType AvailablePosition;
+
+		/// è‚¡ä»½ä½™é¢
+		TTORATstpVolumeType CurrentPosition;
+
+		/// å¼€ä»“æˆæœ¬
+		TTORATstpMoneyType OpenPosCost;
+
+		/// èèµ„ä»“ä½(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType CreditBuyPos;
+
+		/// èåˆ¸ä»“ä½(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType CreditSellPos;
+
+		/// ä»Šæ—¥èåˆ¸ä»“ä½(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType TodayCreditSellPos;
+
+		/// åˆ’å‡ºä»“ä½(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType CollateralOutPos;
+
+		/// è¿˜åˆ¸æœªæˆäº¤æ•°é‡(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType RepayUntradeVolume;
+
+		/// ç›´æ¥è¿˜åˆ¸æœªæˆäº¤æ•°é‡(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType RepayTransferUntradeVolume;
+
+		/// æ‹…ä¿å“ä¹°å…¥æœªæˆäº¤é‡‘é¢(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CollateralBuyUntradeAmount;
+
+		/// æ‹…ä¿å“ä¹°å…¥æœªæˆäº¤æ•°é‡(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType CollateralBuyUntradeVolume;
+
+		/// èèµ„ä¹°å…¥é‡‘é¢(åŒ…å«äº¤æ˜“è´¹ç”¨)(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditBuyAmount;
+
+		/// èèµ„ä¹°å…¥æœªæˆäº¤é‡‘é¢(åŒ…å«äº¤æ˜“è´¹ç”¨)(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditBuyUntradeAmount;
+
+		/// èèµ„å†»ç»“ä¿è¯é‡‘(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditBuyFrozenMargin;
+
+		/// èèµ„ä¹°å…¥åˆ©æ¯(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditBuyInterestFee;
+
+		/// èèµ„ä¹°å…¥æœªæˆäº¤æ•°é‡(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType CreditBuyUntradeVolume;
+
+		/// èåˆ¸å–å‡ºé‡‘é¢(ä»¥æˆäº¤ä»·è®¡ç®—)(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditSellAmount;
+
+		/// èåˆ¸å–å‡ºæœªæˆäº¤é‡‘é¢(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditSellUntradeAmount;
+
+		/// èåˆ¸å†»ç»“ä¿è¯é‡‘(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditSellFrozenMargin;
+
+		/// èåˆ¸å–å‡ºæ¯è´¹(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditSellInterestFee;
+
+		/// èåˆ¸å–å‡ºæœªæˆäº¤æ•°é‡(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType CreditSellUntradeVolume;
+
+		/// åˆ’å…¥å¾…æ”¶ä»“(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType CollateralInPos;
+
+		/// èèµ„æµåŠ¨å†»ç»“ä¿è¯é‡‘(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditBuyFrozenCirculateMargin;
+
+		/// èåˆ¸æµåŠ¨å†»ç»“ä¿è¯é‡‘(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CreditSellFrozenCirculateMargin;
+
+		/// ç´¯è®¡å¹³ä»“ç›ˆäº(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CloseProfit;
+
+		/// å½“æ—¥ç´¯è®¡å¼€ä»“æ•°é‡(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType TodayTotalOpenVolume;
+
+		/// ä»Šæ‰‹ç»­è´¹
+		TTORATstpMoneyType TodayCommission;
 	};
-	
-	/// ²éÑ¯»ù´¡½»Ò×·ÑÂÊ
+
+	/// æŸ¥è¯¢åŸºç¡€äº¤æ˜“è´¹ç‡
 	struct CTORATstpQryTradingFeeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
 	};
-	
-	/// »ù´¡½»Ò×·ÑÂÊ
+
+	/// åŸºç¡€äº¤æ˜“è´¹ç‡
 	struct CTORATstpTradingFeeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///²úÆ·´úÂë
-		TTORATstpProductIDType	ProductID;
-	
-		///Ö¤È¯Àà±ğ´úÂë
-		TTORATstpSecurityTypeType	SecurityType;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÒµÎñÀà±ğ
-		TTORATstpBizClassType	BizClass;
-	
-		///Ó¡»¨Ë°(¸Û¹ÉÓ¡»¨Ë°)°´½ğ¶îÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	StampTaxRatioByAmt;
-	
-		///Ó¡»¨Ë°(¸Û¹ÉÓ¡»¨Ë°)°´ÃæÖµÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	StampTaxRatioByPar;
-	
-		///Ó¡»¨Ë°(¸Û¹ÉÓ¡»¨Ë°,µ¥Î»¸Û±Ò)°´±ÊÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	StampTaxFeePerOrder;
-	
-		///Ó¡»¨Ë°(¸Û¹ÉÓ¡»¨Ë°,µ¥Î»¸Û±Ò)°´ÊıÁ¿ÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	StampTaxFeeByVolume;
-	
-		///Ó¡»¨Ë°(¸Û¹ÉÓ¡»¨Ë°,µ¥Î»¸Û±Ò)×îµÍÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	StampTaxFeeMin;
-	
-		///Ó¡»¨Ë°(¸Û¹ÉÓ¡»¨Ë°,µ¥Î»¸Û±Ò)×î¸ßÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	StampTaxFeeMax;
-	
-		///¹ı»§·Ñ(¸Û¹ÉÖ¤È¯×éºÏ·Ñ)°´½ğ¶îÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	TransferRatioByAmt;
-	
-		///¹ı»§·Ñ(¸Û¹ÉÖ¤È¯×éºÏ·Ñ)°´ÃæÖµÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	TransferRatioByPar;
-	
-		///¹ı»§·Ñ(¸Û¹ÉÖ¤È¯×éºÏ·Ñ,µ¥Î»¸Û±Ò)°´±ÊÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	TransferFeePerOrder;
-	
-		///¹ı»§·Ñ(¸Û¹ÉÖ¤È¯×éºÏ·Ñ,µ¥Î»¸Û±Ò)°´ÊıÁ¿ÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	TransferFeeByVolume;
-	
-		///¹ı»§·Ñ(¸Û¹ÉÖ¤È¯×éºÏ·Ñ,µ¥Î»¸Û±Ò)×îµÍÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	TransferFeeMin;
-	
-		///¹ı»§·Ñ(¸Û¹ÉÖ¤È¯×éºÏ·Ñ,µ¥Î»¸Û±Ò)×î¸ßÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	TransferFeeMax;
-	
-		///¾­ÊÖ·Ñ(¸Û¹É½»Ò×·Ñ)°´½ğ¶îÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	HandlingRatioByAmt;
-	
-		///¾­ÊÖ·Ñ(¸Û¹É½»Ò×·Ñ)°´ÃæÖµÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	HandlingRatioByPar;
-	
-		///¾­ÊÖ·Ñ(¸Û¹É½»Ò×·Ñ,µ¥Î»¸Û±Ò)°´±ÊÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	HandlingFeePerOrder;
-	
-		///¾­ÊÖ·Ñ(¸Û¹É½»Ò×·Ñ,µ¥Î»¸Û±Ò)°´ÊıÁ¿ÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	HandlingFeeByVolume;
-	
-		///¾­ÊÖ·Ñ(¸Û¹É½»Ò×·Ñ,µ¥Î»¸Û±Ò)×îµÍÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	HandlingFeeMin;
-	
-		///¾­ÊÖ·Ñ(¸Û¹É½»Ò×·Ñ,µ¥Î»¸Û±Ò)×î¸ßÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	HandlingFeeMax;
-	
-		///Ö¤¹Ü·Ñ(¸Û¹É½»Ò×Õ÷·Ñ)°´½ğ¶îÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	RegulateRatioByAmt;
-	
-		///Ö¤¹Ü·Ñ(¸Û¹É½»Ò×Õ÷·Ñ)°´ÃæÖµÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	RegulateRatioByPar;
-	
-		///Ö¤¹Ü·Ñ(¸Û¹É½»Ò×Õ÷·Ñ,µ¥Î»¸Û±Ò)°´±ÊÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	RegulateFeePerOrder;
-	
-		///Ö¤¹Ü·Ñ(¸Û¹É½»Ò×Õ÷·Ñ,µ¥Î»¸Û±Ò)°´ÊıÁ¿ÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	RegulateFeeByVolume;
-	
-		///Ö¤¹Ü·Ñ(¸Û¹É½»Ò×Õ÷·Ñ,µ¥Î»¸Û±Ò)×îµÍÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	RegulateFeeMin;
-	
-		///Ö¤¹Ü·Ñ(¸Û¹É½»Ò×Õ÷·Ñ,µ¥Î»¸Û±Ò)×î¸ßÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	RegulateFeeMax;
-	
-		///½áËã·Ñ(¸Û¹É¹É·İ½»ÊÕ·Ñ)°´½ğ¶îÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	SettlementRatioByAmt;
-	
-		///½áËã·Ñ(¸Û¹É¹É·İ½»ÊÕ·Ñ)°´ÃæÖµÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	SettlementRatioByPar;
-	
-		///½áËã·Ñ(¸Û¹É¹É·İ½»ÊÕ·Ñ,µ¥Î»¸Û±Ò)°´±ÊÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	SettlementFeePerOrder;
-	
-		///½áËã·Ñ(¸Û¹É¹É·İ½»ÊÕ·Ñ,µ¥Î»¸Û±Ò)°´ÊıÁ¿ÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	SettlementFeeByVolume;
-	
-		///½áËã·Ñ(¸Û¹É¹É·İ½»ÊÕ·Ñ,µ¥Î»¸Û±Ò)×îµÍÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	SettlementFeeMin;
-	
-		///½áËã·Ñ(¸Û¹É¹É·İ½»ÊÕ·Ñ,µ¥Î»¸Û±Ò)×î¸ßÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	SettlementFeeMax;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// äº§å“ä»£ç 
+		TTORATstpProductIDType ProductID;
+
+		/// è¯åˆ¸ç±»åˆ«ä»£ç 
+		TTORATstpSecurityTypeType SecurityType;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä¸šåŠ¡ç±»åˆ«
+		TTORATstpBizClassType BizClass;
+
+		/// å°èŠ±ç¨(æ¸¯è‚¡å°èŠ±ç¨)æŒ‰é‡‘é¢æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType StampTaxRatioByAmt;
+
+		/// å°èŠ±ç¨(æ¸¯è‚¡å°èŠ±ç¨)æŒ‰é¢å€¼æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType StampTaxRatioByPar;
+
+		/// å°èŠ±ç¨(æ¸¯è‚¡å°èŠ±ç¨,å•ä½æ¸¯å¸)æŒ‰ç¬”æ”¶å–é‡‘é¢
+		TTORATstpMoneyType StampTaxFeePerOrder;
+
+		/// å°èŠ±ç¨(æ¸¯è‚¡å°èŠ±ç¨,å•ä½æ¸¯å¸)æŒ‰æ•°é‡æ”¶å–é‡‘é¢
+		TTORATstpMoneyType StampTaxFeeByVolume;
+
+		/// å°èŠ±ç¨(æ¸¯è‚¡å°èŠ±ç¨,å•ä½æ¸¯å¸)æœ€ä½æ”¶å–é‡‘é¢
+		TTORATstpMoneyType StampTaxFeeMin;
+
+		/// å°èŠ±ç¨(æ¸¯è‚¡å°èŠ±ç¨,å•ä½æ¸¯å¸)æœ€é«˜æ”¶å–é‡‘é¢
+		TTORATstpMoneyType StampTaxFeeMax;
+
+		/// è¿‡æˆ·è´¹(æ¸¯è‚¡è¯åˆ¸ç»„åˆè´¹)æŒ‰é‡‘é¢æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType TransferRatioByAmt;
+
+		/// è¿‡æˆ·è´¹(æ¸¯è‚¡è¯åˆ¸ç»„åˆè´¹)æŒ‰é¢å€¼æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType TransferRatioByPar;
+
+		/// è¿‡æˆ·è´¹(æ¸¯è‚¡è¯åˆ¸ç»„åˆè´¹,å•ä½æ¸¯å¸)æŒ‰ç¬”æ”¶å–é‡‘é¢
+		TTORATstpMoneyType TransferFeePerOrder;
+
+		/// è¿‡æˆ·è´¹(æ¸¯è‚¡è¯åˆ¸ç»„åˆè´¹,å•ä½æ¸¯å¸)æŒ‰æ•°é‡æ”¶å–é‡‘é¢
+		TTORATstpMoneyType TransferFeeByVolume;
+
+		/// è¿‡æˆ·è´¹(æ¸¯è‚¡è¯åˆ¸ç»„åˆè´¹,å•ä½æ¸¯å¸)æœ€ä½æ”¶å–é‡‘é¢
+		TTORATstpMoneyType TransferFeeMin;
+
+		/// è¿‡æˆ·è´¹(æ¸¯è‚¡è¯åˆ¸ç»„åˆè´¹,å•ä½æ¸¯å¸)æœ€é«˜æ”¶å–é‡‘é¢
+		TTORATstpMoneyType TransferFeeMax;
+
+		/// ç»æ‰‹è´¹(æ¸¯è‚¡äº¤æ˜“è´¹)æŒ‰é‡‘é¢æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType HandlingRatioByAmt;
+
+		/// ç»æ‰‹è´¹(æ¸¯è‚¡äº¤æ˜“è´¹)æŒ‰é¢å€¼æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType HandlingRatioByPar;
+
+		/// ç»æ‰‹è´¹(æ¸¯è‚¡äº¤æ˜“è´¹,å•ä½æ¸¯å¸)æŒ‰ç¬”æ”¶å–é‡‘é¢
+		TTORATstpMoneyType HandlingFeePerOrder;
+
+		/// ç»æ‰‹è´¹(æ¸¯è‚¡äº¤æ˜“è´¹,å•ä½æ¸¯å¸)æŒ‰æ•°é‡æ”¶å–é‡‘é¢
+		TTORATstpMoneyType HandlingFeeByVolume;
+
+		/// ç»æ‰‹è´¹(æ¸¯è‚¡äº¤æ˜“è´¹,å•ä½æ¸¯å¸)æœ€ä½æ”¶å–é‡‘é¢
+		TTORATstpMoneyType HandlingFeeMin;
+
+		/// ç»æ‰‹è´¹(æ¸¯è‚¡äº¤æ˜“è´¹,å•ä½æ¸¯å¸)æœ€é«˜æ”¶å–é‡‘é¢
+		TTORATstpMoneyType HandlingFeeMax;
+
+		/// è¯ç®¡è´¹(æ¸¯è‚¡äº¤æ˜“å¾è´¹)æŒ‰é‡‘é¢æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType RegulateRatioByAmt;
+
+		/// è¯ç®¡è´¹(æ¸¯è‚¡äº¤æ˜“å¾è´¹)æŒ‰é¢å€¼æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType RegulateRatioByPar;
+
+		/// è¯ç®¡è´¹(æ¸¯è‚¡äº¤æ˜“å¾è´¹,å•ä½æ¸¯å¸)æŒ‰ç¬”æ”¶å–é‡‘é¢
+		TTORATstpMoneyType RegulateFeePerOrder;
+
+		/// è¯ç®¡è´¹(æ¸¯è‚¡äº¤æ˜“å¾è´¹,å•ä½æ¸¯å¸)æŒ‰æ•°é‡æ”¶å–é‡‘é¢
+		TTORATstpMoneyType RegulateFeeByVolume;
+
+		/// è¯ç®¡è´¹(æ¸¯è‚¡äº¤æ˜“å¾è´¹,å•ä½æ¸¯å¸)æœ€ä½æ”¶å–é‡‘é¢
+		TTORATstpMoneyType RegulateFeeMin;
+
+		/// è¯ç®¡è´¹(æ¸¯è‚¡äº¤æ˜“å¾è´¹,å•ä½æ¸¯å¸)æœ€é«˜æ”¶å–é‡‘é¢
+		TTORATstpMoneyType RegulateFeeMax;
+
+		/// ç»“ç®—è´¹(æ¸¯è‚¡è‚¡ä»½äº¤æ”¶è´¹)æŒ‰é‡‘é¢æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType SettlementRatioByAmt;
+
+		/// ç»“ç®—è´¹(æ¸¯è‚¡è‚¡ä»½äº¤æ”¶è´¹)æŒ‰é¢å€¼æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType SettlementRatioByPar;
+
+		/// ç»“ç®—è´¹(æ¸¯è‚¡è‚¡ä»½äº¤æ”¶è´¹,å•ä½æ¸¯å¸)æŒ‰ç¬”æ”¶å–é‡‘é¢
+		TTORATstpMoneyType SettlementFeePerOrder;
+
+		/// ç»“ç®—è´¹(æ¸¯è‚¡è‚¡ä»½äº¤æ”¶è´¹,å•ä½æ¸¯å¸)æŒ‰æ•°é‡æ”¶å–é‡‘é¢
+		TTORATstpMoneyType SettlementFeeByVolume;
+
+		/// ç»“ç®—è´¹(æ¸¯è‚¡è‚¡ä»½äº¤æ”¶è´¹,å•ä½æ¸¯å¸)æœ€ä½æ”¶å–é‡‘é¢
+		TTORATstpMoneyType SettlementFeeMin;
+
+		/// ç»“ç®—è´¹(æ¸¯è‚¡è‚¡ä»½äº¤æ”¶è´¹,å•ä½æ¸¯å¸)æœ€é«˜æ”¶å–é‡‘é¢
+		TTORATstpMoneyType SettlementFeeMax;
 	};
-	
-	/// ²éÑ¯Ó¶½ğ·ÑÂÊ
+
+	/// æŸ¥è¯¢ä½£é‡‘è´¹ç‡
 	struct CTORATstpQryInvestorTradingFeeField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
 	};
-	
-	/// Ó¶½ğ·ÑÂÊ
+
+	/// ä½£é‡‘è´¹ç‡
 	struct CTORATstpInvestorTradingFeeField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///²úÆ·´úÂë
-		TTORATstpProductIDType	ProductID;
-	
-		///Ö¤È¯Àà±ğ´úÂë
-		TTORATstpSecurityTypeType	SecurityType;
-	
-		///ºÏÔ¼´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÒµÎñÀà±ğ
-		TTORATstpBizClassType	BizClass;
-	
-		///Ó¶½ğÀàĞÍ
-		TTORATstpBrokerageTypeType	BrokerageType;
-	
-		///Ó¶½ğ°´½ğ¶îÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	RatioByAmt;
-	
-		///Ó¶½ğ°´ÃæÖµÊÕÈ¡±ÈÀı
-		TTORATstpRatioType	RatioByPar;
-	
-		///Ó¶½ğ°´±ÊÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	FeePerOrder;
-	
-		///Ó¶½ğ×îµÍÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	FeeMin;
-	
-		///Ó¶½ğ×î¸ßÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	FeeMax;
-	
-		///Ó¶½ğ°´ÊıÁ¿ÊÕÈ¡½ğ¶î
-		TTORATstpMoneyType	FeeByVolume;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///±¨µ¥ÀàĞÍ
-		TTORATstpOrderTypeType	OrderType;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// äº§å“ä»£ç 
+		TTORATstpProductIDType ProductID;
+
+		/// è¯åˆ¸ç±»åˆ«ä»£ç 
+		TTORATstpSecurityTypeType SecurityType;
+
+		/// åˆçº¦ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä¸šåŠ¡ç±»åˆ«
+		TTORATstpBizClassType BizClass;
+
+		/// ä½£é‡‘ç±»å‹
+		TTORATstpBrokerageTypeType BrokerageType;
+
+		/// ä½£é‡‘æŒ‰é‡‘é¢æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType RatioByAmt;
+
+		/// ä½£é‡‘æŒ‰é¢å€¼æ”¶å–æ¯”ä¾‹
+		TTORATstpRatioType RatioByPar;
+
+		/// ä½£é‡‘æŒ‰ç¬”æ”¶å–é‡‘é¢
+		TTORATstpMoneyType FeePerOrder;
+
+		/// ä½£é‡‘æœ€ä½æ”¶å–é‡‘é¢
+		TTORATstpMoneyType FeeMin;
+
+		/// ä½£é‡‘æœ€é«˜æ”¶å–é‡‘é¢
+		TTORATstpMoneyType FeeMax;
+
+		/// ä½£é‡‘æŒ‰æ•°é‡æ”¶å–é‡‘é¢
+		TTORATstpMoneyType FeeByVolume;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// æŠ¥å•ç±»å‹
+		TTORATstpOrderTypeType OrderType;
 	};
-	
-	/// ²éÑ¯ĞÂ¹ÉÉê¹º¶î¶È
+
+	/// æŸ¥è¯¢æ–°è‚¡ç”³è´­é¢åº¦
 	struct CTORATstpQryIPOQuotaField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
 	};
-	
-	/// ĞÂ¹ÉÉê¹º¶î¶È
+
+	/// æ–°è‚¡ç”³è´­é¢åº¦
 	struct CTORATstpIPOQuotaField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¿Í»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///¿ÉÉê¹º¶î¶È
-		TTORATstpLongVolumeType	MaxVolume;
-	
-		///¿Æ´´°å¿ÉÉê¹º¶î¶È
-		TTORATstpLongVolumeType	KCMaxVolume;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// å®¢æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// å¯ç”³è´­é¢åº¦
+		TTORATstpLongVolumeType MaxVolume;
+
+		/// ç§‘åˆ›æ¿å¯ç”³è´­é¢åº¦
+		TTORATstpLongVolumeType KCMaxVolume;
 	};
-	
-	/// ²éÑ¯±¨µ¥Ã÷Ï¸×Ê½ğ
+
+	/// æŸ¥è¯¢æŠ¥å•æ˜ç»†èµ„é‡‘
 	struct CTORATstpQryOrderFundDetailField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
 	};
-	
-	/// ±¨µ¥Ã÷Ï¸×Ê½ğ
+
+	/// æŠ¥å•æ˜ç»†èµ„é‡‘
 	struct CTORATstpOrderFundDetailField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///½»Ò×µ¥Ôª´úÂë
-		TTORATstpPbuIDType	PbuID;
-	
-		///±¾µØ±¨µ¥±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±¨µ¥½ğ¶î
-		TTORATstpMoneyType	OrderAmount;
-	
-		///³É½»½ğ¶î
-		TTORATstpMoneyType	Turnover;
-	
-		///Ó¡»¨Ë°(¸Û¹ÉÎªÓ¡»¨Ë°)
-		TTORATstpMoneyType	StampTaxFee;
-	
-		///¾­ÊÖ·Ñ(¸Û¹ÉÎª½»Ò×·Ñ)
-		TTORATstpMoneyType	HandlingFee;
-	
-		///¹ı»§·Ñ(¸Û¹ÉÎªÖ¤È¯×éºÏ·Ñ)
-		TTORATstpMoneyType	TransferFee;
-	
-		///Ö¤¹Ü·Ñ(¸Û¹ÉÎª½»Ò×Õ÷·Ñ)
-		TTORATstpMoneyType	RegulateFee;
-	
-		///½áËã·Ñ(¸Û¹ÉÎª¹É·İ½»ÊÕ·Ñ)
-		TTORATstpMoneyType	SettlementFee;
-	
-		///Ó¶½ğ
-		TTORATstpMoneyType	BrokerageFee;
-	
-		///×Ü·ÑÓÃ
-		TTORATstpMoneyType	TotalFee;
-	
-		///±¨µ¥³õÊ¼¶³½á½ğ¶î
-		TTORATstpMoneyType	OrderCashFrozen;
-	
-		///Ô¤¹À¶³½áÏÖ½ğ
-		TTORATstpMoneyType	EstimateCashFrozen;
-	
-		///³õÊ¼¶³½á×Ü·ÑÓÃ
-		TTORATstpMoneyType	TotalFeeFrozen;
-	
-		///³õÊ¼¶³½á½ğ¶îºÏ¼Æ
-		TTORATstpMoneyType	TotalFrozen;
-	
-		///±£Ö¤½ğ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	Margin;
-	
-		///³¥»¹½ğ¶î(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	RepayAmount;
-	
-		///³¥»¹ÊıÁ¿(Á½ÈÚ×¨ÓÃ)
-		TTORATstpVolumeType	RepayVolume;
-	
-		///³õÊ¼¶³½á±£Ö¤½ğ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	MarginFrozen;
-	
-		///³õÊ¼¶³½áÁ÷¶¯±£Ö¤½ğ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpMoneyType	CirculateMarginFrozen;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// äº¤æ˜“å•å…ƒä»£ç 
+		TTORATstpPbuIDType PbuID;
+
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// æŠ¥å•é‡‘é¢
+		TTORATstpMoneyType OrderAmount;
+
+		/// æˆäº¤é‡‘é¢
+		TTORATstpMoneyType Turnover;
+
+		/// å°èŠ±ç¨(æ¸¯è‚¡ä¸ºå°èŠ±ç¨)
+		TTORATstpMoneyType StampTaxFee;
+
+		/// ç»æ‰‹è´¹(æ¸¯è‚¡ä¸ºäº¤æ˜“è´¹)
+		TTORATstpMoneyType HandlingFee;
+
+		/// è¿‡æˆ·è´¹(æ¸¯è‚¡ä¸ºè¯åˆ¸ç»„åˆè´¹)
+		TTORATstpMoneyType TransferFee;
+
+		/// è¯ç®¡è´¹(æ¸¯è‚¡ä¸ºäº¤æ˜“å¾è´¹)
+		TTORATstpMoneyType RegulateFee;
+
+		/// ç»“ç®—è´¹(æ¸¯è‚¡ä¸ºè‚¡ä»½äº¤æ”¶è´¹)
+		TTORATstpMoneyType SettlementFee;
+
+		/// ä½£é‡‘
+		TTORATstpMoneyType BrokerageFee;
+
+		/// æ€»è´¹ç”¨
+		TTORATstpMoneyType TotalFee;
+
+		/// æŠ¥å•åˆå§‹å†»ç»“é‡‘é¢
+		TTORATstpMoneyType OrderCashFrozen;
+
+		/// é¢„ä¼°å†»ç»“ç°é‡‘
+		TTORATstpMoneyType EstimateCashFrozen;
+
+		/// åˆå§‹å†»ç»“æ€»è´¹ç”¨
+		TTORATstpMoneyType TotalFeeFrozen;
+
+		/// åˆå§‹å†»ç»“é‡‘é¢åˆè®¡
+		TTORATstpMoneyType TotalFrozen;
+
+		/// ä¿è¯é‡‘(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType Margin;
+
+		/// å¿è¿˜é‡‘é¢(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType RepayAmount;
+
+		/// å¿è¿˜æ•°é‡(ä¸¤èä¸“ç”¨)
+		TTORATstpVolumeType RepayVolume;
+
+		/// åˆå§‹å†»ç»“ä¿è¯é‡‘(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType MarginFrozen;
+
+		/// åˆå§‹å†»ç»“æµåŠ¨ä¿è¯é‡‘(ä¸¤èä¸“ç”¨)
+		TTORATstpMoneyType CirculateMarginFrozen;
 	};
-	
-	/// ²éÑ¯×Ê½ğ×ªÒÆÁ÷Ë®
+
+	/// æŸ¥è¯¢èµ„é‡‘è½¬ç§»æµæ°´
 	struct CTORATstpQryFundTransferDetailField
 	{
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///×ªÒÆ·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// è½¬ç§»æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
 	};
-	
-	/// ×Ê½ğ×ªÒÆÁ÷Ë®
+
+	/// èµ„é‡‘è½¬ç§»æµæ°´
 	struct CTORATstpFundTransferDetailField
 	{
-		///×ªÕËÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	FundSerial;
-	
-		///ÉêÇëÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	ApplySerial;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///×ªÒÆ·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///³öÈë½ğ½ğ¶î
-		TTORATstpMoneyType	Amount;
-	
-		///×ªÒÆ×´Ì¬
-		TTORATstpTransferStatusType	TransferStatus;
-	
-		///²Ù×÷À´Ô´
-		TTORATstpOperateSourceType	OperateSource;
-	
-		///²Ù×÷ÈËÔ±
-		TTORATstpUserIDType	OperatorID;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	OperateDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	OperateTime;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///ÒøĞĞ´úÂë
-		TTORATstpBankIDType	BankID;
-	
-		///Ç©Ô¼ÒøĞĞÕË»§
-		TTORATstpBankAccountIDType	BankAccountID;
-	
-		///IPµØÖ·
-		TTORATstpIPAddressType	IPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Íâ²¿Á÷Ë®ºÅ
-		TTORATstpExternalSerialType	ExternalSerial;
-	
-		///Íâ²¿ÏµÍ³½ÚµãºÅ
-		TTORATstpNodeIDType	ExternalNodeID;
-	
-		///Ç¿Æ½Ô­Òò(Á½ÈÚ×¨ÓÃ)
-		TTORATstpForceCloseReasonType	ForceCloseReason;
-	
-		///(Ö±½Ó»¹¿îÓÃ)Ö¸¶¨³¥»¹Ê±µÄ¸ºÕ®±àºÅ(Á½ÈÚ×¨ÓÃ)
-		TTORATstpCreditDebtIDType	CreditDebtID;
+		/// è½¬è´¦æµæ°´å·
+		TTORATstpIntSerialType FundSerial;
+
+		/// ç”³è¯·æµæ°´å·
+		TTORATstpIntSerialType ApplySerial;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// è½¬ç§»æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// å‡ºå…¥é‡‘é‡‘é¢
+		TTORATstpMoneyType Amount;
+
+		/// è½¬ç§»çŠ¶æ€
+		TTORATstpTransferStatusType TransferStatus;
+
+		/// æ“ä½œæ¥æº
+		TTORATstpOperateSourceType OperateSource;
+
+		/// æ“ä½œäººå‘˜
+		TTORATstpUserIDType OperatorID;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType OperateDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType OperateTime;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// é“¶è¡Œä»£ç 
+		TTORATstpBankIDType BankID;
+
+		/// ç­¾çº¦é“¶è¡Œè´¦æˆ·
+		TTORATstpBankAccountIDType BankAccountID;
+
+		/// IPåœ°å€
+		TTORATstpIPAddressType IPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// å¤–éƒ¨æµæ°´å·
+		TTORATstpExternalSerialType ExternalSerial;
+
+		/// å¤–éƒ¨ç³»ç»ŸèŠ‚ç‚¹å·
+		TTORATstpNodeIDType ExternalNodeID;
+
+		/// å¼ºå¹³åŸå› (ä¸¤èä¸“ç”¨)
+		TTORATstpForceCloseReasonType ForceCloseReason;
+
+		///(ç›´æ¥è¿˜æ¬¾ç”¨)æŒ‡å®šå¿è¿˜æ—¶çš„è´Ÿå€ºç¼–å·(ä¸¤èä¸“ç”¨)
+		TTORATstpCreditDebtIDType CreditDebtID;
 	};
-	
-	/// ²éÑ¯³Ö²Ö×ªÒÆÁ÷Ë®
+
+	/// æŸ¥è¯¢æŒä»“è½¬ç§»æµæ°´
 	struct CTORATstpQryPositionTransferDetailField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///×ªÒÆ·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è½¬ç§»æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
 	};
-	
-	/// ³Ö²Ö×ªÒÆÁ÷Ë®
+
+	/// æŒä»“è½¬ç§»æµæ°´
 	struct CTORATstpPositionTransferDetailField
 	{
-		///Á÷Ë®ºÅ
-		TTORATstpIntSerialType	PositionSerial;
-	
-		///ÉêÇëÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	ApplySerial;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///½»Ò×ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×ÈÕÆÚ
-		TTORATstpDateType	TradingDay;
-	
-		///×ªÒÆ·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///×ªÒÆ³Ö²ÖÀàĞÍ
-		TTORATstpTransferPositionTypeType	TransferPositionType;
-	
-		///×ªÒÆ×´Ì¬
-		TTORATstpTransferStatusType	TransferStatus;
-	
-		///×òÈÕ²ÖÎ»ÊıÁ¿
-		TTORATstpVolumeType	HistoryVolume;
-	
-		///½ñÈÕÂòÂô²ÖÎ»ÊıÁ¿
-		TTORATstpVolumeType	TodayBSVolume;
-	
-		///½ñÈÕÉêÊê²ÖÎ»ÊıÁ¿
-		TTORATstpVolumeType	TodayPRVolume;
-	
-		///½ñÈÕ²ğ·ÖºÏ²¢²ÖÎ»ÊıÁ¿
-		TTORATstpVolumeType	TodaySMVolume;
-	
-		///²Ù×÷ÈËÔ±
-		TTORATstpUserIDType	OperatorID;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	OperateDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	OperateTime;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
-	
-		///IPµØÖ·
-		TTORATstpIPAddressType	IPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
-	
-		///Íâ²¿½Úµã±àºÅ
-		TTORATstpNodeIDType	ExternalNodeID;
+		/// æµæ°´å·
+		TTORATstpIntSerialType PositionSerial;
+
+		/// ç”³è¯·æµæ°´å·
+		TTORATstpIntSerialType ApplySerial;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// äº¤æ˜“è´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ—¥æœŸ
+		TTORATstpDateType TradingDay;
+
+		/// è½¬ç§»æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// è½¬ç§»æŒä»“ç±»å‹
+		TTORATstpTransferPositionTypeType TransferPositionType;
+
+		/// è½¬ç§»çŠ¶æ€
+		TTORATstpTransferStatusType TransferStatus;
+
+		/// æ˜¨æ—¥ä»“ä½æ•°é‡
+		TTORATstpVolumeType HistoryVolume;
+
+		/// ä»Šæ—¥ä¹°å–ä»“ä½æ•°é‡
+		TTORATstpVolumeType TodayBSVolume;
+
+		/// ä»Šæ—¥ç”³èµä»“ä½æ•°é‡
+		TTORATstpVolumeType TodayPRVolume;
+
+		/// ä»Šæ—¥æ‹†åˆ†åˆå¹¶ä»“ä½æ•°é‡
+		TTORATstpVolumeType TodaySMVolume;
+
+		/// æ“ä½œäººå‘˜
+		TTORATstpUserIDType OperatorID;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType OperateDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType OperateTime;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
+
+		/// IPåœ°å€
+		TTORATstpIPAddressType IPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
+
+		/// å¤–éƒ¨èŠ‚ç‚¹ç¼–å·
+		TTORATstpNodeIDType ExternalNodeID;
 	};
-	
-	/// ²éÑ¯ÍâÎ§ÏµÍ³²ÖÎ»µ÷²¦Á÷Ë®
+
+	/// æŸ¥è¯¢å¤–å›´ç³»ç»Ÿä»“ä½è°ƒæ‹¨æµæ°´
 	struct CTORATstpQryPeripheryPositionTransferDetailField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///²ÖÎ»µ÷²¦·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä»“ä½è°ƒæ‹¨æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
 	};
-	
-	/// ÍâÎ§ÏµÍ³²ÖÎ»µ÷²¦Á÷Ë®
+
+	/// å¤–å›´ç³»ç»Ÿä»“ä½è°ƒæ‹¨æµæ°´
 	struct CTORATstpPeripheryPositionTransferDetailField
 	{
-		///²ÖÎ»µ÷²¦ÏµÍ³Á÷Ë®ºÅ
-		TTORATstpIntSerialType	PositionSerial;
-	
-		///²ÖÎ»µ÷²¦ÇëÇóÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	ApplySerial;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///²ÖÎ»µ÷²¦·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///ÏÖ»õÏµÍ³Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///ÏÖ»õÏµÍ³Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///ÏÖ»õÏµÍ³½»Ò×ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½ñÈÕÂòÂô²ÖÎ»×ªÈë×ª³öÊıÁ¿
-		TTORATstpVolumeType	TodayBSPos;
-	
-		///½ñÈÕÉêÊê²ÖÎ»×ªÈëÊıÁ¿
-		TTORATstpVolumeType	TodayPRPos;
-	
-		///½ñÈÕ²ğ·ÖºÏ²¢²ÖÎ»×ªÈëÊıÁ¿
-		TTORATstpVolumeType	TodaySMPos;
-	
-		///×òÈÕ²ÖÎ»×ªÈëÊıÁ¿
-		TTORATstpVolumeType	HistoryPos;
-	
-		///½»Ò×ÈÕÆÚ
-		TTORATstpDateType	TradingDay;
-	
-		///²ÖÎ»µ÷²¦Ô­Òò
-		TTORATstpTransferReasonType	TransferReason;
-	
-		///×ªÒÆ×´Ì¬
-		TTORATstpTransferStatusType	TransferStatus;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	OperateDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	OperateTime;
-	
-		///³åÕıÈÕÆÚ
-		TTORATstpDateType	RepealDate;
-	
-		///³åÕıÊ±¼ä
-		TTORATstpTimeType	RepealTime;
-	
-		///³åÕıÔ­Òò
-		TTORATstpTransferReasonType	RepealReason;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
+		/// ä»“ä½è°ƒæ‹¨ç³»ç»Ÿæµæ°´å·
+		TTORATstpIntSerialType PositionSerial;
+
+		/// ä»“ä½è°ƒæ‹¨è¯·æ±‚æµæ°´å·
+		TTORATstpIntSerialType ApplySerial;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// ä»“ä½è°ƒæ‹¨æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// ç°è´§ç³»ç»ŸæŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// ç°è´§ç³»ç»ŸæŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// ç°è´§ç³»ç»Ÿäº¤æ˜“è´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä»Šæ—¥ä¹°å–ä»“ä½è½¬å…¥è½¬å‡ºæ•°é‡
+		TTORATstpVolumeType TodayBSPos;
+
+		/// ä»Šæ—¥ç”³èµä»“ä½è½¬å…¥æ•°é‡
+		TTORATstpVolumeType TodayPRPos;
+
+		/// ä»Šæ—¥æ‹†åˆ†åˆå¹¶ä»“ä½è½¬å…¥æ•°é‡
+		TTORATstpVolumeType TodaySMPos;
+
+		/// æ˜¨æ—¥ä»“ä½è½¬å…¥æ•°é‡
+		TTORATstpVolumeType HistoryPos;
+
+		/// äº¤æ˜“æ—¥æœŸ
+		TTORATstpDateType TradingDay;
+
+		/// ä»“ä½è°ƒæ‹¨åŸå› 
+		TTORATstpTransferReasonType TransferReason;
+
+		/// è½¬ç§»çŠ¶æ€
+		TTORATstpTransferStatusType TransferStatus;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType OperateDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType OperateTime;
+
+		/// å†²æ­£æ—¥æœŸ
+		TTORATstpDateType RepealDate;
+
+		/// å†²æ­£æ—¶é—´
+		TTORATstpTimeType RepealTime;
+
+		/// å†²æ­£åŸå› 
+		TTORATstpTransferReasonType RepealReason;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
 	};
-	
-	/// ²éÑ¯ÍâÎ§ÏµÍ³×Ê½ğ×ªÒÆÁ÷Ë®
+
+	/// æŸ¥è¯¢å¤–å›´ç³»ç»Ÿèµ„é‡‘è½¬ç§»æµæ°´
 	struct CTORATstpQryPeripheryFundTransferDetailField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///×Ê½ğµ÷²¦·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// èµ„é‡‘è°ƒæ‹¨æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
 	};
-	
-	/// ÍâÎ§ÏµÍ³×Ê½ğ×ªÒÆÁ÷Ë®
+
+	/// å¤–å›´ç³»ç»Ÿèµ„é‡‘è½¬ç§»æµæ°´
 	struct CTORATstpPeripheryFundTransferDetailField
 	{
-		///×ªÕËÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	FundSerial;
-	
-		///ÉêÇëÁ÷Ë®ºÅ
-		TTORATstpIntSerialType	ApplySerial;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///×Ê½ğÕË»§´úÂë
-		TTORATstpAccountIDType	AccountID;
-	
-		///±ÒÖÖ
-		TTORATstpCurrencyIDType	CurrencyID;
-	
-		///×ªÒÆ·½Ïò
-		TTORATstpTransferDirectionType	TransferDirection;
-	
-		///³öÈë½ğ½ğ¶î
-		TTORATstpMoneyType	Amount;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///×ªÒÆ×´Ì¬
-		TTORATstpTransferStatusType	TransferStatus;
-	
-		///×Ê½ğµ÷²¦Ô­Òò
-		TTORATstpTransferReasonType	TransferReason;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	OperateDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	OperateTime;
-	
-		///³åÕıÈÕÆÚ
-		TTORATstpDateType	RepealDate;
-	
-		///³åÕıÊ±¼ä
-		TTORATstpTimeType	RepealTime;
-	
-		///³åÕıÔ­Òò
-		TTORATstpTransferReasonType	RepealReason;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
+		/// è½¬è´¦æµæ°´å·
+		TTORATstpIntSerialType FundSerial;
+
+		/// ç”³è¯·æµæ°´å·
+		TTORATstpIntSerialType ApplySerial;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// èµ„é‡‘è´¦æˆ·ä»£ç 
+		TTORATstpAccountIDType AccountID;
+
+		/// å¸ç§
+		TTORATstpCurrencyIDType CurrencyID;
+
+		/// è½¬ç§»æ–¹å‘
+		TTORATstpTransferDirectionType TransferDirection;
+
+		/// å‡ºå…¥é‡‘é‡‘é¢
+		TTORATstpMoneyType Amount;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// è½¬ç§»çŠ¶æ€
+		TTORATstpTransferStatusType TransferStatus;
+
+		/// èµ„é‡‘è°ƒæ‹¨åŸå› 
+		TTORATstpTransferReasonType TransferReason;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType OperateDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType OperateTime;
+
+		/// å†²æ­£æ—¥æœŸ
+		TTORATstpDateType RepealDate;
+
+		/// å†²æ­£æ—¶é—´
+		TTORATstpTimeType RepealTime;
+
+		/// å†²æ­£åŸå› 
+		TTORATstpTransferReasonType RepealReason;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
 	};
-	
-	/// ²éÑ¯Õ®È¯×ª¹ÉĞÅÏ¢
+
+	/// æŸ¥è¯¢å€ºåˆ¸è½¬è‚¡ä¿¡æ¯
 	struct CTORATstpQryBondConversionInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// Õ®È¯×ª¹ÉĞÅÏ¢
+
+	/// å€ºåˆ¸è½¬è‚¡ä¿¡æ¯
 	struct CTORATstpBondConversionInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///×ª¹ÉÉê±¨´úÂë
-		TTORATstpSecurityIDType	ConvertOrderID;
-	
-		///×ª¹É¼Û¸ñ
-		TTORATstpPriceType	ConvertPrice;
-	
-		///Ã¿´Î¿ÉÒÔ×ª¹É×îĞ¡½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	ConvertVolUnit;
-	
-		///Ö¤È¯¿ÉÒÔ×ª¹ÉµÄ×î´óÊıÁ¿
-		TTORATstpVolumeType	ConvertVolMax;
-	
-		///Ö¤È¯¿ÉÒÔ×ª¹ÉµÄ×îĞ¡ÊıÁ¿
-		TTORATstpVolumeType	ConvertVolMin;
-	
-		///×ª¹É¿ªÊ¼ÈÕÆÚ
-		TTORATstpDateType	BeginDate;
-	
-		///×ª¹É½ØÖÁÈÕÆÚ
-		TTORATstpDateType	EndDate;
-	
-		///×ª¹ÉÃû³Æ
-		TTORATstpSecurityNameType	ConvertName;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è½¬è‚¡ç”³æŠ¥ä»£ç 
+		TTORATstpSecurityIDType ConvertOrderID;
+
+		/// è½¬è‚¡ä»·æ ¼
+		TTORATstpPriceType ConvertPrice;
+
+		/// æ¯æ¬¡å¯ä»¥è½¬è‚¡æœ€å°äº¤æ˜“å•ä½
+		TTORATstpTradingUnitType ConvertVolUnit;
+
+		/// è¯åˆ¸å¯ä»¥è½¬è‚¡çš„æœ€å¤§æ•°é‡
+		TTORATstpVolumeType ConvertVolMax;
+
+		/// è¯åˆ¸å¯ä»¥è½¬è‚¡çš„æœ€å°æ•°é‡
+		TTORATstpVolumeType ConvertVolMin;
+
+		/// è½¬è‚¡å¼€å§‹æ—¥æœŸ
+		TTORATstpDateType BeginDate;
+
+		/// è½¬è‚¡æˆªè‡³æ—¥æœŸ
+		TTORATstpDateType EndDate;
+
+		/// è½¬è‚¡åç§°
+		TTORATstpSecurityNameType ConvertName;
 	};
-	
-	/// ²éÑ¯Õ®È¯»ØÊÛĞÅÏ¢
+
+	/// æŸ¥è¯¢å€ºåˆ¸å›å”®ä¿¡æ¯
 	struct CTORATstpQryBondPutbackInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// Õ®È¯»ØÊÛĞÅÏ¢
+
+	/// å€ºåˆ¸å›å”®ä¿¡æ¯
 	struct CTORATstpBondPutbackInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///»ØÊÛÉê±¨´úÂë
-		TTORATstpSecurityIDType	PutbackOrderID;
-	
-		///»ØÊÛÃû³Æ
-		TTORATstpSecurityNameType	PutbackName;
-	
-		///»ØÊÛ¼Û¸ñ
-		TTORATstpPriceType	PutbackPrice;
-	
-		///Ã¿´Î¿ÉÒÔ»ØÊÛ×îĞ¡½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	PutbackVolUnit;
-	
-		///Õ®È¯¿ÉÒÔ»ØÊÛµÄ×î´óÊıÁ¿
-		TTORATstpVolumeType	PutbackVolMax;
-	
-		///Õ®È¯¿ÉÒÔ»ØÊÛµÄ×îĞ¡ÊıÁ¿
-		TTORATstpVolumeType	PutbackVolMin;
-	
-		///»ØÊÛ¿ªÊ¼ÈÕÆÚ
-		TTORATstpDateType	PutbackBeginDate;
-	
-		///»ØÊÛ½áÊøÈÕÆÚ
-		TTORATstpDateType	PutbackEndDate;
-	
-		///»ØÊÛ³·Ïú¿ªÊ¼ÈÕÆÚ
-		TTORATstpDateType	RelieveBeginDate;
-	
-		///»ØÊÛ³·Ïú½áÊøÈÕÆÚ
-		TTORATstpDateType	RelieveEndDate;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// å›å”®ç”³æŠ¥ä»£ç 
+		TTORATstpSecurityIDType PutbackOrderID;
+
+		/// å›å”®åç§°
+		TTORATstpSecurityNameType PutbackName;
+
+		/// å›å”®ä»·æ ¼
+		TTORATstpPriceType PutbackPrice;
+
+		/// æ¯æ¬¡å¯ä»¥å›å”®æœ€å°äº¤æ˜“å•ä½
+		TTORATstpTradingUnitType PutbackVolUnit;
+
+		/// å€ºåˆ¸å¯ä»¥å›å”®çš„æœ€å¤§æ•°é‡
+		TTORATstpVolumeType PutbackVolMax;
+
+		/// å€ºåˆ¸å¯ä»¥å›å”®çš„æœ€å°æ•°é‡
+		TTORATstpVolumeType PutbackVolMin;
+
+		/// å›å”®å¼€å§‹æ—¥æœŸ
+		TTORATstpDateType PutbackBeginDate;
+
+		/// å›å”®ç»“æŸæ—¥æœŸ
+		TTORATstpDateType PutbackEndDate;
+
+		/// å›å”®æ’¤é”€å¼€å§‹æ—¥æœŸ
+		TTORATstpDateType RelieveBeginDate;
+
+		/// å›å”®æ’¤é”€ç»“æŸæ—¥æœŸ
+		TTORATstpDateType RelieveEndDate;
 	};
-	
-	/// ²éÑ¯Í¶×ÊÕßÌõ¼şµ¥ÏŞÖÆ²ÎÊı
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…æ¡ä»¶å•é™åˆ¶å‚æ•°
 	struct CTORATstpQryInvestorCondOrderLimitParamField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
 	};
-	
-	/// Í¶×ÊÕßÌõ¼şµ¥ÏŞÖÆ²ÎÊı
+
+	/// æŠ•èµ„è€…æ¡ä»¶å•é™åˆ¶å‚æ•°
 	struct CTORATstpInvestorCondOrderLimitParamField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///×î´óÌõ¼şµ¥Êı
-		TTORATstpVolumeType	MaxCondOrderLimitCnt;
-	
-		///µ±Ç°Ìõ¼şµ¥Êı
-		TTORATstpVolumeType	CurrCondOrderCnt;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æœ€å¤§æ¡ä»¶å•æ•°
+		TTORATstpVolumeType MaxCondOrderLimitCnt;
+
+		/// å½“å‰æ¡ä»¶å•æ•°
+		TTORATstpVolumeType CurrCondOrderCnt;
 	};
-	
-	/// ²éÑ¯Ìõ¼şµ¥
+
+	/// æŸ¥è¯¢æ¡ä»¶å•
 	struct CTORATstpQryConditionOrderField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///±¨µ¥±àºÅ
-		TTORATstpCondOrderIDType	CondOrderID;
-	
-		///Insert Time
-		TTORATstpTimeType	InsertTimeStart;
-	
-		///Insert Time
-		TTORATstpTimeType	InsertTimeEnd;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æŠ¥å•ç¼–å·
+		TTORATstpCondOrderIDType CondOrderID;
+
+		/// Insert Time
+		TTORATstpTimeType InsertTimeStart;
+
+		/// Insert Time
+		TTORATstpTimeType InsertTimeEnd;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
 	};
-	
-	/// ²éÑ¯Ìõ¼şµ¥³·µ¥
+
+	/// æŸ¥è¯¢æ¡ä»¶å•æ’¤å•
 	struct CTORATstpQryCondOrderActionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///±»³·Ìõ¼şµ¥±àºÅ
-		TTORATstpCondOrderIDType	CondOrderID;
-	
-		///Ìõ¼şµ¥³·µ¥±àºÅ
-		TTORATstpCondOrderIDType	CancelCondOrderID;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// è¢«æ’¤æ¡ä»¶å•ç¼–å·
+		TTORATstpCondOrderIDType CondOrderID;
+
+		/// æ¡ä»¶å•æ’¤å•ç¼–å·
+		TTORATstpCondOrderIDType CancelCondOrderID;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
 	};
-	
-	/// Ìõ¼şµ¥³·µ¥
+
+	/// æ¡ä»¶å•æ’¤å•
 	struct CTORATstpCondOrderActionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///±»³·Ìõ¼şµ¥Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///±»³·Ìõ¼şµ¥»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///±»³·Ìõ¼şµ¥ÒıÓÃ
-		TTORATstpOrderRefType	CondOrderRef;
-	
-		///±»³·Ìõ¼şµ¥±àºÅ
-		TTORATstpCondOrderIDType	CondOrderID;
-	
-		///²Ù×÷±êÖ¾
-		TTORATstpActionFlagType	ActionFlag;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///Ìõ¼şµ¥²Ù×÷ÒıÓÃ
-		TTORATstpOrderRefType	CondOrderActionRef;
-	
-		///Ìõ¼şµ¥³·µ¥±àºÅ
-		TTORATstpCondOrderIDType	CancelCondOrderID;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
-	
-		///ÇëÇó±àºÅ
-		TTORATstpRequestIDType	RequestID;
-	
-		///³·µ¥Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	ActionFrontID;
-	
-		///³·µ¥»á»°±àºÅ
-		TTORATstpSessionIDType	ActionSessionID;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///²Ù×÷ÓÃ»§
-		TTORATstpUserIDType	ActionUser;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	ActionDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	ActionTime;
-	
-		///IPµØÖ·
-		TTORATstpIPAddressType	IPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¢«æ’¤æ¡ä»¶å•å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// è¢«æ’¤æ¡ä»¶å•ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// è¢«æ’¤æ¡ä»¶å•å¼•ç”¨
+		TTORATstpOrderRefType CondOrderRef;
+
+		/// è¢«æ’¤æ¡ä»¶å•ç¼–å·
+		TTORATstpCondOrderIDType CondOrderID;
+
+		/// æ“ä½œæ ‡å¿—
+		TTORATstpActionFlagType ActionFlag;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// æ¡ä»¶å•æ“ä½œå¼•ç”¨
+		TTORATstpOrderRefType CondOrderActionRef;
+
+		/// æ¡ä»¶å•æ’¤å•ç¼–å·
+		TTORATstpCondOrderIDType CancelCondOrderID;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
+
+		/// è¯·æ±‚ç¼–å·
+		TTORATstpRequestIDType RequestID;
+
+		/// æ’¤å•å‰ç½®ç¼–å·
+		TTORATstpFrontIDType ActionFrontID;
+
+		/// æ’¤å•ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType ActionSessionID;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æ“ä½œç”¨æˆ·
+		TTORATstpUserIDType ActionUser;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType ActionDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType ActionTime;
+
+		/// IPåœ°å€
+		TTORATstpIPAddressType IPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
 	};
-	
-	/// ²éÑ¯½»Ò×Í¨Öª
+
+	/// æŸ¥è¯¢äº¤æ˜“é€šçŸ¥
 	struct CTORATstpQryTradingNoticeField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Insert Date
-		TTORATstpDateType	InsertDateStart;
-	
-		///Insert Date
-		TTORATstpDateType	InsertDateEnd;
-	
-		///Insert Time
-		TTORATstpTimeType	InsertTimeStart;
-	
-		///Insert Time
-		TTORATstpTimeType	InsertTimeEnd;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// Insert Date
+		TTORATstpDateType InsertDateStart;
+
+		/// Insert Date
+		TTORATstpDateType InsertDateEnd;
+
+		/// Insert Time
+		TTORATstpTimeType InsertTimeStart;
+
+		/// Insert Time
+		TTORATstpTimeType InsertTimeEnd;
 	};
-	
-	/// ²éÑ¯ĞÂ¹ÉÉê¹ºÅäºÅ½á¹û
+
+	/// æŸ¥è¯¢æ–°è‚¡ç”³è´­é…å·ç»“æœ
 	struct CTORATstpQryIPONumberResultField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Éê¹º´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///¹É¶«´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// ç”³è´­ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è‚¡ä¸œä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
 	};
-	
-	/// ĞÂ¹ÉÉê¹ºÅäºÅ½á¹û
+
+	/// æ–°è‚¡ç”³è´­é…å·ç»“æœ
 	struct CTORATstpIPONumberResultField
 	{
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¹É¶«´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÈÕÆÚ
-		TTORATstpDateType	Day;
-	
-		///Éê¹ºÖ¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///Ö¤È¯Àà±ğ´úÂë
-		TTORATstpSecurityTypeType	SecurityType;
-	
-		///ÆğÊ¼ÅäºÅ
-		TTORATstpIPONumberIDType	BeginNumberID;
-	
-		///ÅäºÅÊıÁ¿
-		TTORATstpVolumeType	Volume;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è‚¡ä¸œä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æ—¥æœŸ
+		TTORATstpDateType Day;
+
+		/// ç”³è´­è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// è¯åˆ¸ç±»åˆ«ä»£ç 
+		TTORATstpSecurityTypeType SecurityType;
+
+		/// èµ·å§‹é…å·
+		TTORATstpIPONumberIDType BeginNumberID;
+
+		/// é…å·æ•°é‡
+		TTORATstpVolumeType Volume;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
 	};
-	
-	/// ²éÑ¯ĞÂ¹ÉÉê¹ºÖĞÇ©½á¹û
+
+	/// æŸ¥è¯¢æ–°è‚¡ç”³è´­ä¸­ç­¾ç»“æœ
 	struct CTORATstpQryIPOMatchNumberResultField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Éê¹º´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///¹É¶«´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///ÖĞÇ©ÅäºÅ
-		TTORATstpIPONumberIDType	MatchNumberID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// ç”³è´­ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è‚¡ä¸œä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// ä¸­ç­¾é…å·
+		TTORATstpIPONumberIDType MatchNumberID;
 	};
-	
-	/// ĞÂ¹ÉÉê¹ºÖĞÇ©½á¹û
+
+	/// æ–°è‚¡ç”³è´­ä¸­ç­¾ç»“æœ
 	struct CTORATstpIPOMatchNumberResultField
 	{
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¹É¶«´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///ÖĞÇ©ÅäºÅ
-		TTORATstpIPONumberIDType	MatchNumberID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÈÕÆÚ
-		TTORATstpDateType	Day;
-	
-		///Éê¹ºÖ¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///Ö¤È¯Àà±ğ´úÂë
-		TTORATstpSecurityTypeType	SecurityType;
-	
-		///´ËÖĞÇ©ºÅÓµÓĞµÄÖ¤È¯ÊıÁ¿
-		TTORATstpVolumeType	Volume;
-	
-		///Éê¹º¼Û¸ñ
-		TTORATstpPriceType	Price;
-	
-		///Éê¹º½ğ¶î
-		TTORATstpMoneyType	Amout;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è‚¡ä¸œä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// ä¸­ç­¾é…å·
+		TTORATstpIPONumberIDType MatchNumberID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æ—¥æœŸ
+		TTORATstpDateType Day;
+
+		/// ç”³è´­è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// è¯åˆ¸ç±»åˆ«ä»£ç 
+		TTORATstpSecurityTypeType SecurityType;
+
+		/// æ­¤ä¸­ç­¾å·æ‹¥æœ‰çš„è¯åˆ¸æ•°é‡
+		TTORATstpVolumeType Volume;
+
+		/// ç”³è´­ä»·æ ¼
+		TTORATstpPriceType Price;
+
+		/// ç”³è´­é‡‘é¢
+		TTORATstpMoneyType Amout;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
 	};
-	
-	/// ²éÑ¯½»Ò×Ğ­Òé
+
+	/// æŸ¥è¯¢äº¤æ˜“åè®®
 	struct CTORATstpQryShareholderSpecPrivilegeField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///ÌØÊâÈ¨ÏŞÀà±ğ
-		TTORATstpSpecPrivilegeTypeType	SpecPrivilegeType;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// ç‰¹æ®Šæƒé™ç±»åˆ«
+		TTORATstpSpecPrivilegeTypeType SpecPrivilegeType;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
 	};
-	
-	/// ½»Ò×Ğ­Òé
+
+	/// äº¤æ˜“åè®®
 	struct CTORATstpShareholderSpecPrivilegeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///½»Ò×ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///ÌØÊâÈ¨ÏŞÀà±ğ
-		TTORATstpSpecPrivilegeTypeType	SpecPrivilegeType;
-	
-		///±¨µ¥Àà±ğ
-		TTORATstpDirectionType	Direction;
-	
-		///ÊÇ·ñ½ûÖ¹
-		TTORATstpBoolType	bForbidden;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// äº¤æ˜“è´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// ç‰¹æ®Šæƒé™ç±»åˆ«
+		TTORATstpSpecPrivilegeTypeType SpecPrivilegeType;
+
+		/// æŠ¥å•ç±»åˆ«
+		TTORATstpDirectionType Direction;
+
+		/// æ˜¯å¦ç¦æ­¢
+		TTORATstpBoolType bForbidden;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
 	};
-	
-	/// ²éÑ¯ÊĞ³¡
+
+	/// æŸ¥è¯¢å¸‚åœº
 	struct CTORATstpQryMarketField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
 	};
-	
-	/// ÊĞ³¡
+
+	/// å¸‚åœº
 	struct CTORATstpMarketField
 	{
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///ÊĞ³¡Ãû³Æ
-		TTORATstpNameType	MarketName;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡×´Ì¬
-		TTORATstpMarketStatusType	MarketStatus;
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// å¸‚åœºåç§°
+		TTORATstpNameType MarketName;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºçŠ¶æ€
+		TTORATstpMarketStatusType MarketStatus;
 	};
-	
-	/// ²éÑ¯ETFÇåµ¥ĞÅÏ¢
+
+	/// æŸ¥è¯¢ETFæ¸…å•ä¿¡æ¯
 	struct CTORATstpQryETFFileField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ETF¶ş¼¶ÊĞ³¡½»Ò×´úÂë
-		TTORATstpSecurityIDType	ETFSecurityID;
-	
-		///ETFÒ»¼¶ÊĞ³¡ÉêÊê´úÂë
-		TTORATstpSecurityIDType	ETFCreRedSecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// ETFäºŒçº§å¸‚åœºäº¤æ˜“ä»£ç 
+		TTORATstpSecurityIDType ETFSecurityID;
+
+		/// ETFä¸€çº§å¸‚åœºç”³èµä»£ç 
+		TTORATstpSecurityIDType ETFCreRedSecurityID;
 	};
-	
-	/// ETFÇåµ¥ĞÅÏ¢
+
+	/// ETFæ¸…å•ä¿¡æ¯
 	struct CTORATstpETFFileField
 	{
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ETF½»Ò×´úÂë
-		TTORATstpSecurityIDType	ETFSecurityID;
-	
-		///ETFÉêÊê´úÂë
-		TTORATstpSecurityIDType	ETFCreRedSecurityID;
-	
-		///×îĞ¡Éê¹ºÊê»Øµ¥Î»·İÊı
-		TTORATstpVolumeType	CreationRedemptionUnit;
-	
-		///×î´óÏÖ½ğÌæ´ú±ÈÀı
-		TTORATstpRatioType	Maxcashratio;
-	
-		///Ô¤¹ÀÏÖ½ğ²î¶î
-		TTORATstpMoneyType	EstimateCashComponent;
-	
-		///Ç°Ò»½»Ò×ÈÕÏÖ½ğ²î¶î
-		TTORATstpMoneyType	CashComponent;
-	
-		///Ç°Ò»½»Ò×ÈÕ»ù½ğµ¥Î»¾»Öµ
-		TTORATstpMoneyType	NAV;
-	
-		///Ç°Ò»½»Ò×ÈÕÉêÊê»ù×¼µ¥Î»¾»Öµ
-		TTORATstpMoneyType	NAVperCU;
-	
-		///µ±ÈÕÉê¹ºÊê»Ø»ù×¼µ¥Î»µÄºìÀû½ğ¶î
-		TTORATstpMoneyType	DividendPerCU;
-	
-		///ETFÉêÊêÀàĞÍ
-		TTORATstpCreRedTypeType	ETFCreRedType;
-	
-		///ETFÖ¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	ETFSecurityName;
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// ETFäº¤æ˜“ä»£ç 
+		TTORATstpSecurityIDType ETFSecurityID;
+
+		/// ETFç”³èµä»£ç 
+		TTORATstpSecurityIDType ETFCreRedSecurityID;
+
+		/// æœ€å°ç”³è´­èµå›å•ä½ä»½æ•°
+		TTORATstpVolumeType CreationRedemptionUnit;
+
+		/// æœ€å¤§ç°é‡‘æ›¿ä»£æ¯”ä¾‹
+		TTORATstpRatioType Maxcashratio;
+
+		/// é¢„ä¼°ç°é‡‘å·®é¢
+		TTORATstpMoneyType EstimateCashComponent;
+
+		/// å‰ä¸€äº¤æ˜“æ—¥ç°é‡‘å·®é¢
+		TTORATstpMoneyType CashComponent;
+
+		/// å‰ä¸€äº¤æ˜“æ—¥åŸºé‡‘å•ä½å‡€å€¼
+		TTORATstpMoneyType NAV;
+
+		/// å‰ä¸€äº¤æ˜“æ—¥ç”³èµåŸºå‡†å•ä½å‡€å€¼
+		TTORATstpMoneyType NAVperCU;
+
+		/// å½“æ—¥ç”³è´­èµå›åŸºå‡†å•ä½çš„çº¢åˆ©é‡‘é¢
+		TTORATstpMoneyType DividendPerCU;
+
+		/// ETFç”³èµç±»å‹
+		TTORATstpCreRedTypeType ETFCreRedType;
+
+		/// ETFè¯åˆ¸åç§°
+		TTORATstpSecurityNameType ETFSecurityName;
 	};
-	
-	/// ²éÑ¯ETF³É·İÖ¤È¯ĞÅÏ¢
+
+	/// æŸ¥è¯¢ETFæˆä»½è¯åˆ¸ä¿¡æ¯
 	struct CTORATstpQryETFBasketField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ETF¶ş¼¶ÊĞ³¡½»Ò×´úÂë
-		TTORATstpSecurityIDType	ETFSecurityID;
-	
-		///ETF³É·İÖ¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// ETFäºŒçº§å¸‚åœºäº¤æ˜“ä»£ç 
+		TTORATstpSecurityIDType ETFSecurityID;
+
+		/// ETFæˆä»½è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// ETF³É·İÖ¤È¯ĞÅÏ¢
+
+	/// ETFæˆä»½è¯åˆ¸ä¿¡æ¯
 	struct CTORATstpETFBasketField
 	{
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ETF½»Ò×´úÂë
-		TTORATstpSecurityIDType	ETFSecurityID;
-	
-		///ETF³É·İÖ¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///³É·ÖÖ¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///³É·ÖÖ¤È¯ÊıÁ¿
-		TTORATstpVolumeType	Volume;
-	
-		///ÏÖ½ğÌæ´ú±êÖ¾
-		TTORATstpETFCurrenceReplaceStatusType	ETFCurrenceReplaceStatus;
-	
-		///Òç¼Û±ÈÀı
-		TTORATstpRatioType	Premium;
-	
-		///Éê¹ºÌæ´ú½ğ¶î
-		TTORATstpMoneyType	CreationReplaceAmount;
-	
-		///Êê»ØÌæ´ú½ğ¶î
-		TTORATstpMoneyType	RedemptionReplaceAmount;
-	
-		///¹ÒÅÆÊĞ³¡
-		TTORATstpMarketIDType	MarketID;
-	
-		///ETFÉêÊêÀàĞÍ
-		TTORATstpCreRedTypeType	ETFCreRedType;
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// ETFäº¤æ˜“ä»£ç 
+		TTORATstpSecurityIDType ETFSecurityID;
+
+		/// ETFæˆä»½è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// æˆåˆ†è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// æˆåˆ†è¯åˆ¸æ•°é‡
+		TTORATstpVolumeType Volume;
+
+		/// ç°é‡‘æ›¿ä»£æ ‡å¿—
+		TTORATstpETFCurrenceReplaceStatusType ETFCurrenceReplaceStatus;
+
+		/// æº¢ä»·æ¯”ä¾‹
+		TTORATstpRatioType Premium;
+
+		/// ç”³è´­æ›¿ä»£é‡‘é¢
+		TTORATstpMoneyType CreationReplaceAmount;
+
+		/// èµå›æ›¿ä»£é‡‘é¢
+		TTORATstpMoneyType RedemptionReplaceAmount;
+
+		/// æŒ‚ç‰Œå¸‚åœº
+		TTORATstpMarketIDType MarketID;
+
+		/// ETFç”³èµç±»å‹
+		TTORATstpCreRedTypeType ETFCreRedType;
 	};
-	
-	/// ²éÑ¯Í¶×ÊÕßÏŞ²ÖĞÅÏ¢
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…é™ä»“ä¿¡æ¯
 	struct CTORATstpQryInvestorPositionLimitField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// Í¶×ÊÕßÏŞ²ÖĞÅÏ¢
+
+	/// æŠ•èµ„è€…é™ä»“ä¿¡æ¯
 	struct CTORATstpInvestorPositionLimitField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///µ±ÈÕÂòÈë¶î¶È
-		TTORATstpVolumeType	BuyLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕÂòÈë¶î¶È
-		TTORATstpVolumeType	BuyFrozen;
-	
-		///µ±ÈÕÂô³ö¶î¶È
-		TTORATstpVolumeType	SellLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕÂô³ö¶î¶È
-		TTORATstpVolumeType	SellFrozen;
-	
-		///µ±ÈÕÉê¹º¶î¶È
-		TTORATstpVolumeType	PurchaseLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕÉê¹º¶î¶È
-		TTORATstpVolumeType	PurchaseFrozen;
-	
-		///µ±ÈÕÊê»Ø¶î¶È
-		TTORATstpVolumeType	RedeemLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕÊê»Ø¶î¶È
-		TTORATstpVolumeType	RedeemFrozen;
-	
-		///µ±ÈÕÖÊÑºÈë¿â¶î¶È
-		TTORATstpVolumeType	PledgeInLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕÖÊÑºÈë¿â¶î¶È
-		TTORATstpVolumeType	PledgeInFrozen;
-	
-		///µ±ÈÕÖÊÑº³ö¿â¶î¶È
-		TTORATstpVolumeType	PledgeOutLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕÖÊÑº³ö¿â¶î¶È
-		TTORATstpVolumeType	PledgeOutFrozen;
-	
-		///µ±ÈÕÕ®×ª¹É¶î¶È
-		TTORATstpVolumeType	ConvertLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕÕ®×ª¹É¶î¶È
-		TTORATstpVolumeType	ConvertFrozen;
-	
-		///µ±ÈÕÕ®È¯»ØÊÛ¶î¶È
-		TTORATstpVolumeType	PutbackLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕÕ®È¯»ØÊÛ¶î¶È
-		TTORATstpVolumeType	PutbackFrozen;
-	
-		///µ±ÈÕÅä¹ÉÅäÕ®¶î¶È
-		TTORATstpVolumeType	RationalLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕÅä¹ÉÅäÕ®¶î¶È
-		TTORATstpVolumeType	RationalFrozen;
-	
-		///×Ü³Ö²Ö¶î¶È
-		TTORATstpVolumeType	TotalPositionLimit;
-	
-		///ÒÑÊ¹ÓÃ×Ü³Ö²Ö¶î¶È
-		TTORATstpVolumeType	TotalPositionFrozen;
-	
-		///µ±ÈÕ²ğ·Ö¶î¶È
-		TTORATstpVolumeType	SplitLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕ²ğ·Ö¶î¶È
-		TTORATstpVolumeType	SplitFrozen;
-	
-		///µ±ÈÕºÏ²¢¶î¶È
-		TTORATstpVolumeType	MergeLimit;
-	
-		///ÒÑÊ¹ÓÃµ±ÈÕºÏ²¢¶î¶È
-		TTORATstpVolumeType	MergeFrozen;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// å½“æ—¥ä¹°å…¥é¢åº¦
+		TTORATstpVolumeType BuyLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥ä¹°å…¥é¢åº¦
+		TTORATstpVolumeType BuyFrozen;
+
+		/// å½“æ—¥å–å‡ºé¢åº¦
+		TTORATstpVolumeType SellLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥å–å‡ºé¢åº¦
+		TTORATstpVolumeType SellFrozen;
+
+		/// å½“æ—¥ç”³è´­é¢åº¦
+		TTORATstpVolumeType PurchaseLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥ç”³è´­é¢åº¦
+		TTORATstpVolumeType PurchaseFrozen;
+
+		/// å½“æ—¥èµå›é¢åº¦
+		TTORATstpVolumeType RedeemLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥èµå›é¢åº¦
+		TTORATstpVolumeType RedeemFrozen;
+
+		/// å½“æ—¥è´¨æŠ¼å…¥åº“é¢åº¦
+		TTORATstpVolumeType PledgeInLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥è´¨æŠ¼å…¥åº“é¢åº¦
+		TTORATstpVolumeType PledgeInFrozen;
+
+		/// å½“æ—¥è´¨æŠ¼å‡ºåº“é¢åº¦
+		TTORATstpVolumeType PledgeOutLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥è´¨æŠ¼å‡ºåº“é¢åº¦
+		TTORATstpVolumeType PledgeOutFrozen;
+
+		/// å½“æ—¥å€ºè½¬è‚¡é¢åº¦
+		TTORATstpVolumeType ConvertLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥å€ºè½¬è‚¡é¢åº¦
+		TTORATstpVolumeType ConvertFrozen;
+
+		/// å½“æ—¥å€ºåˆ¸å›å”®é¢åº¦
+		TTORATstpVolumeType PutbackLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥å€ºåˆ¸å›å”®é¢åº¦
+		TTORATstpVolumeType PutbackFrozen;
+
+		/// å½“æ—¥é…è‚¡é…å€ºé¢åº¦
+		TTORATstpVolumeType RationalLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥é…è‚¡é…å€ºé¢åº¦
+		TTORATstpVolumeType RationalFrozen;
+
+		/// æ€»æŒä»“é¢åº¦
+		TTORATstpVolumeType TotalPositionLimit;
+
+		/// å·²ä½¿ç”¨æ€»æŒä»“é¢åº¦
+		TTORATstpVolumeType TotalPositionFrozen;
+
+		/// å½“æ—¥æ‹†åˆ†é¢åº¦
+		TTORATstpVolumeType SplitLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥æ‹†åˆ†é¢åº¦
+		TTORATstpVolumeType SplitFrozen;
+
+		/// å½“æ—¥åˆå¹¶é¢åº¦
+		TTORATstpVolumeType MergeLimit;
+
+		/// å·²ä½¿ç”¨å½“æ—¥åˆå¹¶é¢åº¦
+		TTORATstpVolumeType MergeFrozen;
 	};
-	
-	/// ²éÑ¯Éî¸ÛÍ¨¹ú¼ÊÊĞ³¡»¥Áª×´Ì¬ĞÅÏ¢
+
+	/// æŸ¥è¯¢æ·±æ¸¯é€šå›½é™…å¸‚åœºäº’è”çŠ¶æ€ä¿¡æ¯
 	struct CTORATstpQrySZSEImcParamsField
 	{
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
 	};
-	
-	/// Éî¸ÛÍ¨¹ú¼ÊÊĞ³¡»¥Áª×´Ì¬ĞÅÏ¢
+
+	/// æ·±æ¸¯é€šå›½é™…å¸‚åœºäº’è”çŠ¶æ€ä¿¡æ¯
 	struct CTORATstpSZSEImcParamsField
 	{
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///ÊÇ·ñ¿ª·Å
-		TTORATstpBoolType	OpenFlag;
-	
-		///³õÊ¼¶î¶È
-		TTORATstpMoneyType	ThresholdAmount;
-	
-		///ÈÕÖĞÊ£Óà¶î¶È
-		TTORATstpMoneyType	PosAmt;
-	
-		///¶î¶ÈÊÇ·ñ¿ÉÓÃ
-		TTORATstpBoolType	AmountStatus;
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// æ˜¯å¦å¼€æ”¾
+		TTORATstpBoolType OpenFlag;
+
+		/// åˆå§‹é¢åº¦
+		TTORATstpMoneyType ThresholdAmount;
+
+		/// æ—¥ä¸­å‰©ä½™é¢åº¦
+		TTORATstpMoneyType PosAmt;
+
+		/// é¢åº¦æ˜¯å¦å¯ç”¨
+		TTORATstpBoolType AmountStatus;
 	};
-	
-	/// ²éÑ¯Éî¸ÛÍ¨¹ú¼ÊÊĞ³¡»¥Áª»ãÂÊĞÅÏ¢
+
+	/// æŸ¥è¯¢æ·±æ¸¯é€šå›½é™…å¸‚åœºäº’è”æ±‡ç‡ä¿¡æ¯
 	struct CTORATstpQrySZSEImcExchangeRateField
 	{
-		///Ô´»õ±Ò±ÒÖÖ
-		TTORATstpCurrencyIDType	FromCurrency;
-	
-		///Ä¿±ê»õ±Ò±ÒÖÖ
-		TTORATstpCurrencyIDType	ToCurrency;
+		/// æºè´§å¸å¸ç§
+		TTORATstpCurrencyIDType FromCurrency;
+
+		/// ç›®æ ‡è´§å¸å¸ç§
+		TTORATstpCurrencyIDType ToCurrency;
 	};
-	
-	/// Éî¸ÛÍ¨¹ú¼ÊÊĞ³¡»¥Áª»ãÂÊĞÅÏ¢
+
+	/// æ·±æ¸¯é€šå›½é™…å¸‚åœºäº’è”æ±‡ç‡ä¿¡æ¯
 	struct CTORATstpSZSEImcExchangeRateField
 	{
-		///Ô´»õ±Ò±ÒÖÖ
-		TTORATstpCurrencyIDType	FromCurrency;
-	
-		///Ä¿±ê»õ±Ò±ÒÖÖ
-		TTORATstpCurrencyIDType	ToCurrency;
-	
-		///²Î¿¼»ãÂÊÂòÈë¼Û
-		TTORATstpPriceType	BidRate;
-	
-		///²Î¿¼»ãÂÊÂô³ö¼Û
-		TTORATstpPriceType	OfferRate;
-	
-		///²Î¿¼»ãÂÊÖĞ¼ä¼Û
-		TTORATstpPriceType	MidPointRate;
+		/// æºè´§å¸å¸ç§
+		TTORATstpCurrencyIDType FromCurrency;
+
+		/// ç›®æ ‡è´§å¸å¸ç§
+		TTORATstpCurrencyIDType ToCurrency;
+
+		/// å‚è€ƒæ±‡ç‡ä¹°å…¥ä»·
+		TTORATstpPriceType BidRate;
+
+		/// å‚è€ƒæ±‡ç‡å–å‡ºä»·
+		TTORATstpPriceType OfferRate;
+
+		/// å‚è€ƒæ±‡ç‡ä¸­é—´ä»·
+		TTORATstpPriceType MidPointRate;
 	};
-	
-	/// ²éÑ¯Éî¸ÛÍ¨×îĞ¡¼Û²îĞÅÏ¢
+
+	/// æŸ¥è¯¢æ·±æ¸¯é€šæœ€å°ä»·å·®ä¿¡æ¯
 	struct CTORATstpQrySZSEHKPriceTickInfoField
 	{
-		///¼Û²îÆ·ÖÖ
-		TTORATstpPriceTickIDType	PriceTickID;
+		/// ä»·å·®å“ç§
+		TTORATstpPriceTickIDType PriceTickID;
 	};
-	
-	/// Éî¸ÛÍ¨×îĞ¡¼Û²îĞÅÏ¢
+
+	/// æ·±æ¸¯é€šæœ€å°ä»·å·®ä¿¡æ¯
 	struct CTORATstpSZSEHKPriceTickInfoField
 	{
-		///¼Û²îÆ·ÖÖ
-		TTORATstpPriceTickIDType	PriceTickID;
-	
-		///¼Û²î×éºÅ
-		TTORATstpPriceTickGroupIDType	PriceTickGroupID;
-	
-		///¼Û²îÀà±ğ
-		TTORATstpPriceTickTypeType	PriceTickType;
-	
-		///¼Û²î×éÆğÊ¼¼Û¸ñ
-		TTORATstpPriceType	BeginPrice;
-	
-		///¼Û²î×é½áÊø¼Û¸ñ
-		TTORATstpPriceType	EndPrice;
-	
-		///¼Û²îÖµ
-		TTORATstpPriceType	PriceTick;
+		/// ä»·å·®å“ç§
+		TTORATstpPriceTickIDType PriceTickID;
+
+		/// ä»·å·®ç»„å·
+		TTORATstpPriceTickGroupIDType PriceTickGroupID;
+
+		/// ä»·å·®ç±»åˆ«
+		TTORATstpPriceTickTypeType PriceTickType;
+
+		/// ä»·å·®ç»„èµ·å§‹ä»·æ ¼
+		TTORATstpPriceType BeginPrice;
+
+		/// ä»·å·®ç»„ç»“æŸä»·æ ¼
+		TTORATstpPriceType EndPrice;
+
+		/// ä»·å·®å€¼
+		TTORATstpPriceType PriceTick;
 	};
-	
-	/// ²éÑ¯LOF»ù½ğĞÅÏ¢
+
+	/// æŸ¥è¯¢LOFåŸºé‡‘ä¿¡æ¯
 	struct CTORATstpQryLofFundInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///»ù½ğ´úÂë
-		TTORATstpSecurityIDType	FundID;
-	
-		///Ö÷»ù½ğ´úÂë
-		TTORATstpSecurityIDType	MainFundID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// åŸºé‡‘ä»£ç 
+		TTORATstpSecurityIDType FundID;
+
+		/// ä¸»åŸºé‡‘ä»£ç 
+		TTORATstpSecurityIDType MainFundID;
 	};
-	
-	/// LOF»ù½ğĞÅÏ¢
+
+	/// LOFåŸºé‡‘ä¿¡æ¯
 	struct CTORATstpLofFundInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///»ù½ğ´úÂë
-		TTORATstpSecurityIDType	FundID;
-	
-		///Ö÷»ù½ğ´úÂë
-		TTORATstpSecurityIDType	MainFundID;
-	
-		///»ù½ğÀàĞÍ
-		TTORATstpFundTypeType	FundType;
-	
-		///²ğ·ÖÊıÁ¿µ¥Î»
-		TTORATstpVolumeType	SplitUnit;
-	
-		///×îĞ¡²ğ·ÖÊıÁ¿
-		TTORATstpVolumeType	SplitMinVol;
-	
-		///ºÏ²¢ÊıÁ¿µ¥Î»
-		TTORATstpVolumeType	MergeUnit;
-	
-		///×îĞ¡ºÏ²¢ÊıÁ¿
-		TTORATstpVolumeType	MergeMinVol;
-	
-		///»ù½ğ×ª»»ÏµÊı
-		TTORATstpRatioType	FundRatio;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// åŸºé‡‘ä»£ç 
+		TTORATstpSecurityIDType FundID;
+
+		/// ä¸»åŸºé‡‘ä»£ç 
+		TTORATstpSecurityIDType MainFundID;
+
+		/// åŸºé‡‘ç±»å‹
+		TTORATstpFundTypeType FundType;
+
+		/// æ‹†åˆ†æ•°é‡å•ä½
+		TTORATstpVolumeType SplitUnit;
+
+		/// æœ€å°æ‹†åˆ†æ•°é‡
+		TTORATstpVolumeType SplitMinVol;
+
+		/// åˆå¹¶æ•°é‡å•ä½
+		TTORATstpVolumeType MergeUnit;
+
+		/// æœ€å°åˆå¹¶æ•°é‡
+		TTORATstpVolumeType MergeMinVol;
+
+		/// åŸºé‡‘è½¬æ¢ç³»æ•°
+		TTORATstpRatioType FundRatio;
 	};
-	
-	/// ²éÑ¯Í¶×ÊÕßÖÊÑº³Ö²Ö
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…è´¨æŠ¼æŒä»“
 	struct CTORATstpQryPledgePositionField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
 	};
-	
-	/// Í¶×ÊÕßÖÊÑº³Ö²Ö
+
+	/// æŠ•èµ„è€…è´¨æŠ¼æŒä»“
 	struct CTORATstpPledgePositionField
 	{
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¿Í»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///×òÈÕÖÊÑº³Ö²Ö
-		TTORATstpVolumeType	HisPledgePos;
-	
-		///×òÈÕÖÊÑº³Ö²Ö¶³½á
-		TTORATstpVolumeType	HisPledgePosFrozen;
-	
-		///½ñÈÕÈë¿âµÄÖÊÑº³Ö²Ö
-		TTORATstpVolumeType	TodayPledgePos;
-	
-		///½ñÈÕÈë¿âµÄÖÊÑº³Ö²Ö¶³½á
-		TTORATstpVolumeType	TodayPledgePosFrozen;
-	
-		///×òÈÕÖÊÑºÈë¿âµÄÏÖÈ¯×ÜÁ¿
-		TTORATstpVolumeType	PreTotalPledgePos;
-	
-		///×òÈÕÖÊÑºÈë¿âµÄÏÖÈ¯¿ÉÓÃÊıÁ¿
-		TTORATstpVolumeType	PreAvailablePledgePos;
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// å®¢æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// æ˜¨æ—¥è´¨æŠ¼æŒä»“
+		TTORATstpVolumeType HisPledgePos;
+
+		/// æ˜¨æ—¥è´¨æŠ¼æŒä»“å†»ç»“
+		TTORATstpVolumeType HisPledgePosFrozen;
+
+		/// ä»Šæ—¥å…¥åº“çš„è´¨æŠ¼æŒä»“
+		TTORATstpVolumeType TodayPledgePos;
+
+		/// ä»Šæ—¥å…¥åº“çš„è´¨æŠ¼æŒä»“å†»ç»“
+		TTORATstpVolumeType TodayPledgePosFrozen;
+
+		/// æ˜¨æ—¥è´¨æŠ¼å…¥åº“çš„ç°åˆ¸æ€»é‡
+		TTORATstpVolumeType PreTotalPledgePos;
+
+		/// æ˜¨æ—¥è´¨æŠ¼å…¥åº“çš„ç°åˆ¸å¯ç”¨æ•°é‡
+		TTORATstpVolumeType PreAvailablePledgePos;
 	};
-	
-	/// ²éÑ¯Ö¤È¯ÖÊÑºĞÅÏ¢
+
+	/// æŸ¥è¯¢è¯åˆ¸è´¨æŠ¼ä¿¡æ¯
 	struct CTORATstpQryPledgeInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// Ö¤È¯ÖÊÑºĞÅÏ¢
+
+	/// è¯åˆ¸è´¨æŠ¼ä¿¡æ¯
 	struct CTORATstpPledgeInfoField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÖÊÑºÉê±¨´úÂë
-		TTORATstpSecurityIDType	PledgeOrderID;
-	
-		///ÖÊÑºÃû³Æ
-		TTORATstpSecurityNameType	PledgeName;
-	
-		///±ê×¼È¯´úÂë
-		TTORATstpSecurityIDType	StandardBondID;
-	
-		///±ê×¼È¯ÕÛËãÂÊ/ÕÛËãÖµ
-		TTORATstpRatioType	ConversionRate;
-	
-		///Ã¿´Î¿ÉÒÔÈë¿âµÄ×îĞ¡½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	PledgeInTradingUnit;
-	
-		///Ã¿´Î¿ÉÒÔ³ö¿âµÄ×îĞ¡½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	PledgeOutTradingUnit;
-	
-		///Ö¤È¯¿ÉÒÔÈë¿âµÄ×î´óÊıÁ¿
-		TTORATstpVolumeType	PledgeInVolMax;
-	
-		///Ö¤È¯¿ÉÒÔÈë¿âµÄ×îĞ¡ÊıÁ¿
-		TTORATstpVolumeType	PledgeInVolMin;
-	
-		///Ö¤È¯¿ÉÒÔ³ö¿âµÄ×î´óÊıÁ¿
-		TTORATstpVolumeType	PledgeOutVolMax;
-	
-		///Ö¤È¯¿ÉÒÔ³ö¿âµÄ×îĞ¡ÊıÁ¿
-		TTORATstpVolumeType	PledgeOutVolMin;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è´¨æŠ¼ç”³æŠ¥ä»£ç 
+		TTORATstpSecurityIDType PledgeOrderID;
+
+		/// è´¨æŠ¼åç§°
+		TTORATstpSecurityNameType PledgeName;
+
+		/// æ ‡å‡†åˆ¸ä»£ç 
+		TTORATstpSecurityIDType StandardBondID;
+
+		/// æ ‡å‡†åˆ¸æŠ˜ç®—ç‡/æŠ˜ç®—å€¼
+		TTORATstpRatioType ConversionRate;
+
+		/// æ¯æ¬¡å¯ä»¥å…¥åº“çš„æœ€å°äº¤æ˜“å•ä½
+		TTORATstpTradingUnitType PledgeInTradingUnit;
+
+		/// æ¯æ¬¡å¯ä»¥å‡ºåº“çš„æœ€å°äº¤æ˜“å•ä½
+		TTORATstpTradingUnitType PledgeOutTradingUnit;
+
+		/// è¯åˆ¸å¯ä»¥å…¥åº“çš„æœ€å¤§æ•°é‡
+		TTORATstpVolumeType PledgeInVolMax;
+
+		/// è¯åˆ¸å¯ä»¥å…¥åº“çš„æœ€å°æ•°é‡
+		TTORATstpVolumeType PledgeInVolMin;
+
+		/// è¯åˆ¸å¯ä»¥å‡ºåº“çš„æœ€å¤§æ•°é‡
+		TTORATstpVolumeType PledgeOutVolMax;
+
+		/// è¯åˆ¸å¯ä»¥å‡ºåº“çš„æœ€å°æ•°é‡
+		TTORATstpVolumeType PledgeOutVolMin;
 	};
-	
-	/// ²éÑ¯ÏµÍ³½ÚµãĞÅÏ¢
+
+	/// æŸ¥è¯¢ç³»ç»ŸèŠ‚ç‚¹ä¿¡æ¯
 	struct CTORATstpQrySystemNodeInfoField
 	{
-		///½Úµã±àºÅ
-		TTORATstpNodeIDType	NodeID;
+		/// èŠ‚ç‚¹ç¼–å·
+		TTORATstpNodeIDType NodeID;
 	};
-	
-	/// ÏµÍ³½ÚµãĞÅÏ¢
+
+	/// ç³»ç»ŸèŠ‚ç‚¹ä¿¡æ¯
 	struct CTORATstpSystemNodeInfoField
 	{
-		///½Úµã±àºÅ
-		TTORATstpNodeIDType	NodeID;
-	
-		///½ÚµãĞÅÏ¢
-		TTORATstpNodeInfoType	NodeInfo;
-	
-		///ÊÇ·ñµ±Ç°½Úµã
-		TTORATstpBoolType	bCurrent;
+		/// èŠ‚ç‚¹ç¼–å·
+		TTORATstpNodeIDType NodeID;
+
+		/// èŠ‚ç‚¹ä¿¡æ¯
+		TTORATstpNodeInfoType NodeInfo;
+
+		/// æ˜¯å¦å½“å‰èŠ‚ç‚¹
+		TTORATstpBoolType bCurrent;
 	};
-	
-	/// ²éÑ¯Í¶×ÊÕß±ê×¼È¯¶î¶È
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…æ ‡å‡†åˆ¸é¢åº¦
 	struct CTORATstpQryStandardBondPositionField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
 	};
-	
-	/// Í¶×ÊÕß±ê×¼È¯¶î¶È
+
+	/// æŠ•èµ„è€…æ ‡å‡†åˆ¸é¢åº¦
 	struct CTORATstpStandardBondPositionField
 	{
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¿Í»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///±ê×¼È¯¿ÉÓÃ¶î¶È
-		TTORATstpVolumeType	AvailablePosition;
-	
-		///±ê×¼È¯¿ÉÓÃ¶î¶È¶³½á
-		TTORATstpVolumeType	AvailablePosFrozen;
-	
-		///±ê×¼È¯¶î¶È×ÜÁ¿
-		TTORATstpVolumeType	TotalPosition;
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// å®¢æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// æ ‡å‡†åˆ¸å¯ç”¨é¢åº¦
+		TTORATstpVolumeType AvailablePosition;
+
+		/// æ ‡å‡†åˆ¸å¯ç”¨é¢åº¦å†»ç»“
+		TTORATstpVolumeType AvailablePosFrozen;
+
+		/// æ ‡å‡†åˆ¸é¢åº¦æ€»é‡
+		TTORATstpVolumeType TotalPosition;
 	};
-	
-	/// ²éÑ¯Î´µ½ÆÚÕ®È¯ÖÊÑº»Ø¹ºÎ¯ÍĞ
+
+	/// æŸ¥è¯¢æœªåˆ°æœŸå€ºåˆ¸è´¨æŠ¼å›è´­å§”æ‰˜
 	struct CTORATstpQryPrematurityRepoOrderField
 	{
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///±¾µØ±¨µ¥±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///Ö¤È¯Æ·ÖÖ´úÂë
-		TTORATstpProductIDType	ProductID;
-	
-		///Ö¤È¯Àà±ğ´úÂë
-		TTORATstpSecurityTypeType	SecurityType;
-	
-		///ÂòÂô·½Ïò
-		TTORATstpDirectionType	Direction;
-	
-		///³É½»±àºÅ
-		TTORATstpTradeIDType	TradeID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// è¯åˆ¸å“ç§ä»£ç 
+		TTORATstpProductIDType ProductID;
+
+		/// è¯åˆ¸ç±»åˆ«ä»£ç 
+		TTORATstpSecurityTypeType SecurityType;
+
+		/// ä¹°å–æ–¹å‘
+		TTORATstpDirectionType Direction;
+
+		/// æˆäº¤ç¼–å·
+		TTORATstpTradeIDType TradeID;
 	};
-	
-	/// Î´µ½ÆÚÕ®È¯ÖÊÑº»Ø¹ºÎ¯ÍĞ
+
+	/// æœªåˆ°æœŸå€ºåˆ¸è´¨æŠ¼å›è´­å§”æ‰˜
 	struct CTORATstpPrematurityRepoOrderField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///½»Ò×ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///³É½»ÈÕÆÚ
-		TTORATstpDateType	TradeDay;
-	
-		///µ½ÆÚÈÕÆÚ
-		TTORATstpDateType	ExpireDay;
-	
-		///±¨µ¥±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///Ö¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///Ö¤È¯Æ·ÖÖ´úÂë
-		TTORATstpProductIDType	ProductID;
-	
-		///Ö¤È¯Àà±ğ´úÂë
-		TTORATstpSecurityTypeType	SecurityType;
-	
-		///±¨µ¥Àà±ğ
-		TTORATstpDirectionType	Direction;
-	
-		///³É½»ÊıÁ¿
-		TTORATstpVolumeType	VolumeTraded;
-	
-		///³É½»¼Û¸ñ
-		TTORATstpPriceType	Price;
-	
-		///³É½»½ğ¶î
-		TTORATstpMoneyType	Turnover;
-	
-		///³É½»±àºÅ
-		TTORATstpTradeIDType	TradeID;
-	
-		///¹º»ØÓ¦ÊÕ½ğ¶î
-		TTORATstpMoneyType	RepoTotalMoney;
-	
-		///ÀûÏ¢½ğ¶î
-		TTORATstpMoneyType	InterestAmount;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// äº¤æ˜“è´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// æˆäº¤æ—¥æœŸ
+		TTORATstpDateType TradeDay;
+
+		/// åˆ°æœŸæ—¥æœŸ
+		TTORATstpDateType ExpireDay;
+
+		/// æŠ¥å•ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// è¯åˆ¸å“ç§ä»£ç 
+		TTORATstpProductIDType ProductID;
+
+		/// è¯åˆ¸ç±»åˆ«ä»£ç 
+		TTORATstpSecurityTypeType SecurityType;
+
+		/// æŠ¥å•ç±»åˆ«
+		TTORATstpDirectionType Direction;
+
+		/// æˆäº¤æ•°é‡
+		TTORATstpVolumeType VolumeTraded;
+
+		/// æˆäº¤ä»·æ ¼
+		TTORATstpPriceType Price;
+
+		/// æˆäº¤é‡‘é¢
+		TTORATstpMoneyType Turnover;
+
+		/// æˆäº¤ç¼–å·
+		TTORATstpTradeIDType TradeID;
+
+		/// è´­å›åº”æ”¶é‡‘é¢
+		TTORATstpMoneyType RepoTotalMoney;
+
+		/// åˆ©æ¯é‡‘é¢
+		TTORATstpMoneyType InterestAmount;
 	};
-	
-	/// ²éÑ¯Ğ­Òé½»Ò×±¨µ¥
+
+	/// æŸ¥è¯¢åè®®äº¤æ˜“æŠ¥å•
 	struct CTORATstpQryNegoOrderField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///Insert Time
-		TTORATstpTimeType	InsertTimeStart;
-	
-		///Insert Time
-		TTORATstpTimeType	InsertTimeEnd;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// Insert Time
+		TTORATstpTimeType InsertTimeStart;
+
+		/// Insert Time
+		TTORATstpTimeType InsertTimeEnd;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
 	};
-	
-	/// ²éÑ¯Ğ­Òé½»Ò×³·µ¥
+
+	/// æŸ¥è¯¢åè®®äº¤æ˜“æ’¤å•
 	struct CTORATstpQryNegoOrderActionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///±¾µØ±¨µ¥±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///±¾µØ³·µ¥±àºÅ
-		TTORATstpOrderLocalIDType	CancelOrderLocalID;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·è´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// æœ¬åœ°æ’¤å•ç¼–å·
+		TTORATstpOrderLocalIDType CancelOrderLocalID;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
 	};
-	
-	/// Ğ­Òé½»Ò×³·µ¥
+
+	/// åè®®äº¤æ˜“æ’¤å•
 	struct CTORATstpNegoOrderActionField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///²Ù×÷±êÖ¾
-		TTORATstpActionFlagType	ActionFlag;
-	
-		///±¾µØ³·µ¥±àºÅ
-		TTORATstpOrderLocalIDType	CancelOrderLocalID;
-	
-		///ÏµÍ³³·µ¥±àºÅ
-		TTORATstpOrderSysIDType	CancelOrderSysID;
-	
-		///±»³·±¨µ¥ÏµÍ³±¨µ¥±àºÅ
-		TTORATstpOrderSysIDType	OrderSysID;
-	
-		///±»³·±¨µ¥±¾µØ±¨µ¥±àºÅ
-		TTORATstpOrderLocalIDType	OrderLocalID;
-	
-		///Î¯ÍĞ·½Ê½
-		TTORATstpOperwayType	Operway;
-	
-		///×Ö·û´®¸½¼ÓĞÅÏ¢
-		TTORATstpStrInfoType	SInfo;
-	
-		///ÕûĞÎ¸½¼ÓĞÅÏ¢
-		TTORATstpIntInfoType	IInfo;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///²Ù×÷ÓÃ»§
-		TTORATstpUserIDType	ActionUser;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///²Ù×÷ÈÕÆÚ
-		TTORATstpDateType	ActionDate;
-	
-		///²Ù×÷Ê±¼ä
-		TTORATstpTimeType	ActionTime;
-	
-		///³·µ¥×´Ì¬
-		TTORATstpCancelOrderStatusType	CancelOrderStatus;
-	
-		///×´Ì¬ĞÅÏ¢
-		TTORATstpErrorMsgType	StatusMsg;
-	
-		///ÇëÇó±àºÅ
-		TTORATstpRequestIDType	RequestID;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	ActionFrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	ActionSessionID;
-	
-		///½»Ò×µ¥Ôª´úÂë
-		TTORATstpPbuIDType	PbuID;
-	
-		///IPµØÖ·
-		TTORATstpIPAddressType	IPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æ“ä½œæ ‡å¿—
+		TTORATstpActionFlagType ActionFlag;
+
+		/// æœ¬åœ°æ’¤å•ç¼–å·
+		TTORATstpOrderLocalIDType CancelOrderLocalID;
+
+		/// ç³»ç»Ÿæ’¤å•ç¼–å·
+		TTORATstpOrderSysIDType CancelOrderSysID;
+
+		/// è¢«æ’¤æŠ¥å•ç³»ç»ŸæŠ¥å•ç¼–å·
+		TTORATstpOrderSysIDType OrderSysID;
+
+		/// è¢«æ’¤æŠ¥å•æœ¬åœ°æŠ¥å•ç¼–å·
+		TTORATstpOrderLocalIDType OrderLocalID;
+
+		/// å§”æ‰˜æ–¹å¼
+		TTORATstpOperwayType Operway;
+
+		/// å­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯
+		TTORATstpStrInfoType SInfo;
+
+		/// æ•´å½¢é™„åŠ ä¿¡æ¯
+		TTORATstpIntInfoType IInfo;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// æ“ä½œç”¨æˆ·
+		TTORATstpUserIDType ActionUser;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// æ“ä½œæ—¥æœŸ
+		TTORATstpDateType ActionDate;
+
+		/// æ“ä½œæ—¶é—´
+		TTORATstpTimeType ActionTime;
+
+		/// æ’¤å•çŠ¶æ€
+		TTORATstpCancelOrderStatusType CancelOrderStatus;
+
+		/// çŠ¶æ€ä¿¡æ¯
+		TTORATstpErrorMsgType StatusMsg;
+
+		/// è¯·æ±‚ç¼–å·
+		TTORATstpRequestIDType RequestID;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType ActionFrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType ActionSessionID;
+
+		/// äº¤æ˜“å•å…ƒä»£ç 
+		TTORATstpPbuIDType PbuID;
+
+		/// IPåœ°å€
+		TTORATstpIPAddressType IPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
 	};
-	
-	/// ²éÑ¯Ğ­Òé½»Ò×³É½»
+
+	/// æŸ¥è¯¢åè®®äº¤æ˜“æˆäº¤
 	struct CTORATstpQryNegoTradeField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Í¶×ÊÕß´úÂë
-		TTORATstpInvestorIDType	InvestorID;
-	
-		///Í¶×Êµ¥Ôª´úÂë
-		TTORATstpBusinessUnitIDType	BusinessUnitID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///¹É¶«ÕË»§´úÂë
-		TTORATstpShareholderIDType	ShareholderID;
-	
-		///³É½»±àºÅ
-		TTORATstpTradeIDType	TradeID;
-	
-		///Insert Time
-		TTORATstpTimeType	TradeTimeStart;
-	
-		///Insert Time
-		TTORATstpTimeType	TradeTimeEnd;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æŠ•èµ„è€…ä»£ç 
+		TTORATstpInvestorIDType InvestorID;
+
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TTORATstpBusinessUnitIDType BusinessUnitID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è‚¡ä¸œè´¦æˆ·ä»£ç 
+		TTORATstpShareholderIDType ShareholderID;
+
+		/// æˆäº¤ç¼–å·
+		TTORATstpTradeIDType TradeID;
+
+		/// Insert Time
+		TTORATstpTimeType TradeTimeStart;
+
+		/// Insert Time
+		TTORATstpTimeType TradeTimeEnd;
 	};
-	
-	/// ²éÑ¯Ğ­Òé½»Ò×²ÎÊı
+
+	/// æŸ¥è¯¢åè®®äº¤æ˜“å‚æ•°
 	struct CTORATstpQryNegotiationParamField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// Ğ­Òé½»Ò×²ÎÊı
+
+	/// åè®®äº¤æ˜“å‚æ•°
 	struct CTORATstpNegotiationParamField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///ºÏÔ¼´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÂòÈë½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	BuyTradingUnit;
-	
-		///Âô³ö½»Ò×µ¥Î»
-		TTORATstpTradingUnitType	SellTradingUnit;
-	
-		///ÊıÁ¿ÃÅ¼÷
-		TTORATstpVolumeType	MinOrderVolume;
-	
-		///½ğ¶îÃÅ¼÷
-		TTORATstpMoneyType	MinOrderAmt;
-	
-		///×îĞ¡±ä¶¯¼ÛÎ»
-		TTORATstpPriceTickType	PriceTick;
-	
-		///ÕÇÍ£°å¼Û
-		TTORATstpPriceType	UpperLimitPrice;
-	
-		///µøÍ£°å¼Û
-		TTORATstpPriceType	LowerLimitPrice;
-	
-		///ÊÇ·ñÓĞ×öÊĞÉÌ
-		TTORATstpBoolType	bMarketMaker;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// åˆçº¦ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// ä¹°å…¥äº¤æ˜“å•ä½
+		TTORATstpTradingUnitType BuyTradingUnit;
+
+		/// å–å‡ºäº¤æ˜“å•ä½
+		TTORATstpTradingUnitType SellTradingUnit;
+
+		/// æ•°é‡é—¨æ§›
+		TTORATstpVolumeType MinOrderVolume;
+
+		/// é‡‘é¢é—¨æ§›
+		TTORATstpMoneyType MinOrderAmt;
+
+		/// æœ€å°å˜åŠ¨ä»·ä½
+		TTORATstpPriceTickType PriceTick;
+
+		/// æ¶¨åœæ¿ä»·
+		TTORATstpPriceType UpperLimitPrice;
+
+		/// è·Œåœæ¿ä»·
+		TTORATstpPriceType LowerLimitPrice;
+
+		/// æ˜¯å¦æœ‰åšå¸‚å•†
+		TTORATstpBoolType bMarketMaker;
 	};
-	
-	/// fensÓÃ»§ĞÅÏ¢
+
+	/// fensç”¨æˆ·ä¿¡æ¯
 	struct CTORATstpFensUserInfoField
 	{
-		///°æ±¾ĞÅÏ¢
-		TTORATstpFensVerType	FensVer;
-	
-		///»·¾³±àºÅ
-		TTORATstpFensEnvIDType	FensEnvID;
-	
-		///½Úµã±àºÅ
-		TTORATstpFensNodeIDType	FensNodeID;
-	
-		///FensÓÃ»§´úÂë
-		TTORATstpFensUserIDType	FensUserID;
-	
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
-	
-		///ÖÕ¶ËĞÅÏ¢
-		TTORATstpClientInfoType	ClientInfo;
+		/// ç‰ˆæœ¬ä¿¡æ¯
+		TTORATstpFensVerType FensVer;
+
+		/// ç¯å¢ƒç¼–å·
+		TTORATstpFensEnvIDType FensEnvID;
+
+		/// èŠ‚ç‚¹ç¼–å·
+		TTORATstpFensNodeIDType FensNodeID;
+
+		/// Fensç”¨æˆ·ä»£ç 
+		TTORATstpFensUserIDType FensUserID;
+
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
+
+		/// ç»ˆç«¯ä¿¡æ¯
+		TTORATstpClientInfoType ClientInfo;
 	};
-	
-	/// Á¬½ÓĞÅÏ¢
+
+	/// è¿æ¥ä¿¡æ¯
 	struct CTORATstpConnectionInfoField
 	{
-		///ÄÚÍøIPµØÖ·
-		TTORATstpIPAddressType	InnerIPAddress;
-	
-		///ÄÚÍø¶Ë¿ÚºÅ
-		TTORATstpPortType	InnerPort;
-	
-		///ÍâÍøIPµØÖ·
-		TTORATstpIPAddressType	OuterIPAddress;
-	
-		///ÍâÍø¶Ë¿ÚºÅ
-		TTORATstpPortType	OuterPort;
-	
-		///MACµØÖ·
-		TTORATstpMacAddressType	MacAddress;
+		/// å†…ç½‘IPåœ°å€
+		TTORATstpIPAddressType InnerIPAddress;
+
+		/// å†…ç½‘ç«¯å£å·
+		TTORATstpPortType InnerPort;
+
+		/// å¤–ç½‘IPåœ°å€
+		TTORATstpIPAddressType OuterIPAddress;
+
+		/// å¤–ç½‘ç«¯å£å·
+		TTORATstpPortType OuterPort;
+
+		/// MACåœ°å€
+		TTORATstpMacAddressType MacAddress;
 	};
-	
+
 }
 #endif // TORATSTPUSERAPISTRUCT_H__

@@ -2,26 +2,26 @@
 #ifndef _XTP_ALGO_DATA_TYPE_H_
 #define _XTP_ALGO_DATA_TYPE_H_
 
-///@brief XTPStrategyStateType²ßÂÔ×´Ì¬ÀàÐÍ
+///@brief XTPStrategyStateTypeç­–ç•¥çŠ¶æ€ç±»åž‹
 typedef uint8_t XTPStrategyStateType;
 
-///´´½¨ÖÐ
-#define XTP_STRATEGY_STATE_CREATING		0
-///ÒÑ´´½¨
-#define XTP_STRATEGY_STATE_CREATED		1
-///¿ªÊ¼Ö´ÐÐÖÐ
-#define XTP_STRATEGY_STATE_STARTING		2
-///ÒÑÖ´ÐÐ
-#define XTP_STRATEGY_STATE_STARTED		3
-///Í£Ö¹ÖÐ
-#define XTP_STRATEGY_STATE_STOPPING		4
-///ÒÑÍ£Ö¹
-#define XTP_STRATEGY_STATE_STOPPED		5
-///Ïú»ÙÖÐ
-#define XTP_STRATEGY_STATE_DESTROYING	6
-///ÒÑÏú»Ù
-#define XTP_STRATEGY_STATE_DESTROYED	7
-///·¢Éú´íÎó
-#define XTP_STRATEGY_STATE_ERROR		8
+/// åˆ›å»ºä¸­
+#define XTP_STRATEGY_STATE_CREATING 0
+/// å·²åˆ›å»º
+#define XTP_STRATEGY_STATE_CREATED 1
+/// å¼€å§‹æ‰§è¡Œä¸­
+#define XTP_STRATEGY_STATE_STARTING 2
+/// å·²æ‰§è¡Œ
+#define XTP_STRATEGY_STATE_STARTED 3
+/// åœæ­¢ä¸­
+#define XTP_STRATEGY_STATE_STOPPING 4
+/// å·²åœæ­¢
+#define XTP_STRATEGY_STATE_STOPPED 5
+/// é”€æ¯ä¸­
+#define XTP_STRATEGY_STATE_DESTROYING 6
+/// å·²é”€æ¯
+#define XTP_STRATEGY_STATE_DESTROYED 7
+/// å‘ç”Ÿé”™è¯¯
+#define XTP_STRATEGY_STATE_ERROR 8
 
 #endif //_XTP_ALGO_DATA_TYPE_H_

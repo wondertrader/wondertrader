@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////////////////////////////
-///@system ĞÂÒ»´ú½»Ò×ËùÏµÍ³
-///@company ÉÏº£ÆÚ»õĞÅÏ¢¼¼ÊõÓĞÏŞ¹«Ë¾
+///@system æ–°ä¸€ä»£äº¤æ˜“æ‰€ç³»ç»Ÿ
+///@company ä¸Šæµ·æœŸè´§ä¿¡æ¯æŠ€æœ¯æœ‰é™å…¬å¸
 ///@file ThostFtdcUserApiStruct.h
-///@brief ¶¨ÒåÁË¿Í»§¶Ë½Ó¿ÚÊ¹ÓÃµÄÒµÎñÊı¾İ½á¹¹
-///@history 
-///20060106	ÕÔºèê»		´´½¨¸ÃÎÄ¼ş
+///@brief å®šä¹‰äº†å®¢æˆ·ç«¯æ¥å£ä½¿ç”¨çš„ä¸šåŠ¡æ•°æ®ç»“æ„
+///@history
+/// 20060106	èµµé¸¿æ˜Š		åˆ›å»ºè¯¥æ–‡ä»¶
 /////////////////////////////////////////////////////////////////////////
 
 #if !defined(SOPT_THOST_FTDCSTRUCT_H)
@@ -16,11471 +16,11469 @@
 
 #include "ThostFtdcUserApiDataType.h"
 
-
 namespace ctp_sopt
 {
-///ĞÅÏ¢·Ö·¢
-struct CThostFtdcDisseminationField
-{
-	///ĞòÁĞÏµÁĞºÅ
-	TThostFtdcSequenceSeriesType	SequenceSeries;
-	///ĞòÁĞºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-};
-
-///ÓÃ»§µÇÂ¼ÇëÇó
-struct CThostFtdcReqUserLoginField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///½Ó¿Ú¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	InterfaceProductInfo;
-	///Ğ­ÒéĞÅÏ¢
-	TThostFtdcProtocolInfoType	ProtocolInfo;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///¶¯Ì¬ÃÜÂë
-	TThostFtdcPasswordType	OneTimePassword;
-	///ÖÕ¶ËIPµØÖ·
-	TThostFtdcIPAddressType	ClientIPAddress;
-	///µÇÂ¼±¸×¢
-	TThostFtdcLoginRemarkType	LoginRemark;
-	///ÖÕ¶ËIP¶Ë¿Ú
-	TThostFtdcIPPortType	ClientIPPort;
-};
-
-///ÓÃ»§µÇÂ¼Ó¦´ğ
-struct CThostFtdcRspUserLoginField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///µÇÂ¼³É¹¦Ê±¼ä
-	TThostFtdcTimeType	LoginTime;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///½»Ò×ÏµÍ³Ãû³Æ
-	TThostFtdcSystemNameType	SystemName;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///×î´ó±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	MaxOrderRef;
-	///ÉÏÆÚËùÊ±¼ä
-	TThostFtdcTimeType	SHFETime;
-	///´óÉÌËùÊ±¼ä
-	TThostFtdcTimeType	DCETime;
-	///Ö£ÉÌËùÊ±¼ä
-	TThostFtdcTimeType	CZCETime;
-	///ÖĞ½ğËùÊ±¼ä
-	TThostFtdcTimeType	FFEXTime;
-	///ÄÜÔ´ÖĞĞÄÊ±¼ä
-	TThostFtdcTimeType	INETime;
-};
-
-///ÓÃ»§µÇ³öÇëÇó
-struct CThostFtdcUserLogoutField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-};
-
-///Ç¿ÖÆ½»Ò×Ô±ÍË³ö
-struct CThostFtdcForceUserLogoutField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-};
-
-///¿Í»§¶ËÈÏÖ¤ÇëÇó
-struct CThostFtdcReqAuthenticateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///ÈÏÖ¤Âë
-	TThostFtdcAuthCodeType	AuthCode;
-	///App´úÂë
-	TThostFtdcAppIDType	AppID;
-};
-
-///¿Í»§¶ËÈÏÖ¤ÏìÓ¦
-struct CThostFtdcRspAuthenticateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///App´úÂë
-	TThostFtdcAppIDType	AppID;
-	///AppÀàĞÍ
-	TThostFtdcAppTypeType	AppType;
-};
-
-///¿Í»§¶ËÈÏÖ¤ĞÅÏ¢
-struct CThostFtdcAuthenticationInfoField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///ÈÏÖ¤ĞÅÏ¢
-	TThostFtdcAuthInfoType	AuthInfo;
-	///ÊÇ·ñÎªÈÏÖ¤½á¹û
-	TThostFtdcBoolType	IsResult;
-	///App´úÂë
-	TThostFtdcAppIDType	AppID;
-	///AppÀàĞÍ
-	TThostFtdcAppTypeType	AppType;
-};
-
-///°²È«ÓÃ»§µÇÂ¼Ó¦´ğ
-struct CThostFtdcRspUserLoginSafelyField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///µÇÂ¼³É¹¦Ê±¼ä
-	TThostFtdcTimeType	LoginTime;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///½»Ò×ÏµÍ³Ãû³Æ
-	TThostFtdcSystemNameType	SystemName;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///×î´ó±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	MaxOrderRef;
-	///ÉÏÆÚËùÊ±¼ä
-	TThostFtdcTimeType	SHFETime;
-	///´óÉÌËùÊ±¼ä
-	TThostFtdcTimeType	DCETime;
-	///Ö£ÉÌËùÊ±¼ä
-	TThostFtdcTimeType	CZCETime;
-	///ÖĞ½ğËùÊ±¼ä
-	TThostFtdcTimeType	FFEXTime;
-	///ÄÜÔ´ÖĞĞÄÊ±¼ä
-	TThostFtdcTimeType	INETime;
-	///Ëæ»ú´®
-	TThostFtdcRandomStringType	RandomString;
-};
-
-///ÒøÆÚ×ªÕÊ±¨ÎÄÍ·
-struct CThostFtdcTransferHeaderField
-{
-	///°æ±¾ºÅ£¬³£Á¿£¬1.0
-	TThostFtdcVersionType	Version;
-	///½»Ò×´úÂë£¬±ØÌî
-	TThostFtdcTradeCodeType	TradeCode;
-	///½»Ò×ÈÕÆÚ£¬±ØÌî£¬¸ñÊ½£ºyyyymmdd
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä£¬±ØÌî£¬¸ñÊ½£ºhhmmss
-	TThostFtdcTradeTimeType	TradeTime;
-	///·¢Æğ·½Á÷Ë®ºÅ£¬N/A
-	TThostFtdcTradeSerialType	TradeSerial;
-	///ÆÚ»õ¹«Ë¾´úÂë£¬±ØÌî
-	TThostFtdcFutureIDType	FutureID;
-	///ÒøĞĞ´úÂë£¬¸ù¾İ²éÑ¯ÒøĞĞµÃµ½£¬±ØÌî
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖĞĞÄ´úÂë£¬¸ù¾İ²éÑ¯ÒøĞĞµÃµ½£¬±ØÌî
-	TThostFtdcBankBrchIDType	BankBrchID;
-	///²Ù×÷Ô±£¬N/A
-	TThostFtdcOperNoType	OperNo;
-	///½»Ò×Éè±¸ÀàĞÍ£¬N/A
-	TThostFtdcDeviceIDType	DeviceID;
-	///¼ÇÂ¼Êı£¬N/A
-	TThostFtdcRecordNumType	RecordNum;
-	///»á»°±àºÅ£¬N/A
-	TThostFtdcSessionIDType	SessionID;
-	///ÇëÇó±àºÅ£¬N/A
-	TThostFtdcRequestIDType	RequestID;
-};
-
-///ÒøĞĞ×Ê½ğ×ªÆÚ»õÇëÇó£¬TradeCode=202001
-struct CThostFtdcTransferBankToFutureReqField
-{
-	///ÆÚ»õ×Ê½ğÕË»§
-	TThostFtdcAccountIDType	FutureAccount;
-	///ÃÜÂë±êÖ¾
-	TThostFtdcFuturePwdFlagType	FuturePwdFlag;
-	///ÃÜÂë
-	TThostFtdcFutureAccPwdType	FutureAccPwd;
-	///×ªÕË½ğ¶î
-	TThostFtdcMoneyType	TradeAmt;
-	///¿Í»§ÊÖĞø·Ñ
-	TThostFtdcMoneyType	CustFee;
-	///±ÒÖÖ£ºRMB-ÈËÃñ±Ò USD-ÃÀÔ² HKD-¸ÛÔª
-	TThostFtdcCurrencyCodeType	CurrencyCode;
-};
-
-///ÒøĞĞ×Ê½ğ×ªÆÚ»õÇëÇóÏìÓ¦
-struct CThostFtdcTransferBankToFutureRspField
-{
-	///ÏìÓ¦´úÂë
-	TThostFtdcRetCodeType	RetCode;
-	///ÏìÓ¦ĞÅÏ¢
-	TThostFtdcRetInfoType	RetInfo;
-	///×Ê½ğÕË»§
-	TThostFtdcAccountIDType	FutureAccount;
-	///×ªÕÊ½ğ¶î
-	TThostFtdcMoneyType	TradeAmt;
-	///Ó¦ÊÕ¿Í»§ÊÖĞø·Ñ
-	TThostFtdcMoneyType	CustFee;
-	///±ÒÖÖ
-	TThostFtdcCurrencyCodeType	CurrencyCode;
-};
-
-///ÆÚ»õ×Ê½ğ×ªÒøĞĞÇëÇó£¬TradeCode=202002
-struct CThostFtdcTransferFutureToBankReqField
-{
-	///ÆÚ»õ×Ê½ğÕË»§
-	TThostFtdcAccountIDType	FutureAccount;
-	///ÃÜÂë±êÖ¾
-	TThostFtdcFuturePwdFlagType	FuturePwdFlag;
-	///ÃÜÂë
-	TThostFtdcFutureAccPwdType	FutureAccPwd;
-	///×ªÕË½ğ¶î
-	TThostFtdcMoneyType	TradeAmt;
-	///¿Í»§ÊÖĞø·Ñ
-	TThostFtdcMoneyType	CustFee;
-	///±ÒÖÖ£ºRMB-ÈËÃñ±Ò USD-ÃÀÔ² HKD-¸ÛÔª
-	TThostFtdcCurrencyCodeType	CurrencyCode;
-};
-
-///ÆÚ»õ×Ê½ğ×ªÒøĞĞÇëÇóÏìÓ¦
-struct CThostFtdcTransferFutureToBankRspField
-{
-	///ÏìÓ¦´úÂë
-	TThostFtdcRetCodeType	RetCode;
-	///ÏìÓ¦ĞÅÏ¢
-	TThostFtdcRetInfoType	RetInfo;
-	///×Ê½ğÕË»§
-	TThostFtdcAccountIDType	FutureAccount;
-	///×ªÕÊ½ğ¶î
-	TThostFtdcMoneyType	TradeAmt;
-	///Ó¦ÊÕ¿Í»§ÊÖĞø·Ñ
-	TThostFtdcMoneyType	CustFee;
-	///±ÒÖÖ
-	TThostFtdcCurrencyCodeType	CurrencyCode;
-};
-
-///²éÑ¯ÒøĞĞ×Ê½ğÇëÇó£¬TradeCode=204002
-struct CThostFtdcTransferQryBankReqField
-{
-	///ÆÚ»õ×Ê½ğÕË»§
-	TThostFtdcAccountIDType	FutureAccount;
-	///ÃÜÂë±êÖ¾
-	TThostFtdcFuturePwdFlagType	FuturePwdFlag;
-	///ÃÜÂë
-	TThostFtdcFutureAccPwdType	FutureAccPwd;
-	///±ÒÖÖ£ºRMB-ÈËÃñ±Ò USD-ÃÀÔ² HKD-¸ÛÔª
-	TThostFtdcCurrencyCodeType	CurrencyCode;
-};
-
-///²éÑ¯ÒøĞĞ×Ê½ğÇëÇóÏìÓ¦
-struct CThostFtdcTransferQryBankRspField
-{
-	///ÏìÓ¦´úÂë
-	TThostFtdcRetCodeType	RetCode;
-	///ÏìÓ¦ĞÅÏ¢
-	TThostFtdcRetInfoType	RetInfo;
-	///×Ê½ğÕË»§
-	TThostFtdcAccountIDType	FutureAccount;
-	///ÒøĞĞÓà¶î
-	TThostFtdcMoneyType	TradeAmt;
-	///ÒøĞĞ¿ÉÓÃÓà¶î
-	TThostFtdcMoneyType	UseAmt;
-	///ÒøĞĞ¿ÉÈ¡Óà¶î
-	TThostFtdcMoneyType	FetchAmt;
-	///±ÒÖÖ
-	TThostFtdcCurrencyCodeType	CurrencyCode;
-};
-
-///²éÑ¯ÒøĞĞ½»Ò×Ã÷Ï¸ÇëÇó£¬TradeCode=204999
-struct CThostFtdcTransferQryDetailReqField
-{
-	///ÆÚ»õ×Ê½ğÕË»§
-	TThostFtdcAccountIDType	FutureAccount;
-};
-
-///²éÑ¯ÒøĞĞ½»Ò×Ã÷Ï¸ÇëÇóÏìÓ¦
-struct CThostFtdcTransferQryDetailRspField
-{
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///½»Ò×´úÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÆÚ»õÁ÷Ë®ºÅ
-	TThostFtdcTradeSerialNoType	FutureSerial;
-	///ÆÚ»õ¹«Ë¾´úÂë
-	TThostFtdcFutureIDType	FutureID;
-	///×Ê½ğÕÊºÅ
-	TThostFtdcFutureAccountType	FutureAccount;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcTradeSerialNoType	BankSerial;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖĞĞÄ´úÂë
-	TThostFtdcBankBrchIDType	BankBrchID;
-	///ÒøĞĞÕËºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///Ö¤¼şºÅÂë
-	TThostFtdcCertCodeType	CertCode;
-	///»õ±Ò´úÂë
-	TThostFtdcCurrencyCodeType	CurrencyCode;
-	///·¢Éú½ğ¶î
-	TThostFtdcMoneyType	TxAmount;
-	///ÓĞĞ§±êÖ¾
-	TThostFtdcTransferValidFlagType	Flag;
-};
-
-///ÏìÓ¦ĞÅÏ¢
-struct CThostFtdcRspInfoField
-{
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///½»Ò×Ëù
-struct CThostFtdcExchangeField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×ËùÃû³Æ
-	TThostFtdcExchangeNameType	ExchangeName;
-	///½»Ò×ËùÊôĞÔ
-	TThostFtdcExchangePropertyType	ExchangeProperty;
-};
-
-///²úÆ·
-struct CThostFtdcProductField
-{
-	///²úÆ·´úÂë
-	TThostFtdcInstrumentIDType	ProductID;
-	///²úÆ·Ãû³Æ
-	TThostFtdcProductNameType	ProductName;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///²úÆ·ÀàĞÍ
-	TThostFtdcProductClassType	ProductClass;
-	///ºÏÔ¼ÊıÁ¿³ËÊı
-	TThostFtdcVolumeMultipleType	VolumeMultiple;
-	///×îĞ¡±ä¶¯¼ÛÎ»
-	TThostFtdcPriceType	PriceTick;
-	///ÊĞ¼Ûµ¥×î´óÏÂµ¥Á¿
-	TThostFtdcVolumeType	MaxMarketOrderVolume;
-	///ÊĞ¼Ûµ¥×îĞ¡ÏÂµ¥Á¿
-	TThostFtdcVolumeType	MinMarketOrderVolume;
-	///ÏŞ¼Ûµ¥×î´óÏÂµ¥Á¿
-	TThostFtdcVolumeType	MaxLimitOrderVolume;
-	///ÏŞ¼Ûµ¥×îĞ¡ÏÂµ¥Á¿
-	TThostFtdcVolumeType	MinLimitOrderVolume;
-	///³Ö²ÖÀàĞÍ
-	TThostFtdcPositionTypeType	PositionType;
-	///³Ö²ÖÈÕÆÚÀàĞÍ
-	TThostFtdcPositionDateTypeType	PositionDateType;
-	///Æ½²Ö´¦ÀíÀàĞÍ
-	TThostFtdcCloseDealTypeType	CloseDealType;
-	///½»Ò×±ÒÖÖÀàĞÍ
-	TThostFtdcCurrencyIDType	TradeCurrencyID;
-	///ÖÊÑº×Ê½ğ¿ÉÓÃ·¶Î§
-	TThostFtdcMortgageFundUseRangeType	MortgageFundUseRange;
-	///½»Ò×Ëù²úÆ·´úÂë
-	TThostFtdcInstrumentIDType	ExchangeProductID;
-	///ºÏÔ¼»ù´¡ÉÌÆ·³ËÊı
-	TThostFtdcUnderlyingMultipleType	UnderlyingMultiple;
-};
-
-///ºÏÔ¼
-struct CThostFtdcInstrumentField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼Ãû³Æ
-	TThostFtdcInstrumentNameType	InstrumentName;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///²úÆ·´úÂë
-	TThostFtdcInstrumentIDType	ProductID;
-	///²úÆ·ÀàĞÍ
-	TThostFtdcProductClassType	ProductClass;
-	///½»¸îÄê·İ
-	TThostFtdcYearType	DeliveryYear;
-	///½»¸îÔÂ
-	TThostFtdcMonthType	DeliveryMonth;
-	///ÊĞ¼Ûµ¥×î´óÏÂµ¥Á¿
-	TThostFtdcVolumeType	MaxMarketOrderVolume;
-	///ÊĞ¼Ûµ¥×îĞ¡ÏÂµ¥Á¿
-	TThostFtdcVolumeType	MinMarketOrderVolume;
-	///ÏŞ¼Ûµ¥×î´óÏÂµ¥Á¿
-	TThostFtdcVolumeType	MaxLimitOrderVolume;
-	///ÏŞ¼Ûµ¥×îĞ¡ÏÂµ¥Á¿
-	TThostFtdcVolumeType	MinLimitOrderVolume;
-	///ºÏÔ¼ÊıÁ¿³ËÊı
-	TThostFtdcVolumeMultipleType	VolumeMultiple;
-	///×îĞ¡±ä¶¯¼ÛÎ»
-	TThostFtdcPriceType	PriceTick;
-	///´´½¨ÈÕ
-	TThostFtdcDateType	CreateDate;
-	///ÉÏÊĞÈÕ
-	TThostFtdcDateType	OpenDate;
-	///µ½ÆÚÈÕ
-	TThostFtdcDateType	ExpireDate;
-	///¿ªÊ¼½»¸îÈÕ
-	TThostFtdcDateType	StartDelivDate;
-	///½áÊø½»¸îÈÕ
-	TThostFtdcDateType	EndDelivDate;
-	///ºÏÔ¼ÉúÃüÖÜÆÚ×´Ì¬
-	TThostFtdcInstLifePhaseType	InstLifePhase;
-	///µ±Ç°ÊÇ·ñ½»Ò×
-	TThostFtdcBoolType	IsTrading;
-	///³Ö²ÖÀàĞÍ
-	TThostFtdcPositionTypeType	PositionType;
-	///³Ö²ÖÈÕÆÚÀàĞÍ
-	TThostFtdcPositionDateTypeType	PositionDateType;
-	///¶àÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	LongMarginRatio;
-	///¿ÕÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	ShortMarginRatio;
-	///ÊÇ·ñÊ¹ÓÃ´ó¶îµ¥±ß±£Ö¤½ğËã·¨
-	TThostFtdcMaxMarginSideAlgorithmType	MaxMarginSideAlgorithm;
-	///»ù´¡ÉÌÆ·´úÂë
-	TThostFtdcInstrumentIDType	UnderlyingInstrID;
-	///Ö´ĞĞ¼Û
-	TThostFtdcPriceType	StrikePrice;
-	///ÆÚÈ¨ÀàĞÍ
-	TThostFtdcOptionsTypeType	OptionsType;
-	///ºÏÔ¼»ù´¡ÉÌÆ·³ËÊı
-	TThostFtdcUnderlyingMultipleType	UnderlyingMultiple;
-	///×éºÏÀàĞÍ
-	TThostFtdcCombinationTypeType	CombinationType;
-	///×îĞ¡ÂòÏÂµ¥µ¥Î»
-	TThostFtdcVolumeType	MinBuyVolume;
-	///×îĞ¡ÂôÏÂµ¥µ¥Î»
-	TThostFtdcVolumeType	MinSellVolume;
-	///ºÏÔ¼±êÊ¶Âë
-	TThostFtdcInstrumentCodeType	InstrumentCode;
-};
-
-///¾­¼Í¹«Ë¾
-struct CThostFtdcBrokerField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///¾­¼Í¹«Ë¾¼ò³Æ
-	TThostFtdcBrokerAbbrType	BrokerAbbr;
-	///¾­¼Í¹«Ë¾Ãû³Æ
-	TThostFtdcBrokerNameType	BrokerName;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-};
-
-///½»Ò×Ëù½»Ò×Ô±
-struct CThostFtdcTraderField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///ÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°ÊıÁ¿
-	TThostFtdcInstallCountType	InstallCount;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-};
-
-///Í¶×ÊÕß
-struct CThostFtdcInvestorField
-{
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß·Ö×é´úÂë
-	TThostFtdcInvestorIDType	InvestorGroupID;
-	///Í¶×ÊÕßÃû³Æ
-	TThostFtdcPartyNameType	InvestorName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdentifiedCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-	///ÁªÏµµç»°
-	TThostFtdcTelephoneType	Telephone;
-	///Í¨Ñ¶µØÖ·
-	TThostFtdcAddressType	Address;
-	///¿ª»§ÈÕÆÚ
-	TThostFtdcDateType	OpenDate;
-	///ÊÖ»ú
-	TThostFtdcMobileType	Mobile;
-	///ÊÖĞø·ÑÂÊÄ£°å´úÂë
-	TThostFtdcInvestorIDType	CommModelID;
-	///±£Ö¤½ğÂÊÄ£°å´úÂë
-	TThostFtdcInvestorIDType	MarginModelID;
-};
-
-///½»Ò×±àÂë
-struct CThostFtdcTradingCodeField
-{
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-	///½»Ò×±àÂëÀàĞÍ
-	TThostFtdcClientIDTypeType	ClientIDType;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///ÒµÎñÀàĞÍ
-	TThostFtdcBizTypeType	BizType;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///»áÔ±±àÂëºÍ¾­¼Í¹«Ë¾±àÂë¶ÔÕÕ±í
-struct CThostFtdcPartBrokerField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-};
-
-///¹ÜÀíÓÃ»§
-struct CThostFtdcSuperUserField
-{
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÓÃ»§Ãû³Æ
-	TThostFtdcUserNameType	UserName;
-	///ÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-};
-
-///¹ÜÀíÓÃ»§¹¦ÄÜÈ¨ÏŞ
-struct CThostFtdcSuperUserFunctionField
-{
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///¹¦ÄÜ´úÂë
-	TThostFtdcFunctionCodeType	FunctionCode;
-};
-
-///Í¶×ÊÕß×é
-struct CThostFtdcInvestorGroupField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß·Ö×é´úÂë
-	TThostFtdcInvestorIDType	InvestorGroupID;
-	///Í¶×ÊÕß·Ö×éÃû³Æ
-	TThostFtdcInvestorGroupNameType	InvestorGroupName;
-};
-
-///×Ê½ğÕË»§
-struct CThostFtdcTradingAccountField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÉÏ´ÎÖÊÑº½ğ¶î
-	TThostFtdcMoneyType	PreMortgage;
-	///ÉÏ´ÎĞÅÓÃ¶î¶È
-	TThostFtdcMoneyType	PreCredit;
-	///ÉÏ´Î´æ¿î¶î
-	TThostFtdcMoneyType	PreDeposit;
-	///ÉÏ´Î½áËã×¼±¸½ğ
-	TThostFtdcMoneyType	PreBalance;
-	///ÉÏ´ÎÕ¼ÓÃµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	PreMargin;
-	///ÀûÏ¢»ùÊı
-	TThostFtdcMoneyType	InterestBase;
-	///ÀûÏ¢ÊÕÈë
-	TThostFtdcMoneyType	Interest;
-	///Èë½ğ½ğ¶î
-	TThostFtdcMoneyType	Deposit;
-	///³ö½ğ½ğ¶î
-	TThostFtdcMoneyType	Withdraw;
-	///¶³½áµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	FrozenMargin;
-	///¶³½áµÄ×Ê½ğ
-	TThostFtdcMoneyType	FrozenCash;
-	///¶³½áµÄÊÖĞø·Ñ
-	TThostFtdcMoneyType	FrozenCommission;
-	///µ±Ç°±£Ö¤½ğ×Ü¶î
-	TThostFtdcMoneyType	CurrMargin;
-	///×Ê½ğ²î¶î
-	TThostFtdcMoneyType	CashIn;
-	///ÊÖĞø·Ñ
-	TThostFtdcMoneyType	Commission;
-	///Æ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfit;
-	///³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	PositionProfit;
-	///ÆÚ»õ½áËã×¼±¸½ğ
-	TThostFtdcMoneyType	Balance;
-	///¿ÉÓÃ×Ê½ğ
-	TThostFtdcMoneyType	Available;
-	///¿ÉÈ¡×Ê½ğ
-	TThostFtdcMoneyType	WithdrawQuota;
-	///»ù±¾×¼±¸½ğ
-	TThostFtdcMoneyType	Reserve;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///ĞÅÓÃ¶î¶È
-	TThostFtdcMoneyType	Credit;
-	///ÖÊÑº½ğ¶î
-	TThostFtdcMoneyType	Mortgage;
-	///½»Ò×Ëù±£Ö¤½ğ
-	TThostFtdcMoneyType	ExchangeMargin;
-	///Í¶×ÊÕß½»¸î±£Ö¤½ğ
-	TThostFtdcMoneyType	DeliveryMargin;
-	///½»Ò×Ëù½»¸î±£Ö¤½ğ
-	TThostFtdcMoneyType	ExchangeDeliveryMargin;
-	///±£µ×ÆÚ»õ½áËã×¼±¸½ğ
-	TThostFtdcMoneyType	ReserveBalance;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÉÏ´Î»õ±ÒÖÊÈë½ğ¶î
-	TThostFtdcMoneyType	PreFundMortgageIn;
-	///ÉÏ´Î»õ±ÒÖÊ³ö½ğ¶î
-	TThostFtdcMoneyType	PreFundMortgageOut;
-	///»õ±ÒÖÊÈë½ğ¶î
-	TThostFtdcMoneyType	FundMortgageIn;
-	///»õ±ÒÖÊ³ö½ğ¶î
-	TThostFtdcMoneyType	FundMortgageOut;
-	///»õ±ÒÖÊÑºÓà¶î
-	TThostFtdcMoneyType	FundMortgageAvailable;
-	///¿ÉÖÊÑº»õ±Ò½ğ¶î
-	TThostFtdcMoneyType	MortgageableFund;
-	///ÌØÊâ²úÆ·Õ¼ÓÃ±£Ö¤½ğ
-	TThostFtdcMoneyType	SpecProductMargin;
-	///ÌØÊâ²úÆ·¶³½á±£Ö¤½ğ
-	TThostFtdcMoneyType	SpecProductFrozenMargin;
-	///ÌØÊâ²úÆ·ÊÖĞø·Ñ
-	TThostFtdcMoneyType	SpecProductCommission;
-	///ÌØÊâ²úÆ·¶³½áÊÖĞø·Ñ
-	TThostFtdcMoneyType	SpecProductFrozenCommission;
-	///ÌØÊâ²úÆ·³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	SpecProductPositionProfit;
-	///ÌØÊâ²úÆ·Æ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	SpecProductCloseProfit;
-	///¸ù¾İ³Ö²ÖÓ¯¿÷Ëã·¨¼ÆËãµÄÌØÊâ²úÆ·³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	SpecProductPositionProfitByAlg;
-	///ÌØÊâ²úÆ·½»Ò×Ëù±£Ö¤½ğ
-	TThostFtdcMoneyType	SpecProductExchangeMargin;
-	///ÒµÎñÀàĞÍ
-	TThostFtdcBizTypeType	BizType;
-	///ÑÓÊ±»»»ã¶³½á½ğ¶î
-	TThostFtdcMoneyType	FrozenSwap;
-	///Ê£Óà»»»ã¶î¶È
-	TThostFtdcMoneyType	RemainSwap;
-};
-
-///Í¶×ÊÕß³Ö²Ö
-struct CThostFtdcInvestorPositionField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///³Ö²Ö¶à¿Õ·½Ïò
-	TThostFtdcPosiDirectionType	PosiDirection;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///³Ö²ÖÈÕÆÚ
-	TThostFtdcPositionDateType	PositionDate;
-	///ÉÏÈÕ³Ö²Ö
-	TThostFtdcVolumeType	YdPosition;
-	///½ñÈÕ³Ö²Ö
-	TThostFtdcVolumeType	Position;
-	///¶àÍ·¶³½á
-	TThostFtdcVolumeType	LongFrozen;
-	///¿ÕÍ·¶³½á
-	TThostFtdcVolumeType	ShortFrozen;
-	///¿ª²Ö¶³½á½ğ¶î
-	TThostFtdcMoneyType	LongFrozenAmount;
-	///¿ª²Ö¶³½á½ğ¶î
-	TThostFtdcMoneyType	ShortFrozenAmount;
-	///¿ª²ÖÁ¿
-	TThostFtdcVolumeType	OpenVolume;
-	///Æ½²ÖÁ¿
-	TThostFtdcVolumeType	CloseVolume;
-	///¿ª²Ö½ğ¶î
-	TThostFtdcMoneyType	OpenAmount;
-	///Æ½²Ö½ğ¶î
-	TThostFtdcMoneyType	CloseAmount;
-	///³Ö²Ö³É±¾
-	TThostFtdcMoneyType	PositionCost;
-	///ÉÏ´ÎÕ¼ÓÃµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	PreMargin;
-	///Õ¼ÓÃµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	UseMargin;
-	///¶³½áµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	FrozenMargin;
-	///¶³½áµÄ×Ê½ğ
-	TThostFtdcMoneyType	FrozenCash;
-	///¶³½áµÄÊÖĞø·Ñ
-	TThostFtdcMoneyType	FrozenCommission;
-	///×Ê½ğ²î¶î
-	TThostFtdcMoneyType	CashIn;
-	///ÊÖĞø·Ñ
-	TThostFtdcMoneyType	Commission;
-	///Æ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfit;
-	///³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	PositionProfit;
-	///ÉÏ´Î½áËã¼Û
-	TThostFtdcPriceType	PreSettlementPrice;
-	///±¾´Î½áËã¼Û
-	TThostFtdcPriceType	SettlementPrice;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///¿ª²Ö³É±¾
-	TThostFtdcMoneyType	OpenCost;
-	///½»Ò×Ëù±£Ö¤½ğ
-	TThostFtdcMoneyType	ExchangeMargin;
-	///×éºÏ³É½»ĞÎ³ÉµÄ³Ö²Ö
-	TThostFtdcVolumeType	CombPosition;
-	///×éºÏ¶àÍ·¶³½á
-	TThostFtdcVolumeType	CombLongFrozen;
-	///×éºÏ¿ÕÍ·¶³½á
-	TThostFtdcVolumeType	CombShortFrozen;
-	///ÖğÈÕ¶¢ÊĞÆ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfitByDate;
-	///Öğ±Ê¶Ô³åÆ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfitByTrade;
-	///½ñÈÕ³Ö²Ö
-	TThostFtdcVolumeType	TodayPosition;
-	///±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	MarginRateByMoney;
-	///±£Ö¤½ğÂÊ(°´ÊÖÊı)
-	TThostFtdcRatioType	MarginRateByVolume;
-	///Ö´ĞĞ¶³½á
-	TThostFtdcVolumeType	StrikeFrozen;
-	///Ö´ĞĞ¶³½á½ğ¶î
-	TThostFtdcMoneyType	StrikeFrozenAmount;
-	///·ÅÆúÖ´ĞĞ¶³½á
-	TThostFtdcVolumeType	AbandonFrozen;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞ¶³½áµÄ×ò²Ö
-	TThostFtdcVolumeType	YdStrikeFrozen;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///ºÏÔ¼±£Ö¤½ğÂÊ
-struct CThostFtdcInstrumentMarginRateField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///¶àÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	LongMarginRatioByMoney;
-	///¶àÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	LongMarginRatioByVolume;
-	///¿ÕÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	ShortMarginRatioByMoney;
-	///¿ÕÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	ShortMarginRatioByVolume;
-	///ÊÇ·ñÏà¶Ô½»Ò×ËùÊÕÈ¡
-	TThostFtdcBoolType	IsRelative;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///ºÏÔ¼ÊÖĞø·ÑÂÊ
-struct CThostFtdcInstrumentCommissionRateField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¿ª²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	OpenRatioByMoney;
-	///¿ª²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	OpenRatioByVolume;
-	///Æ½²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseRatioByMoney;
-	///Æ½²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseRatioByVolume;
-	///Æ½½ñÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseTodayRatioByMoney;
-	///Æ½½ñÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseTodayRatioByVolume;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ÒµÎñÀàĞÍ
-	TThostFtdcBizTypeType	BizType;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///Éî¶ÈĞĞÇé
-struct CThostFtdcDepthMarketDataField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///×îĞÂ¼Û
-	TThostFtdcPriceType	LastPrice;
-	///ÉÏ´Î½áËã¼Û
-	TThostFtdcPriceType	PreSettlementPrice;
-	///×òÊÕÅÌ
-	TThostFtdcPriceType	PreClosePrice;
-	///×ò³Ö²ÖÁ¿
-	TThostFtdcLargeVolumeType	PreOpenInterest;
-	///½ñ¿ªÅÌ
-	TThostFtdcPriceType	OpenPrice;
-	///×î¸ß¼Û
-	TThostFtdcPriceType	HighestPrice;
-	///×îµÍ¼Û
-	TThostFtdcPriceType	LowestPrice;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///³É½»½ğ¶î
-	TThostFtdcMoneyType	Turnover;
-	///³Ö²ÖÁ¿
-	TThostFtdcLargeVolumeType	OpenInterest;
-	///½ñÊÕÅÌ
-	TThostFtdcPriceType	ClosePrice;
-	///±¾´Î½áËã¼Û
-	TThostFtdcPriceType	SettlementPrice;
-	///ÕÇÍ£°å¼Û
-	TThostFtdcPriceType	UpperLimitPrice;
-	///µøÍ£°å¼Û
-	TThostFtdcPriceType	LowerLimitPrice;
-	///×òĞéÊµ¶È
-	TThostFtdcRatioType	PreDelta;
-	///½ñĞéÊµ¶È
-	TThostFtdcRatioType	CurrDelta;
-	///×îºóĞŞ¸ÄÊ±¼ä
-	TThostFtdcTimeType	UpdateTime;
-	///×îºóĞŞ¸ÄºÁÃë
-	TThostFtdcMillisecType	UpdateMillisec;
-	///ÉêÂò¼ÛÒ»
-	TThostFtdcPriceType	BidPrice1;
-	///ÉêÂòÁ¿Ò»
-	TThostFtdcVolumeType	BidVolume1;
-	///ÉêÂô¼ÛÒ»
-	TThostFtdcPriceType	AskPrice1;
-	///ÉêÂôÁ¿Ò»
-	TThostFtdcVolumeType	AskVolume1;
-	///ÉêÂò¼Û¶ş
-	TThostFtdcPriceType	BidPrice2;
-	///ÉêÂòÁ¿¶ş
-	TThostFtdcVolumeType	BidVolume2;
-	///ÉêÂô¼Û¶ş
-	TThostFtdcPriceType	AskPrice2;
-	///ÉêÂôÁ¿¶ş
-	TThostFtdcVolumeType	AskVolume2;
-	///ÉêÂò¼ÛÈı
-	TThostFtdcPriceType	BidPrice3;
-	///ÉêÂòÁ¿Èı
-	TThostFtdcVolumeType	BidVolume3;
-	///ÉêÂô¼ÛÈı
-	TThostFtdcPriceType	AskPrice3;
-	///ÉêÂôÁ¿Èı
-	TThostFtdcVolumeType	AskVolume3;
-	///ÉêÂò¼ÛËÄ
-	TThostFtdcPriceType	BidPrice4;
-	///ÉêÂòÁ¿ËÄ
-	TThostFtdcVolumeType	BidVolume4;
-	///ÉêÂô¼ÛËÄ
-	TThostFtdcPriceType	AskPrice4;
-	///ÉêÂôÁ¿ËÄ
-	TThostFtdcVolumeType	AskVolume4;
-	///ÉêÂò¼ÛÎå
-	TThostFtdcPriceType	BidPrice5;
-	///ÉêÂòÁ¿Îå
-	TThostFtdcVolumeType	BidVolume5;
-	///ÉêÂô¼ÛÎå
-	TThostFtdcPriceType	AskPrice5;
-	///ÉêÂôÁ¿Îå
-	TThostFtdcVolumeType	AskVolume5;
-	///µ±ÈÕ¾ù¼Û
-	TThostFtdcPriceType	AveragePrice;
-	///ÒµÎñÈÕÆÚ
-	TThostFtdcDateType	ActionDay;
-};
-
-///Í¶×ÊÕßºÏÔ¼½»Ò×È¨ÏŞ
-struct CThostFtdcInstrumentTradingRightField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×È¨ÏŞ
-	TThostFtdcTradingRightType	TradingRight;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ÒµÎñÀàĞÍ
-	TThostFtdcBizTypeType	BizType;
-};
-
-///¾­¼Í¹«Ë¾ÓÃ»§
-struct CThostFtdcBrokerUserField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÓÃ»§Ãû³Æ
-	TThostFtdcUserNameType	UserName;
-	///ÓÃ»§ÀàĞÍ
-	TThostFtdcUserTypeType	UserType;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-	///ÊÇ·ñÊ¹ÓÃÁîÅÆ
-	TThostFtdcBoolType	IsUsingOTP;
-	///ÊÇ·ñÇ¿ÖÆÖÕ¶ËÈÏÖ¤
-	TThostFtdcBoolType	IsAuthForce;
-};
-
-///¾­¼Í¹«Ë¾ÓÃ»§¿ÚÁî
-struct CThostFtdcBrokerUserPasswordField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÉÏ´ÎĞŞ¸ÄÊ±¼ä
-	TThostFtdcDateTimeType	LastUpdateTime;
-	///ÉÏ´ÎµÇÂ½Ê±¼ä
-	TThostFtdcDateTimeType	LastLoginTime;
-	///ÃÜÂë¹ıÆÚÊ±¼ä
-	TThostFtdcDateType	ExpireDate;
-	///ÈõÃÜÂë¹ıÆÚÊ±¼ä
-	TThostFtdcDateType	WeakExpireDate;
-};
-
-///¾­¼Í¹«Ë¾ÓÃ»§¹¦ÄÜÈ¨ÏŞ
-struct CThostFtdcBrokerUserFunctionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///¾­¼Í¹«Ë¾¹¦ÄÜ´úÂë
-	TThostFtdcBrokerFunctionCodeType	BrokerFunctionCode;
-};
-
-///½»Ò×Ëù½»Ò×Ô±±¨ÅÌ»ú
-struct CThostFtdcTraderOfferField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///ÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///½»Ò×Ëù½»Ò×Ô±Á¬½Ó×´Ì¬
-	TThostFtdcTraderConnectStatusType	TraderConnectStatus;
-	///·¢³öÁ¬½ÓÇëÇóµÄÈÕÆÚ
-	TThostFtdcDateType	ConnectRequestDate;
-	///·¢³öÁ¬½ÓÇëÇóµÄÊ±¼ä
-	TThostFtdcTimeType	ConnectRequestTime;
-	///ÉÏ´Î±¨¸æÈÕÆÚ
-	TThostFtdcDateType	LastReportDate;
-	///ÉÏ´Î±¨¸æÊ±¼ä
-	TThostFtdcTimeType	LastReportTime;
-	///Íê³ÉÁ¬½ÓÈÕÆÚ
-	TThostFtdcDateType	ConnectDate;
-	///Íê³ÉÁ¬½ÓÊ±¼ä
-	TThostFtdcTimeType	ConnectTime;
-	///Æô¶¯ÈÕÆÚ
-	TThostFtdcDateType	StartDate;
-	///Æô¶¯Ê±¼ä
-	TThostFtdcTimeType	StartTime;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///±¾Ï¯Î»×î´ó³É½»±àºÅ
-	TThostFtdcTradeIDType	MaxTradeID;
-	///±¾Ï¯Î»×î´ó±¨µ¥±¸¿½
-	TThostFtdcReturnCodeType	MaxOrderMessageReference;
-	///ÒµÎñÀàĞÍ
-	TThostFtdcBizTypeType	BizType;
-};
-
-///Í¶×ÊÕß½áËã½á¹û
-struct CThostFtdcSettlementInfoField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///ÏûÏ¢ÕıÎÄ
-	TThostFtdcContentType	Content;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///ºÏÔ¼±£Ö¤½ğÂÊµ÷Õû
-struct CThostFtdcInstrumentMarginRateAdjustField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///¶àÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	LongMarginRatioByMoney;
-	///¶àÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	LongMarginRatioByVolume;
-	///¿ÕÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	ShortMarginRatioByMoney;
-	///¿ÕÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	ShortMarginRatioByVolume;
-	///ÊÇ·ñÏà¶Ô½»Ò×ËùÊÕÈ¡
-	TThostFtdcBoolType	IsRelative;
-};
-
-///½»Ò×Ëù±£Ö¤½ğÂÊ
-struct CThostFtdcExchangeMarginRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///¶àÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	LongMarginRatioByMoney;
-	///¶àÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	LongMarginRatioByVolume;
-	///¿ÕÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	ShortMarginRatioByMoney;
-	///¿ÕÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	ShortMarginRatioByVolume;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///½»Ò×Ëù±£Ö¤½ğÂÊµ÷Õû
-struct CThostFtdcExchangeMarginRateAdjustField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///¸úËæ½»Ò×ËùÍ¶×ÊÕß¶àÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	LongMarginRatioByMoney;
-	///¸úËæ½»Ò×ËùÍ¶×ÊÕß¶àÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	LongMarginRatioByVolume;
-	///¸úËæ½»Ò×ËùÍ¶×ÊÕß¿ÕÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	ShortMarginRatioByMoney;
-	///¸úËæ½»Ò×ËùÍ¶×ÊÕß¿ÕÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	ShortMarginRatioByVolume;
-	///½»Ò×Ëù¶àÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	ExchLongMarginRatioByMoney;
-	///½»Ò×Ëù¶àÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	ExchLongMarginRatioByVolume;
-	///½»Ò×Ëù¿ÕÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	ExchShortMarginRatioByMoney;
-	///½»Ò×Ëù¿ÕÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	ExchShortMarginRatioByVolume;
-	///²»¸úËæ½»Ò×ËùÍ¶×ÊÕß¶àÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	NoLongMarginRatioByMoney;
-	///²»¸úËæ½»Ò×ËùÍ¶×ÊÕß¶àÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	NoLongMarginRatioByVolume;
-	///²»¸úËæ½»Ò×ËùÍ¶×ÊÕß¿ÕÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	NoShortMarginRatioByMoney;
-	///²»¸úËæ½»Ò×ËùÍ¶×ÊÕß¿ÕÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	NoShortMarginRatioByVolume;
-};
-
-///»ãÂÊ
-struct CThostFtdcExchangeRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Ô´±ÒÖÖ
-	TThostFtdcCurrencyIDType	FromCurrencyID;
-	///Ô´±ÒÖÖµ¥Î»ÊıÁ¿
-	TThostFtdcCurrencyUnitType	FromCurrencyUnit;
-	///Ä¿±ê±ÒÖÖ
-	TThostFtdcCurrencyIDType	ToCurrencyID;
-	///»ãÂÊ
-	TThostFtdcExchangeRateType	ExchangeRate;
-};
-
-///½áËãÒıÓÃ
-struct CThostFtdcSettlementRefField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-};
-
-///µ±Ç°Ê±¼ä
-struct CThostFtdcCurrentTimeField
-{
-	///µ±Ç°ÈÕÆÚ
-	TThostFtdcDateType	CurrDate;
-	///µ±Ç°Ê±¼ä
-	TThostFtdcTimeType	CurrTime;
-	///µ±Ç°Ê±¼ä£¨ºÁÃë£©
-	TThostFtdcMillisecType	CurrMillisec;
-	///ÒµÎñÈÕÆÚ
-	TThostFtdcDateType	ActionDay;
-};
-
-///Í¨Ñ¶½×¶Î
-struct CThostFtdcCommPhaseField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///Í¨Ñ¶Ê±¶Î±àºÅ
-	TThostFtdcCommPhaseNoType	CommPhaseNo;
-	///ÏµÍ³±àºÅ
-	TThostFtdcSystemIDType	SystemID;
-};
-
-///µÇÂ¼ĞÅÏ¢
-struct CThostFtdcLoginInfoField
-{
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///µÇÂ¼ÈÕÆÚ
-	TThostFtdcDateType	LoginDate;
-	///µÇÂ¼Ê±¼ä
-	TThostFtdcTimeType	LoginTime;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///½Ó¿Ú¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	InterfaceProductInfo;
-	///Ğ­ÒéĞÅÏ¢
-	TThostFtdcProtocolInfoType	ProtocolInfo;
-	///ÏµÍ³Ãû³Æ
-	TThostFtdcSystemNameType	SystemName;
-	///ÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///×î´ó±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	MaxOrderRef;
-	///ÉÏÆÚËùÊ±¼ä
-	TThostFtdcTimeType	SHFETime;
-	///´óÉÌËùÊ±¼ä
-	TThostFtdcTimeType	DCETime;
-	///Ö£ÉÌËùÊ±¼ä
-	TThostFtdcTimeType	CZCETime;
-	///ÖĞ½ğËùÊ±¼ä
-	TThostFtdcTimeType	FFEXTime;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///¶¯Ì¬ÃÜÂë
-	TThostFtdcPasswordType	OneTimePassword;
-	///ÄÜÔ´ÖĞĞÄÊ±¼ä
-	TThostFtdcTimeType	INETime;
-	///²éÑ¯Ê±ÊÇ·ñĞèÒªÁ÷¿Ø
-	TThostFtdcBoolType	IsQryControl;
-	///µÇÂ¼±¸×¢
-	TThostFtdcLoginRemarkType	LoginRemark;
-	///¶ÌĞÅÑéÖ¤Âë
-	TThostFtdcSmsCodeType	SmsCode;
-	///ÃÜÂë¼ÓÃÜÀàĞÍ,0²»¼ÓÃÜ£¬1Ëæ»ú¼ÓÃÜ£¬2¼òµ¥¼ÓÃÜ
-	TThostFtdcPasswordEncryptTypeType	EncryptType;
-};
-
-///µÇÂ¼ĞÅÏ¢
-struct CThostFtdcLogoutAllField
-{
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÏµÍ³Ãû³Æ
-	TThostFtdcSystemNameType	SystemName;
-};
-
-///Ç°ÖÃ×´Ì¬
-struct CThostFtdcFrontStatusField
-{
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///ÉÏ´Î±¨¸æÈÕÆÚ
-	TThostFtdcDateType	LastReportDate;
-	///ÉÏ´Î±¨¸æÊ±¼ä
-	TThostFtdcTimeType	LastReportTime;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-};
-
-///ÓÃ»§¿ÚÁî±ä¸ü
-struct CThostFtdcUserPasswordUpdateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Ô­À´µÄ¿ÚÁî
-	TThostFtdcPasswordType	OldPassword;
-	///ĞÂµÄ¿ÚÁî
-	TThostFtdcPasswordType	NewPassword;
-	///¼ÓÃÜÀàĞÍ
-	TThostFtdcPasswordEncryptTypeType	EncryptType;
-};
-
-///ÊäÈë±¨µ¥
-struct CThostFtdcInputOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	OrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///±¨µ¥¼Û¸ñÌõ¼ş
-	TThostFtdcOrderPriceTypeType	OrderPriceType;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///×éºÏ¿ªÆ½±êÖ¾
-	TThostFtdcCombOffsetFlagType	CombOffsetFlag;
-	///×éºÏÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcCombHedgeFlagType	CombHedgeFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	VolumeTotalOriginal;
-	///ÓĞĞ§ÆÚÀàĞÍ
-	TThostFtdcTimeConditionType	TimeCondition;
-	///GTDÈÕÆÚ
-	TThostFtdcDateType	GTDDate;
-	///³É½»Á¿ÀàĞÍ
-	TThostFtdcVolumeConditionType	VolumeCondition;
-	///×îĞ¡³É½»Á¿
-	TThostFtdcVolumeType	MinVolume;
-	///´¥·¢Ìõ¼ş
-	TThostFtdcContingentConditionType	ContingentCondition;
-	///Ö¹Ëğ¼Û
-	TThostFtdcPriceType	StopPrice;
-	///Ç¿Æ½Ô­Òò
-	TThostFtdcForceCloseReasonType	ForceCloseReason;
-	///×Ô¶¯¹ÒÆğ±êÖ¾
-	TThostFtdcBoolType	IsAutoSuspend;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÓÃ»§Ç¿ÆÀ±êÖ¾
-	TThostFtdcBoolType	UserForceClose;
-	///»¥»»µ¥±êÖ¾
-	TThostFtdcBoolType	IsSwapOrder;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///½»Ò×±àÂë
-	TThostFtdcClientIDType	ClientID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///±¨µ¥
-struct CThostFtdcOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	OrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///±¨µ¥¼Û¸ñÌõ¼ş
-	TThostFtdcOrderPriceTypeType	OrderPriceType;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///×éºÏ¿ªÆ½±êÖ¾
-	TThostFtdcCombOffsetFlagType	CombOffsetFlag;
-	///×éºÏÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcCombHedgeFlagType	CombHedgeFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	VolumeTotalOriginal;
-	///ÓĞĞ§ÆÚÀàĞÍ
-	TThostFtdcTimeConditionType	TimeCondition;
-	///GTDÈÕÆÚ
-	TThostFtdcDateType	GTDDate;
-	///³É½»Á¿ÀàĞÍ
-	TThostFtdcVolumeConditionType	VolumeCondition;
-	///×îĞ¡³É½»Á¿
-	TThostFtdcVolumeType	MinVolume;
-	///´¥·¢Ìõ¼ş
-	TThostFtdcContingentConditionType	ContingentCondition;
-	///Ö¹Ëğ¼Û
-	TThostFtdcPriceType	StopPrice;
-	///Ç¿Æ½Ô­Òò
-	TThostFtdcForceCloseReasonType	ForceCloseReason;
-	///×Ô¶¯¹ÒÆğ±êÖ¾
-	TThostFtdcBoolType	IsAutoSuspend;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¨µ¥Ìá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///±¨µ¥À´Ô´
-	TThostFtdcOrderSourceType	OrderSource;
-	///±¨µ¥×´Ì¬
-	TThostFtdcOrderStatusType	OrderStatus;
-	///±¨µ¥ÀàĞÍ
-	TThostFtdcOrderTypeType	OrderType;
-	///½ñ³É½»ÊıÁ¿
-	TThostFtdcVolumeType	VolumeTraded;
-	///Ê£ÓàÊıÁ¿
-	TThostFtdcVolumeType	VolumeTotal;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///Î¯ÍĞÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///¼¤»îÊ±¼ä
-	TThostFtdcTimeType	ActiveTime;
-	///¹ÒÆğÊ±¼ä
-	TThostFtdcTimeType	SuspendTime;
-	///×îºóĞŞ¸ÄÊ±¼ä
-	TThostFtdcTimeType	UpdateTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///×îºóĞŞ¸Ä½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	ActiveTraderID;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///ÓÃ»§Ç¿ÆÀ±êÖ¾
-	TThostFtdcBoolType	UserForceClose;
-	///²Ù×÷ÓÃ»§´úÂë
-	TThostFtdcUserIDType	ActiveUserID;
-	///¾­¼Í¹«Ë¾±¨µ¥±àºÅ
-	TThostFtdcSequenceNoType	BrokerOrderSeq;
-	///Ïà¹Ø±¨µ¥
-	TThostFtdcOrderSysIDType	RelativeOrderSysID;
-	///Ö£ÉÌËù³É½»ÊıÁ¿
-	TThostFtdcVolumeType	ZCETotalTradedVolume;
-	///»¥»»µ¥±êÖ¾
-	TThostFtdcBoolType	IsSwapOrder;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///½»Ò×Ëù±¨µ¥
-struct CThostFtdcExchangeOrderField
-{
-	///±¨µ¥¼Û¸ñÌõ¼ş
-	TThostFtdcOrderPriceTypeType	OrderPriceType;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///×éºÏ¿ªÆ½±êÖ¾
-	TThostFtdcCombOffsetFlagType	CombOffsetFlag;
-	///×éºÏÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcCombHedgeFlagType	CombHedgeFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	VolumeTotalOriginal;
-	///ÓĞĞ§ÆÚÀàĞÍ
-	TThostFtdcTimeConditionType	TimeCondition;
-	///GTDÈÕÆÚ
-	TThostFtdcDateType	GTDDate;
-	///³É½»Á¿ÀàĞÍ
-	TThostFtdcVolumeConditionType	VolumeCondition;
-	///×îĞ¡³É½»Á¿
-	TThostFtdcVolumeType	MinVolume;
-	///´¥·¢Ìõ¼ş
-	TThostFtdcContingentConditionType	ContingentCondition;
-	///Ö¹Ëğ¼Û
-	TThostFtdcPriceType	StopPrice;
-	///Ç¿Æ½Ô­Òò
-	TThostFtdcForceCloseReasonType	ForceCloseReason;
-	///×Ô¶¯¹ÒÆğ±êÖ¾
-	TThostFtdcBoolType	IsAutoSuspend;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¨µ¥Ìá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///±¨µ¥À´Ô´
-	TThostFtdcOrderSourceType	OrderSource;
-	///±¨µ¥×´Ì¬
-	TThostFtdcOrderStatusType	OrderStatus;
-	///±¨µ¥ÀàĞÍ
-	TThostFtdcOrderTypeType	OrderType;
-	///½ñ³É½»ÊıÁ¿
-	TThostFtdcVolumeType	VolumeTraded;
-	///Ê£ÓàÊıÁ¿
-	TThostFtdcVolumeType	VolumeTotal;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///Î¯ÍĞÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///¼¤»îÊ±¼ä
-	TThostFtdcTimeType	ActiveTime;
-	///¹ÒÆğÊ±¼ä
-	TThostFtdcTimeType	SuspendTime;
-	///×îºóĞŞ¸ÄÊ±¼ä
-	TThostFtdcTimeType	UpdateTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///×îºóĞŞ¸Ä½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	ActiveTraderID;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///½»Ò×Ëù±¨µ¥²åÈëÊ§°Ü
-struct CThostFtdcExchangeOrderInsertErrorField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///ÊäÈë±¨µ¥²Ù×÷
-struct CThostFtdcInputOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±¨µ¥²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	OrderActionRef;
-	///±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	OrderRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿±ä»¯
-	TThostFtdcVolumeType	VolumeChange;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///±¨µ¥²Ù×÷
-struct CThostFtdcOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±¨µ¥²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	OrderActionRef;
-	///±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	OrderRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿±ä»¯
-	TThostFtdcVolumeType	VolumeChange;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///½»Ò×Ëù±¨µ¥²Ù×÷
-struct CThostFtdcExchangeOrderActionField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿±ä»¯
-	TThostFtdcVolumeType	VolumeChange;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///½»Ò×Ëù±¨µ¥²Ù×÷Ê§°Ü
-struct CThostFtdcExchangeOrderActionErrorField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-};
-
-///½»Ò×Ëù³É½»
-struct CThostFtdcExchangeTradeField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///³É½»±àºÅ
-	TThostFtdcTradeIDType	TradeID;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×½ÇÉ«
-	TThostFtdcTradingRoleType	TradingRole;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	OffsetFlag;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	Price;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///³É½»Ê±ÆÚ
-	TThostFtdcDateType	TradeDate;
-	///³É½»Ê±¼ä
-	TThostFtdcTimeType	TradeTime;
-	///³É½»ÀàĞÍ
-	TThostFtdcTradeTypeType	TradeType;
-	///³É½»¼ÛÀ´Ô´
-	TThostFtdcPriceSourceType	PriceSource;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///³É½»À´Ô´
-	TThostFtdcTradeSourceType	TradeSource;
-};
-
-///³É½»
-struct CThostFtdcTradeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	OrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///³É½»±àºÅ
-	TThostFtdcTradeIDType	TradeID;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×½ÇÉ«
-	TThostFtdcTradingRoleType	TradingRole;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	OffsetFlag;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	Price;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///³É½»Ê±ÆÚ
-	TThostFtdcDateType	TradeDate;
-	///³É½»Ê±¼ä
-	TThostFtdcTimeType	TradeTime;
-	///³É½»ÀàĞÍ
-	TThostFtdcTradeTypeType	TradeType;
-	///³É½»¼ÛÀ´Ô´
-	TThostFtdcPriceSourceType	PriceSource;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///¾­¼Í¹«Ë¾±¨µ¥±àºÅ
-	TThostFtdcSequenceNoType	BrokerOrderSeq;
-	///³É½»À´Ô´
-	TThostFtdcTradeSourceType	TradeSource;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///ÓÃ»§»á»°
-struct CThostFtdcUserSessionField
-{
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///µÇÂ¼ÈÕÆÚ
-	TThostFtdcDateType	LoginDate;
-	///µÇÂ¼Ê±¼ä
-	TThostFtdcTimeType	LoginTime;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///½Ó¿Ú¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	InterfaceProductInfo;
-	///Ğ­ÒéĞÅÏ¢
-	TThostFtdcProtocolInfoType	ProtocolInfo;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///µÇÂ¼±¸×¢
-	TThostFtdcLoginRemarkType	LoginRemark;
-};
-
-///²éÑ¯×î´ó±¨µ¥ÊıÁ¿
-struct CThostFtdcQueryMaxOrderVolumeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	OffsetFlag;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///×î´óÔÊĞí±¨µ¥ÊıÁ¿
-	TThostFtdcVolumeType	MaxVolume;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///Í¶×ÊÕß½áËã½á¹ûÈ·ÈÏĞÅÏ¢
-struct CThostFtdcSettlementInfoConfirmField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///È·ÈÏÈÕÆÚ
-	TThostFtdcDateType	ConfirmDate;
-	///È·ÈÏÊ±¼ä
-	TThostFtdcTimeType	ConfirmTime;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///³öÈë½ğÍ¬²½
-struct CThostFtdcSyncDepositField
-{
-	///³öÈë½ğÁ÷Ë®ºÅ
-	TThostFtdcDepositSeqNoType	DepositSeqNo;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Èë½ğ½ğ¶î
-	TThostFtdcMoneyType	Deposit;
-	///ÊÇ·ñÇ¿ÖÆ½øĞĞ
-	TThostFtdcBoolType	IsForce;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÒµÎñÀàĞÍ
-	TThostFtdcBizTypeType	BizType;
-};
-
-///»õ±ÒÖÊÑºÍ¬²½
-struct CThostFtdcSyncFundMortgageField
-{
-	///»õ±ÒÖÊÑºÁ÷Ë®ºÅ
-	TThostFtdcDepositSeqNoType	MortgageSeqNo;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ô´±ÒÖÖ
-	TThostFtdcCurrencyIDType	FromCurrencyID;
-	///ÖÊÑº½ğ¶î
-	TThostFtdcMoneyType	MortgageAmount;
-	///Ä¿±ê±ÒÖÖ
-	TThostFtdcCurrencyIDType	ToCurrencyID;
-};
-
-///¾­¼Í¹«Ë¾Í¬²½
-struct CThostFtdcBrokerSyncField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-};
-
-///ÕıÔÚÍ¬²½ÖĞµÄÍ¶×ÊÕß
-struct CThostFtdcSyncingInvestorField
-{
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß·Ö×é´úÂë
-	TThostFtdcInvestorIDType	InvestorGroupID;
-	///Í¶×ÊÕßÃû³Æ
-	TThostFtdcPartyNameType	InvestorName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdentifiedCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-	///ÁªÏµµç»°
-	TThostFtdcTelephoneType	Telephone;
-	///Í¨Ñ¶µØÖ·
-	TThostFtdcAddressType	Address;
-	///¿ª»§ÈÕÆÚ
-	TThostFtdcDateType	OpenDate;
-	///ÊÖ»ú
-	TThostFtdcMobileType	Mobile;
-	///ÊÖĞø·ÑÂÊÄ£°å´úÂë
-	TThostFtdcInvestorIDType	CommModelID;
-	///±£Ö¤½ğÂÊÄ£°å´úÂë
-	TThostFtdcInvestorIDType	MarginModelID;
-};
-
-///ÕıÔÚÍ¬²½ÖĞµÄ½»Ò×´úÂë
-struct CThostFtdcSyncingTradingCodeField
-{
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-	///½»Ò×±àÂëÀàĞÍ
-	TThostFtdcClientIDTypeType	ClientIDType;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-};
-
-///ÕıÔÚÍ¬²½ÖĞµÄÍ¶×ÊÕß·Ö×é
-struct CThostFtdcSyncingInvestorGroupField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß·Ö×é´úÂë
-	TThostFtdcInvestorIDType	InvestorGroupID;
-	///Í¶×ÊÕß·Ö×éÃû³Æ
-	TThostFtdcInvestorGroupNameType	InvestorGroupName;
-};
-
-///ÕıÔÚÍ¬²½ÖĞµÄ½»Ò×ÕËºÅ
-struct CThostFtdcSyncingTradingAccountField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÉÏ´ÎÖÊÑº½ğ¶î
-	TThostFtdcMoneyType	PreMortgage;
-	///ÉÏ´ÎĞÅÓÃ¶î¶È
-	TThostFtdcMoneyType	PreCredit;
-	///ÉÏ´Î´æ¿î¶î
-	TThostFtdcMoneyType	PreDeposit;
-	///ÉÏ´Î½áËã×¼±¸½ğ
-	TThostFtdcMoneyType	PreBalance;
-	///ÉÏ´ÎÕ¼ÓÃµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	PreMargin;
-	///ÀûÏ¢»ùÊı
-	TThostFtdcMoneyType	InterestBase;
-	///ÀûÏ¢ÊÕÈë
-	TThostFtdcMoneyType	Interest;
-	///Èë½ğ½ğ¶î
-	TThostFtdcMoneyType	Deposit;
-	///³ö½ğ½ğ¶î
-	TThostFtdcMoneyType	Withdraw;
-	///¶³½áµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	FrozenMargin;
-	///¶³½áµÄ×Ê½ğ
-	TThostFtdcMoneyType	FrozenCash;
-	///¶³½áµÄÊÖĞø·Ñ
-	TThostFtdcMoneyType	FrozenCommission;
-	///µ±Ç°±£Ö¤½ğ×Ü¶î
-	TThostFtdcMoneyType	CurrMargin;
-	///×Ê½ğ²î¶î
-	TThostFtdcMoneyType	CashIn;
-	///ÊÖĞø·Ñ
-	TThostFtdcMoneyType	Commission;
-	///Æ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfit;
-	///³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	PositionProfit;
-	///ÆÚ»õ½áËã×¼±¸½ğ
-	TThostFtdcMoneyType	Balance;
-	///¿ÉÓÃ×Ê½ğ
-	TThostFtdcMoneyType	Available;
-	///¿ÉÈ¡×Ê½ğ
-	TThostFtdcMoneyType	WithdrawQuota;
-	///»ù±¾×¼±¸½ğ
-	TThostFtdcMoneyType	Reserve;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///ĞÅÓÃ¶î¶È
-	TThostFtdcMoneyType	Credit;
-	///ÖÊÑº½ğ¶î
-	TThostFtdcMoneyType	Mortgage;
-	///½»Ò×Ëù±£Ö¤½ğ
-	TThostFtdcMoneyType	ExchangeMargin;
-	///Í¶×ÊÕß½»¸î±£Ö¤½ğ
-	TThostFtdcMoneyType	DeliveryMargin;
-	///½»Ò×Ëù½»¸î±£Ö¤½ğ
-	TThostFtdcMoneyType	ExchangeDeliveryMargin;
-	///±£µ×ÆÚ»õ½áËã×¼±¸½ğ
-	TThostFtdcMoneyType	ReserveBalance;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÉÏ´Î»õ±ÒÖÊÈë½ğ¶î
-	TThostFtdcMoneyType	PreFundMortgageIn;
-	///ÉÏ´Î»õ±ÒÖÊ³ö½ğ¶î
-	TThostFtdcMoneyType	PreFundMortgageOut;
-	///»õ±ÒÖÊÈë½ğ¶î
-	TThostFtdcMoneyType	FundMortgageIn;
-	///»õ±ÒÖÊ³ö½ğ¶î
-	TThostFtdcMoneyType	FundMortgageOut;
-	///»õ±ÒÖÊÑºÓà¶î
-	TThostFtdcMoneyType	FundMortgageAvailable;
-	///¿ÉÖÊÑº»õ±Ò½ğ¶î
-	TThostFtdcMoneyType	MortgageableFund;
-	///ÌØÊâ²úÆ·Õ¼ÓÃ±£Ö¤½ğ
-	TThostFtdcMoneyType	SpecProductMargin;
-	///ÌØÊâ²úÆ·¶³½á±£Ö¤½ğ
-	TThostFtdcMoneyType	SpecProductFrozenMargin;
-	///ÌØÊâ²úÆ·ÊÖĞø·Ñ
-	TThostFtdcMoneyType	SpecProductCommission;
-	///ÌØÊâ²úÆ·¶³½áÊÖĞø·Ñ
-	TThostFtdcMoneyType	SpecProductFrozenCommission;
-	///ÌØÊâ²úÆ·³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	SpecProductPositionProfit;
-	///ÌØÊâ²úÆ·Æ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	SpecProductCloseProfit;
-	///¸ù¾İ³Ö²ÖÓ¯¿÷Ëã·¨¼ÆËãµÄÌØÊâ²úÆ·³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	SpecProductPositionProfitByAlg;
-	///ÌØÊâ²úÆ·½»Ò×Ëù±£Ö¤½ğ
-	TThostFtdcMoneyType	SpecProductExchangeMargin;
-	///ÑÓÊ±»»»ã¶³½á½ğ¶î
-	TThostFtdcMoneyType	FrozenSwap;
-	///Ê£Óà»»»ã¶î¶È
-	TThostFtdcMoneyType	RemainSwap;
-};
-
-///ÕıÔÚÍ¬²½ÖĞµÄÍ¶×ÊÕß³Ö²Ö
-struct CThostFtdcSyncingInvestorPositionField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///³Ö²Ö¶à¿Õ·½Ïò
-	TThostFtdcPosiDirectionType	PosiDirection;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///³Ö²ÖÈÕÆÚ
-	TThostFtdcPositionDateType	PositionDate;
-	///ÉÏÈÕ³Ö²Ö
-	TThostFtdcVolumeType	YdPosition;
-	///½ñÈÕ³Ö²Ö
-	TThostFtdcVolumeType	Position;
-	///¶àÍ·¶³½á
-	TThostFtdcVolumeType	LongFrozen;
-	///¿ÕÍ·¶³½á
-	TThostFtdcVolumeType	ShortFrozen;
-	///¿ª²Ö¶³½á½ğ¶î
-	TThostFtdcMoneyType	LongFrozenAmount;
-	///¿ª²Ö¶³½á½ğ¶î
-	TThostFtdcMoneyType	ShortFrozenAmount;
-	///¿ª²ÖÁ¿
-	TThostFtdcVolumeType	OpenVolume;
-	///Æ½²ÖÁ¿
-	TThostFtdcVolumeType	CloseVolume;
-	///¿ª²Ö½ğ¶î
-	TThostFtdcMoneyType	OpenAmount;
-	///Æ½²Ö½ğ¶î
-	TThostFtdcMoneyType	CloseAmount;
-	///³Ö²Ö³É±¾
-	TThostFtdcMoneyType	PositionCost;
-	///ÉÏ´ÎÕ¼ÓÃµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	PreMargin;
-	///Õ¼ÓÃµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	UseMargin;
-	///¶³½áµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	FrozenMargin;
-	///¶³½áµÄ×Ê½ğ
-	TThostFtdcMoneyType	FrozenCash;
-	///¶³½áµÄÊÖĞø·Ñ
-	TThostFtdcMoneyType	FrozenCommission;
-	///×Ê½ğ²î¶î
-	TThostFtdcMoneyType	CashIn;
-	///ÊÖĞø·Ñ
-	TThostFtdcMoneyType	Commission;
-	///Æ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfit;
-	///³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	PositionProfit;
-	///ÉÏ´Î½áËã¼Û
-	TThostFtdcPriceType	PreSettlementPrice;
-	///±¾´Î½áËã¼Û
-	TThostFtdcPriceType	SettlementPrice;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///¿ª²Ö³É±¾
-	TThostFtdcMoneyType	OpenCost;
-	///½»Ò×Ëù±£Ö¤½ğ
-	TThostFtdcMoneyType	ExchangeMargin;
-	///×éºÏ³É½»ĞÎ³ÉµÄ³Ö²Ö
-	TThostFtdcVolumeType	CombPosition;
-	///×éºÏ¶àÍ·¶³½á
-	TThostFtdcVolumeType	CombLongFrozen;
-	///×éºÏ¿ÕÍ·¶³½á
-	TThostFtdcVolumeType	CombShortFrozen;
-	///ÖğÈÕ¶¢ÊĞÆ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfitByDate;
-	///Öğ±Ê¶Ô³åÆ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfitByTrade;
-	///½ñÈÕ³Ö²Ö
-	TThostFtdcVolumeType	TodayPosition;
-	///±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	MarginRateByMoney;
-	///±£Ö¤½ğÂÊ(°´ÊÖÊı)
-	TThostFtdcRatioType	MarginRateByVolume;
-	///Ö´ĞĞ¶³½á
-	TThostFtdcVolumeType	StrikeFrozen;
-	///Ö´ĞĞ¶³½á½ğ¶î
-	TThostFtdcMoneyType	StrikeFrozenAmount;
-	///·ÅÆúÖ´ĞĞ¶³½á
-	TThostFtdcVolumeType	AbandonFrozen;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞ¶³½áµÄ×ò²Ö
-	TThostFtdcVolumeType	YdStrikeFrozen;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///ÕıÔÚÍ¬²½ÖĞµÄºÏÔ¼±£Ö¤½ğÂÊ
-struct CThostFtdcSyncingInstrumentMarginRateField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///¶àÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	LongMarginRatioByMoney;
-	///¶àÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	LongMarginRatioByVolume;
-	///¿ÕÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	ShortMarginRatioByMoney;
-	///¿ÕÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	ShortMarginRatioByVolume;
-	///ÊÇ·ñÏà¶Ô½»Ò×ËùÊÕÈ¡
-	TThostFtdcBoolType	IsRelative;
-};
-
-///ÕıÔÚÍ¬²½ÖĞµÄºÏÔ¼ÊÖĞø·ÑÂÊ
-struct CThostFtdcSyncingInstrumentCommissionRateField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¿ª²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	OpenRatioByMoney;
-	///¿ª²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	OpenRatioByVolume;
-	///Æ½²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseRatioByMoney;
-	///Æ½²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseRatioByVolume;
-	///Æ½½ñÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseTodayRatioByMoney;
-	///Æ½½ñÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseTodayRatioByVolume;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///ÕıÔÚÍ¬²½ÖĞµÄºÏÔ¼½»Ò×È¨ÏŞ
-struct CThostFtdcSyncingInstrumentTradingRightField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×È¨ÏŞ
-	TThostFtdcTradingRightType	TradingRight;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²éÑ¯±¨µ¥
-struct CThostFtdcQryOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	InsertTimeStart;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	InsertTimeEnd;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯³É½»
-struct CThostFtdcQryTradeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///³É½»±àºÅ
-	TThostFtdcTradeIDType	TradeID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	TradeTimeStart;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	TradeTimeEnd;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯Í¶×ÊÕß³Ö²Ö
-struct CThostFtdcQryInvestorPositionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯×Ê½ğÕË»§
-struct CThostFtdcQryTradingAccountField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÒµÎñÀàĞÍ
-	TThostFtdcBizTypeType	BizType;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-};
-
-///²éÑ¯Í¶×ÊÕß
-struct CThostFtdcQryInvestorField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-};
-
-///²éÑ¯½»Ò×±àÂë
-struct CThostFtdcQryTradingCodeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×±àÂëÀàĞÍ
-	TThostFtdcClientIDTypeType	ClientIDType;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯Í¶×ÊÕß×é
-struct CThostFtdcQryInvestorGroupField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-};
-
-///²éÑ¯ºÏÔ¼±£Ö¤½ğÂÊ
-struct CThostFtdcQryInstrumentMarginRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯ÊÖĞø·ÑÂÊ
-struct CThostFtdcQryInstrumentCommissionRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯ºÏÔ¼½»Ò×È¨ÏŞ
-struct CThostFtdcQryInstrumentTradingRightField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾
-struct CThostFtdcQryBrokerField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-};
-
-///²éÑ¯½»Ò×Ô±
-struct CThostFtdcQryTraderField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///²éÑ¯¹ÜÀíÓÃ»§¹¦ÄÜÈ¨ÏŞ
-struct CThostFtdcQrySuperUserFunctionField
-{
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-};
-
-///²éÑ¯ÓÃ»§»á»°
-struct CThostFtdcQryUserSessionField
-{
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾»áÔ±´úÂë
-struct CThostFtdcQryPartBrokerField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-};
-
-///²éÑ¯Ç°ÖÃ×´Ì¬
-struct CThostFtdcQryFrontStatusField
-{
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-};
-
-///²éÑ¯½»Ò×Ëù±¨µ¥
-struct CThostFtdcQryExchangeOrderField
-{
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///²éÑ¯±¨µ¥²Ù×÷
-struct CThostFtdcQryOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²éÑ¯½»Ò×Ëù±¨µ¥²Ù×÷
-struct CThostFtdcQryExchangeOrderActionField
-{
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///²éÑ¯¹ÜÀíÓÃ»§
-struct CThostFtdcQrySuperUserField
-{
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-};
-
-///²éÑ¯½»Ò×Ëù
-struct CThostFtdcQryExchangeField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²éÑ¯²úÆ·
-struct CThostFtdcQryProductField
-{
-	///²úÆ·´úÂë
-	TThostFtdcInstrumentIDType	ProductID;
-	///²úÆ·ÀàĞÍ
-	TThostFtdcProductClassType	ProductClass;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²éÑ¯ºÏÔ¼
-struct CThostFtdcQryInstrumentField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///²úÆ·´úÂë
-	TThostFtdcInstrumentIDType	ProductID;
-};
-
-///²éÑ¯ĞĞÇé
-struct CThostFtdcQryDepthMarketDataField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾ÓÃ»§
-struct CThostFtdcQryBrokerUserField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾ÓÃ»§È¨ÏŞ
-struct CThostFtdcQryBrokerUserFunctionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-};
-
-///½»Ò×Ëù±¨¼Û³·Ïú»Ø±¨
-struct CThostFtdcExchangeQuoteActionErrorField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨¼Û±àºÅ
-	TThostFtdcOrderSysIDType	QuoteSysID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÖ´ĞĞĞû¸æ±àºÅ
-	TThostFtdcOrderLocalIDType	QuoteLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///Âò±¨µ¥±¾µØ±¨µ¥ºÅ
-	TThostFtdcOrderLocalIDType	BidOrderLocalID;
-	///Âô±¨µ¥±¾µØ±¨µ¥ºÅ
-	TThostFtdcOrderLocalIDType	AskOrderLocalID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-};
-
-///²éÑ¯½»Ò×Ô±±¨ÅÌ»ú
-struct CThostFtdcQryTraderOfferField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///²éÑ¯³öÈë½ğÁ÷Ë®
-struct CThostFtdcQrySyncDepositField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///³öÈë½ğÁ÷Ë®ºÅ
-	TThostFtdcDepositSeqNoType	DepositSeqNo;
-};
-
-///²éÑ¯Í¶×ÊÕß½áËã½á¹û
-struct CThostFtdcQrySettlementInfoField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///²éÑ¯½»Ò×Ëù±£Ö¤½ğÂÊ
-struct CThostFtdcQryExchangeMarginRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²éÑ¯½»Ò×Ëùµ÷Õû±£Ö¤½ğÂÊ
-struct CThostFtdcQryExchangeMarginRateAdjustField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-};
-
-///²éÑ¯»ãÂÊ
-struct CThostFtdcQryExchangeRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Ô´±ÒÖÖ
-	TThostFtdcCurrencyIDType	FromCurrencyID;
-	///Ä¿±ê±ÒÖÖ
-	TThostFtdcCurrencyIDType	ToCurrencyID;
-};
-
-///²éÑ¯»õ±ÒÖÊÑºÁ÷Ë®
-struct CThostFtdcQrySyncFundMortgageField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///»õ±ÒÖÊÑºÁ÷Ë®ºÅ
-	TThostFtdcDepositSeqNoType	MortgageSeqNo;
-};
-
-///²éÑ¯±¨µ¥
-struct CThostFtdcQryHisOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	InsertTimeStart;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	InsertTimeEnd;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-};
-
-///µ±Ç°ÆÚÈ¨ºÏÔ¼×îĞ¡±£Ö¤½ğ
-struct CThostFtdcOptionInstrMiniMarginField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///µ¥Î»£¨ÊÖ£©ÆÚÈ¨ºÏÔ¼×îĞ¡±£Ö¤½ğ
-	TThostFtdcMoneyType	MinMargin;
-	///È¡Öµ·½Ê½
-	TThostFtdcValueMethodType	ValueMethod;
-	///ÊÇ·ñ¸úËæ½»Ò×ËùÊÕÈ¡
-	TThostFtdcBoolType	IsRelative;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///µ±Ç°ÆÚÈ¨ºÏÔ¼±£Ö¤½ğµ÷ÕûÏµÊı
-struct CThostFtdcOptionInstrMarginAdjustField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶»ú¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcRatioType	SShortMarginRatioByMoney;
-	///Í¶»ú¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcMoneyType	SShortMarginRatioByVolume;
-	///±£Öµ¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcRatioType	HShortMarginRatioByMoney;
-	///±£Öµ¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcMoneyType	HShortMarginRatioByVolume;
-	///Ì×Àû¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcRatioType	AShortMarginRatioByMoney;
-	///Ì×Àû¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcMoneyType	AShortMarginRatioByVolume;
-	///ÊÇ·ñ¸úËæ½»Ò×ËùÊÕÈ¡
-	TThostFtdcBoolType	IsRelative;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///×öÊĞÉÌ¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcRatioType	MShortMarginRatioByMoney;
-	///×öÊĞÉÌ¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcMoneyType	MShortMarginRatioByVolume;
-};
-
-///µ±Ç°ÆÚÈ¨ºÏÔ¼ÊÖĞø·ÑµÄÏêÏ¸ÄÚÈİ
-struct CThostFtdcOptionInstrCommRateField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¿ª²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	OpenRatioByMoney;
-	///¿ª²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	OpenRatioByVolume;
-	///Æ½²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseRatioByMoney;
-	///Æ½²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseRatioByVolume;
-	///Æ½½ñÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseTodayRatioByMoney;
-	///Æ½½ñÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseTodayRatioByVolume;
-	///Ö´ĞĞÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	StrikeRatioByMoney;
-	///Ö´ĞĞÊÖĞø·Ñ
-	TThostFtdcRatioType	StrikeRatioByVolume;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///ÆÚÈ¨½»Ò×³É±¾
-struct CThostFtdcOptionInstrTradeCostField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///ÆÚÈ¨ºÏÔ¼±£Ö¤½ğ²»±ä²¿·Ö
-	TThostFtdcMoneyType	FixedMargin;
-	///ÆÚÈ¨ºÏÔ¼×îĞ¡±£Ö¤½ğ
-	TThostFtdcMoneyType	MiniMargin;
-	///ÆÚÈ¨ºÏÔ¼È¨Àû½ğ
-	TThostFtdcMoneyType	Royalty;
-	///½»Ò×ËùÆÚÈ¨ºÏÔ¼±£Ö¤½ğ²»±ä²¿·Ö
-	TThostFtdcMoneyType	ExchFixedMargin;
-	///½»Ò×ËùÆÚÈ¨ºÏÔ¼×îĞ¡±£Ö¤½ğ
-	TThostFtdcMoneyType	ExchMiniMargin;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///ÆÚÈ¨½»Ò×³É±¾²éÑ¯
-struct CThostFtdcQryOptionInstrTradeCostField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///ÆÚÈ¨ºÏÔ¼±¨¼Û
-	TThostFtdcPriceType	InputPrice;
-	///±êµÄ¼Û¸ñ,Ìî0ÔòÓÃ×ò½áËã¼Û
-	TThostFtdcPriceType	UnderlyingPrice;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///ÆÚÈ¨ÊÖĞø·ÑÂÊ²éÑ¯
-struct CThostFtdcQryOptionInstrCommRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///¹ÉÖ¸ÏÖ»õÖ¸Êı
-struct CThostFtdcIndexPriceField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Ö¸ÊıÏÖ»õÊÕÅÌ¼Û
-	TThostFtdcPriceType	ClosePrice;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///ÊäÈëµÄÖ´ĞĞĞû¸æ
-struct CThostFtdcInputExecOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Ö´ĞĞĞû¸æÒıÓÃ
-	TThostFtdcOrderRefType	ExecOrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	OffsetFlag;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///±£ÁôÍ·´çÉêÇëµÄ³Ö²Ö·½Ïò
-	TThostFtdcPosiDirectionType	PosiDirection;
-	///ÆÚÈ¨ĞĞÈ¨ºóÊÇ·ñ±£ÁôÆÚ»õÍ·´çµÄ±ê¼Ç,¸Ã×Ö¶ÎÒÑ·ÏÆú
-	TThostFtdcExecOrderPositionFlagType	ReservePositionFlag;
-	///ÆÚÈ¨ĞĞÈ¨ºóÉú³ÉµÄÍ·´çÊÇ·ñ×Ô¶¯Æ½²Ö
-	TThostFtdcExecOrderCloseFlagType	CloseFlag;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///½»Ò×±àÂë
-	TThostFtdcClientIDType	ClientID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÊäÈëÖ´ĞĞĞû¸æ²Ù×÷
-struct CThostFtdcInputExecOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö´ĞĞĞû¸æ²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	ExecOrderActionRef;
-	///Ö´ĞĞĞû¸æÒıÓÃ
-	TThostFtdcOrderRefType	ExecOrderRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞĞû¸æ²Ù×÷±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecOrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///Ö´ĞĞĞû¸æ
-struct CThostFtdcExecOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Ö´ĞĞĞû¸æÒıÓÃ
-	TThostFtdcOrderRefType	ExecOrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	OffsetFlag;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///±£ÁôÍ·´çÉêÇëµÄ³Ö²Ö·½Ïò
-	TThostFtdcPosiDirectionType	PosiDirection;
-	///ÆÚÈ¨ĞĞÈ¨ºóÊÇ·ñ±£ÁôÆÚ»õÍ·´çµÄ±ê¼Ç,¸Ã×Ö¶ÎÒÑ·ÏÆú
-	TThostFtdcExecOrderPositionFlagType	ReservePositionFlag;
-	///ÆÚÈ¨ĞĞÈ¨ºóÉú³ÉµÄÍ·´çÊÇ·ñ×Ô¶¯Æ½²Ö
-	TThostFtdcExecOrderCloseFlagType	CloseFlag;
-	///±¾µØÖ´ĞĞĞû¸æ±àºÅ
-	TThostFtdcOrderLocalIDType	ExecOrderLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///Ö´ĞĞĞû¸æÌá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///Ö´ĞĞĞû¸æ±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecOrderSysID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///Ö´ĞĞ½á¹û
-	TThostFtdcExecResultType	ExecResult;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///²Ù×÷ÓÃ»§´úÂë
-	TThostFtdcUserIDType	ActiveUserID;
-	///¾­¼Í¹«Ë¾±¨µ¥±àºÅ
-	TThostFtdcSequenceNoType	BrokerExecOrderSeq;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///Ö´ĞĞĞû¸æ²Ù×÷
-struct CThostFtdcExecOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö´ĞĞĞû¸æ²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	ExecOrderActionRef;
-	///Ö´ĞĞĞû¸æÒıÓÃ
-	TThostFtdcOrderRefType	ExecOrderRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞĞû¸æ²Ù×÷±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecOrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÖ´ĞĞĞû¸æ±àºÅ
-	TThostFtdcOrderLocalIDType	ExecOrderLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///Ö´ĞĞĞû¸æ²éÑ¯
-struct CThostFtdcQryExecOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞĞû¸æ±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecOrderSysID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	InsertTimeStart;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	InsertTimeEnd;
-};
-
-///½»Ò×ËùÖ´ĞĞĞû¸æĞÅÏ¢
-struct CThostFtdcExchangeExecOrderField
-{
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	OffsetFlag;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///±£ÁôÍ·´çÉêÇëµÄ³Ö²Ö·½Ïò
-	TThostFtdcPosiDirectionType	PosiDirection;
-	///ÆÚÈ¨ĞĞÈ¨ºóÊÇ·ñ±£ÁôÆÚ»õÍ·´çµÄ±ê¼Ç,¸Ã×Ö¶ÎÒÑ·ÏÆú
-	TThostFtdcExecOrderPositionFlagType	ReservePositionFlag;
-	///ÆÚÈ¨ĞĞÈ¨ºóÉú³ÉµÄÍ·´çÊÇ·ñ×Ô¶¯Æ½²Ö
-	TThostFtdcExecOrderCloseFlagType	CloseFlag;
-	///±¾µØÖ´ĞĞĞû¸æ±àºÅ
-	TThostFtdcOrderLocalIDType	ExecOrderLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///Ö´ĞĞĞû¸æÌá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///Ö´ĞĞĞû¸æ±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecOrderSysID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///Ö´ĞĞ½á¹û
-	TThostFtdcExecResultType	ExecResult;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///½»Ò×ËùÖ´ĞĞĞû¸æ²éÑ¯
-struct CThostFtdcQryExchangeExecOrderField
-{
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///Ö´ĞĞĞû¸æ²Ù×÷²éÑ¯
-struct CThostFtdcQryExecOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///½»Ò×ËùÖ´ĞĞĞû¸æ²Ù×÷
-struct CThostFtdcExchangeExecOrderActionField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞĞû¸æ²Ù×÷±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecOrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÖ´ĞĞĞû¸æ±àºÅ
-	TThostFtdcOrderLocalIDType	ExecOrderLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///½»Ò×ËùÖ´ĞĞĞû¸æ²Ù×÷²éÑ¯
-struct CThostFtdcQryExchangeExecOrderActionField
-{
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///´íÎóÖ´ĞĞĞû¸æ
-struct CThostFtdcErrExecOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Ö´ĞĞĞû¸æÒıÓÃ
-	TThostFtdcOrderRefType	ExecOrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	OffsetFlag;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///±£ÁôÍ·´çÉêÇëµÄ³Ö²Ö·½Ïò
-	TThostFtdcPosiDirectionType	PosiDirection;
-	///ÆÚÈ¨ĞĞÈ¨ºóÊÇ·ñ±£ÁôÆÚ»õÍ·´çµÄ±ê¼Ç,¸Ã×Ö¶ÎÒÑ·ÏÆú
-	TThostFtdcExecOrderPositionFlagType	ReservePositionFlag;
-	///ÆÚÈ¨ĞĞÈ¨ºóÉú³ÉµÄÍ·´çÊÇ·ñ×Ô¶¯Æ½²Ö
-	TThostFtdcExecOrderCloseFlagType	CloseFlag;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///½»Ò×±àÂë
-	TThostFtdcClientIDType	ClientID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///²éÑ¯´íÎóÖ´ĞĞĞû¸æ
-struct CThostFtdcQryErrExecOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-};
-
-///´íÎóÖ´ĞĞĞû¸æ²Ù×÷
-struct CThostFtdcErrExecOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö´ĞĞĞû¸æ²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	ExecOrderActionRef;
-	///Ö´ĞĞĞû¸æÒıÓÃ
-	TThostFtdcOrderRefType	ExecOrderRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞĞû¸æ²Ù×÷±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecOrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///²éÑ¯´íÎóÖ´ĞĞĞû¸æ²Ù×÷
-struct CThostFtdcQryErrExecOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-};
-
-///Í¶×ÊÕßÆÚÈ¨ºÏÔ¼½»Ò×È¨ÏŞ
-struct CThostFtdcOptionInstrTradingRightField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///½»Ò×È¨ÏŞ
-	TThostFtdcTradingRightType	TradingRight;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-};
-
-///²éÑ¯ÆÚÈ¨ºÏÔ¼½»Ò×È¨ÏŞ
-struct CThostFtdcQryOptionInstrTradingRightField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///ÊäÈëµÄÑ¯¼Û
-struct CThostFtdcInputForQuoteField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Ñ¯¼ÛÒıÓÃ
-	TThostFtdcOrderRefType	ForQuoteRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///Ñ¯¼Û
-struct CThostFtdcForQuoteField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Ñ¯¼ÛÒıÓÃ
-	TThostFtdcOrderRefType	ForQuoteRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///±¾µØÑ¯¼Û±àºÅ
-	TThostFtdcOrderLocalIDType	ForQuoteLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///Ñ¯¼Û×´Ì¬
-	TThostFtdcForQuoteStatusType	ForQuoteStatus;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///²Ù×÷ÓÃ»§´úÂë
-	TThostFtdcUserIDType	ActiveUserID;
-	///¾­¼Í¹«Ë¾Ñ¯¼Û±àºÅ
-	TThostFtdcSequenceNoType	BrokerForQutoSeq;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-};
-
-///Ñ¯¼Û²éÑ¯
-struct CThostFtdcQryForQuoteField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	InsertTimeStart;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	InsertTimeEnd;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///½»Ò×ËùÑ¯¼ÛĞÅÏ¢
-struct CThostFtdcExchangeForQuoteField
-{
-	///±¾µØÑ¯¼Û±àºÅ
-	TThostFtdcOrderLocalIDType	ForQuoteLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///Ñ¯¼Û×´Ì¬
-	TThostFtdcForQuoteStatusType	ForQuoteStatus;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-};
-
-///½»Ò×ËùÑ¯¼Û²éÑ¯
-struct CThostFtdcQryExchangeForQuoteField
-{
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///ÊäÈëµÄ±¨¼Û
-struct CThostFtdcInputQuoteField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///±¨¼ÛÒıÓÃ
-	TThostFtdcOrderRefType	QuoteRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Âô¼Û¸ñ
-	TThostFtdcPriceType	AskPrice;
-	///Âò¼Û¸ñ
-	TThostFtdcPriceType	BidPrice;
-	///ÂôÊıÁ¿
-	TThostFtdcVolumeType	AskVolume;
-	///ÂòÊıÁ¿
-	TThostFtdcVolumeType	BidVolume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Âô¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	AskOffsetFlag;
-	///Âò¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	BidOffsetFlag;
-	///ÂôÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	AskHedgeFlag;
-	///ÂòÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	BidHedgeFlag;
-	///ÑÜÉúÂô±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	AskOrderRef;
-	///ÑÜÉúÂò±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	BidOrderRef;
-	///Ó¦¼Û±àºÅ
-	TThostFtdcOrderSysIDType	ForQuoteSysID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///½»Ò×±àÂë
-	TThostFtdcClientIDType	ClientID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÊäÈë±¨¼Û²Ù×÷
-struct CThostFtdcInputQuoteActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±¨¼Û²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	QuoteActionRef;
-	///±¨¼ÛÒıÓÃ
-	TThostFtdcOrderRefType	QuoteRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨¼Û²Ù×÷±àºÅ
-	TThostFtdcOrderSysIDType	QuoteSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///½»Ò×±àÂë
-	TThostFtdcClientIDType	ClientID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///ÂôÊıÁ¿
-	TThostFtdcVolumeType	AskVolume;
-	///ÂòÊıÁ¿
-	TThostFtdcVolumeType	BidVolume;
-};
-
-///±¨¼Û
-struct CThostFtdcQuoteField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///±¨¼ÛÒıÓÃ
-	TThostFtdcOrderRefType	QuoteRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Âô¼Û¸ñ
-	TThostFtdcPriceType	AskPrice;
-	///Âò¼Û¸ñ
-	TThostFtdcPriceType	BidPrice;
-	///ÂôÊıÁ¿
-	TThostFtdcVolumeType	AskVolume;
-	///ÂòÊıÁ¿
-	TThostFtdcVolumeType	BidVolume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Âô¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	AskOffsetFlag;
-	///Âò¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	BidOffsetFlag;
-	///ÂôÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	AskHedgeFlag;
-	///ÂòÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	BidHedgeFlag;
-	///±¾µØ±¨¼Û±àºÅ
-	TThostFtdcOrderLocalIDType	QuoteLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¨¼ÛÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///±¨¼ÛÌá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///±¨¼Û±àºÅ
-	TThostFtdcOrderSysIDType	QuoteSysID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///±¨¼Û×´Ì¬
-	TThostFtdcOrderStatusType	QuoteStatus;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///Âô·½±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	AskOrderSysID;
-	///Âò·½±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	BidOrderSysID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///²Ù×÷ÓÃ»§´úÂë
-	TThostFtdcUserIDType	ActiveUserID;
-	///¾­¼Í¹«Ë¾±¨¼Û±àºÅ
-	TThostFtdcSequenceNoType	BrokerQuoteSeq;
-	///ÑÜÉúÂô±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	AskOrderRef;
-	///ÑÜÉúÂò±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	BidOrderRef;
-	///Ó¦¼Û±àºÅ
-	TThostFtdcOrderSysIDType	ForQuoteSysID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///±¨¼Û²Ù×÷
-struct CThostFtdcQuoteActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±¨¼Û²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	QuoteActionRef;
-	///±¨¼ÛÒıÓÃ
-	TThostFtdcOrderRefType	QuoteRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨¼Û²Ù×÷±àºÅ
-	TThostFtdcOrderSysIDType	QuoteSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØ±¨¼Û±àºÅ
-	TThostFtdcOrderLocalIDType	QuoteLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///ÂôÊıÁ¿
-	TThostFtdcVolumeType	AskVolume;
-	///ÂòÊıÁ¿
-	TThostFtdcVolumeType	BidVolume;
-};
-
-///±¨¼Û²éÑ¯
-struct CThostFtdcQryQuoteField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨¼Û±àºÅ
-	TThostFtdcOrderSysIDType	QuoteSysID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	InsertTimeStart;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	InsertTimeEnd;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///½»Ò×Ëù±¨¼ÛĞÅÏ¢
-struct CThostFtdcExchangeQuoteField
-{
-	///Âô¼Û¸ñ
-	TThostFtdcPriceType	AskPrice;
-	///Âò¼Û¸ñ
-	TThostFtdcPriceType	BidPrice;
-	///ÂôÊıÁ¿
-	TThostFtdcVolumeType	AskVolume;
-	///ÂòÊıÁ¿
-	TThostFtdcVolumeType	BidVolume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Âô¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	AskOffsetFlag;
-	///Âò¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	BidOffsetFlag;
-	///ÂôÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	AskHedgeFlag;
-	///ÂòÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	BidHedgeFlag;
-	///±¾µØ±¨¼Û±àºÅ
-	TThostFtdcOrderLocalIDType	QuoteLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¨¼ÛÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///±¨¼ÛÌá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///±¨¼Û±àºÅ
-	TThostFtdcOrderSysIDType	QuoteSysID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///±¨¼Û×´Ì¬
-	TThostFtdcOrderStatusType	QuoteStatus;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///Âô·½±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	AskOrderSysID;
-	///Âò·½±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	BidOrderSysID;
-	///Ó¦¼Û±àºÅ
-	TThostFtdcOrderSysIDType	ForQuoteSysID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///½»Ò×Ëù±¨¼Û²éÑ¯
-struct CThostFtdcQryExchangeQuoteField
-{
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///±¨¼Û²Ù×÷²éÑ¯
-struct CThostFtdcQryQuoteActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///½»Ò×Ëù±¨¼Û²Ù×÷
-struct CThostFtdcExchangeQuoteActionField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨¼Û²Ù×÷±àºÅ
-	TThostFtdcOrderSysIDType	QuoteSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØ±¨¼Û±àºÅ
-	TThostFtdcOrderLocalIDType	QuoteLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///ÂôÊıÁ¿
-	TThostFtdcVolumeType	AskVolume;
-	///ÂòÊıÁ¿
-	TThostFtdcVolumeType	BidVolume;
-};
-
-///½»Ò×Ëù±¨¼Û²Ù×÷²éÑ¯
-struct CThostFtdcQryExchangeQuoteActionField
-{
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///ÆÚÈ¨ºÏÔ¼deltaÖµ
-struct CThostFtdcOptionInstrDeltaField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///DeltaÖµ
-	TThostFtdcRatioType	Delta;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///·¢¸ø×öÊĞÉÌµÄÑ¯¼ÛÇëÇó
-struct CThostFtdcForQuoteRspField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Ñ¯¼Û±àºÅ
-	TThostFtdcOrderSysIDType	ForQuoteSysID;
-	///Ñ¯¼ÛÊ±¼ä
-	TThostFtdcTimeType	ForQuoteTime;
-	///ÒµÎñÈÕÆÚ
-	TThostFtdcDateType	ActionDay;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///µ±Ç°ÆÚÈ¨ºÏÔ¼Ö´ĞĞÆ«ÒÆÖµµÄÏêÏ¸ÄÚÈİ
-struct CThostFtdcStrikeOffsetField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö´ĞĞÆ«ÒÆÖµ
-	TThostFtdcMoneyType	Offset;
-	///ĞĞÈ¨Æ«ÒÆÀàĞÍ
-	TThostFtdcStrikeOffsetTypeType	OffsetType;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///ÆÚÈ¨Ö´ĞĞÆ«ÒÆÖµ²éÑ¯
-struct CThostFtdcQryStrikeOffsetField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-};
-
-///Â¼ÈëËø¶¨
-struct CThostFtdcInputLockField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Ëø¶¨ÒıÓÃ
-	TThostFtdcOrderRefType	LockRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Ëø¶¨ÀàĞÍ
-	TThostFtdcLockTypeType	LockType;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///Ëø¶¨
-struct CThostFtdcLockField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Ëø¶¨ÒıÓÃ
-	TThostFtdcOrderRefType	LockRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Ëø¶¨ÀàĞÍ
-	TThostFtdcLockTypeType	LockType;
-	///±¾µØËø¶¨±àºÅ
-	TThostFtdcOrderLocalIDType	LockLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///Ö´ĞĞĞû¸æÌá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///Ëø¶¨±àºÅ
-	TThostFtdcOrderSysIDType	LockSysID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///Ëø¶¨×´Ì¬
-	TThostFtdcOrderActionStatusType	LockStatus;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///²Ù×÷ÓÃ»§´úÂë
-	TThostFtdcUserIDType	ActiveUserID;
-	///¾­¼Í¹«Ë¾±¨µ¥±àºÅ
-	TThostFtdcSequenceNoType	BrokerLockSeq;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///²éÑ¯Ëø¶¨
-struct CThostFtdcQryLockField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ëø¶¨±àºÅ
-	TThostFtdcOrderSysIDType	LockSysID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	InsertTimeStart;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	InsertTimeEnd;
-};
-
-///Ëø¶¨Ö¤È¯²ÖÎ»
-struct CThostFtdcLockPositionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///¶³½áÊıÁ¿
-	TThostFtdcVolumeType	FrozenVolume;
-	///½ñÈÕËø¶¨ÊıÁ¿
-	TThostFtdcVolumeType	TodayVolume;
-};
-
-///²éÑ¯Ëø¶¨Ö¤È¯²ÖÎ»
-struct CThostFtdcQryLockPositionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///µ±Ç°ETFÆÚÈ¨ºÏÔ¼ÊÖĞø·ÑµÄÏêÏ¸ÄÚÈİ
-struct CThostFtdcETFOptionInstrCommRateField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¿ª²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	OpenRatioByMoney;
-	///¿ª²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	OpenRatioByVolume;
-	///Æ½²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseRatioByMoney;
-	///Æ½²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseRatioByVolume;
-	///Æ½½ñÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseTodayRatioByMoney;
-	///Æ½½ñÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseTodayRatioByVolume;
-	///Ö´ĞĞÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	StrikeRatioByMoney;
-	///Ö´ĞĞÊÖĞø·Ñ
-	TThostFtdcRatioType	StrikeRatioByVolume;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///³Ö²Ö·½Ïò
-	TThostFtdcPosiDirectionType	PosiDirection;
-};
-
-///ETFÆÚÈ¨ÊÖĞø·ÑÂÊ²éÑ¯
-struct CThostFtdcQryETFOptionInstrCommRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///ÊäÈëµÄ³Ö²Ö¶³½á
-struct CThostFtdcPosiFreezeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///¶³½áÔ­Òò
-	TThostFtdcFreezeReasonTypeType	FreezeReasonType;
-	///¶³½áÀàĞÍ
-	TThostFtdcFreezeTypeType	FreezeType;
-};
-
-///²éÑ¯Ëø¶¨
-struct CThostFtdcQryExchangeLockField
-{
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///½»Ò×ËùËø¶¨
-struct CThostFtdcExchangeLockField
-{
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Ëø¶¨ÀàĞÍ
-	TThostFtdcLockTypeType	LockType;
-	///±¾µØËø¶¨±àºÅ
-	TThostFtdcOrderLocalIDType	LockLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///Ö´ĞĞĞû¸æÌá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///Ëø¶¨±àºÅ
-	TThostFtdcOrderSysIDType	LockSysID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///Ëø¶¨×´Ì¬
-	TThostFtdcOrderActionStatusType	LockStatus;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///½»Ò×Ëù²Ù×÷´íÎó
-struct CThostFtdcExchangeExecOrderActionErrorField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞĞû¸æ±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecOrderSysID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÖ´ĞĞĞû¸æ±àºÅ
-	TThostFtdcOrderLocalIDType	ExecOrderLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-};
-
-///ÊäÈëÅúÁ¿±¨µ¥²Ù×÷
-struct CThostFtdcInputBatchOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±¨µ¥²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	OrderActionRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÅúÁ¿±¨µ¥²Ù×÷
-struct CThostFtdcBatchOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±¨µ¥²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	OrderActionRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///½»Ò×ËùÅúÁ¿±¨µ¥²Ù×÷
-struct CThostFtdcExchangeBatchOrderActionField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///²éÑ¯ÅúÁ¿±¨µ¥²Ù×÷
-struct CThostFtdcQryBatchOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///Í¶×ÊÕß³Ö²ÖÏŞÖÆ
-struct CThostFtdcLimitPosiField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///×ÜÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	TotalVolume;
-	///¶àÍ·ÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	LongVolume;
-	///µ±ÈÕ¶àÍ·¿ª²ÖÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	OpenVolume;
-	///¶àÍ·³Ö²Ö½ğ¶îÏŞÖÆ,²»ÔÙÊ¹ÓÃ
-	TThostFtdcMoneyType	LongAmount;
-	///×ÜÊıÁ¿¶³½á
-	TThostFtdcVolumeType	TotalVolumeFrozen;
-	///¶àÍ·ÊıÁ¿¶³½á
-	TThostFtdcVolumeType	LongVolumeFrozen;
-	///µ±ÈÕ¿ª²ÖÊıÁ¿¶³½á
-	TThostFtdcVolumeType	OpenVolumeFrozen;
-	///¶àÍ·³Ö²Ö½ğ¶î¶³½á,²»ÔÙÊ¹ÓÃ
-	TThostFtdcMoneyType	LongAmountFrozen;
-};
-
-///²éÑ¯Í¶×ÊÕß³Ö²ÖÏŞÖÆ
-struct CThostFtdcQryLimitPosiField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///¾­¼Í¹«Ë¾³Ö²ÖÏŞÖÆ
-struct CThostFtdcBrokerLimitPosiField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///×ÜÊıÁ¿ÏŞÖÆ
-	TThostFtdcLargeVolumeType	TotalVolume;
-	///¶àÍ·ÊıÁ¿ÏŞÖÆ
-	TThostFtdcLargeVolumeType	LongVolume;
-	///×ÜÊıÁ¿¶³½á
-	TThostFtdcLargeVolumeType	TotalVolumeFrozen;
-	///¶àÍ·ÊıÁ¿¶³½á
-	TThostFtdcLargeVolumeType	LongVolumeFrozen;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾³Ö²ÖÏŞÖÆ
-struct CThostFtdcQryBrokerLimitPosiField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///Í¶×ÊÕßÖ¤È¯³Ö²ÖÏŞÖÆ
-struct CThostFtdcLimitPosiSField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///×ÜÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	TotalVolume;
-	///µ±ÈÕ¿ª²ÖÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	OpenVolume;
-	///×ÜÊıÁ¿¶³½á
-	TThostFtdcVolumeType	TotalVolumeFrozen;
-	///µ±ÈÕ¿ª²ÖÊıÁ¿¶³½á
-	TThostFtdcVolumeType	OpenVolumeFrozen;
-};
-
-///²éÑ¯Í¶×ÊÕßÖ¤È¯³Ö²ÖÏŞÖÆ
-struct CThostFtdcQryLimitPosiSField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///Í¶×ÊÕß³Ö²ÖÏŞÖÆ²ÎÊı
-struct CThostFtdcLimitPosiParamField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///×ÜÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	TotalVolume;
-	///¶àÍ·ÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	LongVolume;
-	///µ±ÈÕ¿ª²ÖÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	OpenVolume;
-	///¶àÍ·³Ö²Ö½ğ¶îÏŞÖÆ,²»ÔÙÊ¹ÓÃ
-	TThostFtdcMoneyType	LongAmount;
-};
-
-///¾­¼Í¹«Ë¾³Ö²ÖÏŞÖÆ²ÎÊı
-struct CThostFtdcBrokerLimitPosiParamField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///×ÜÊıÁ¿ÏŞÖÆ
-	TThostFtdcLargeVolumeType	TotalVolume;
-	///¶àÍ·ÊıÁ¿ÏŞÖÆ
-	TThostFtdcLargeVolumeType	LongVolume;
-};
-
-///Í¶×ÊÕßÖ¤È¯³Ö²ÖÏŞÖÆ²ÎÊı
-struct CThostFtdcLimitPosiParamSField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///×ÜÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	TotalVolume;
-	///µ±ÈÕ¿ª²ÖÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	OpenVolume;
-};
-
-///ÊäÈëÖ¤È¯´¦ÖÃ²Ù×÷
-struct CThostFtdcInputStockDisposalActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö¤È¯´¦ÖÃ²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	StockDisposalActionRef;
-	///Ö¤È¯´¦ÖÃÒıÓÃ
-	TThostFtdcOrderRefType	StockDisposalRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö¤È¯´¦ÖÃ²Ù×÷±àºÅ
-	TThostFtdcStockDisposalSysIDType	StockDisposalSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-};
-
-///Ö¤È¯´¦ÖÃ²Ù×÷
-struct CThostFtdcStockDisposalActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö¤È¯´¦ÖÃ²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	StockDisposalActionRef;
-	///Ö¤È¯´¦ÖÃÒıÓÃ
-	TThostFtdcOrderRefType	StockDisposalRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö¤È¯´¦ÖÃ²Ù×÷±àºÅ
-	TThostFtdcStockDisposalSysIDType	StockDisposalSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÖ¤È¯´¦ÖÃ±àºÅ
-	TThostFtdcOrderLocalIDType	StockDisposalLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-};
-
-///Ö¤È¯´¦ÖÃ²Ù×÷²éÑ¯
-struct CThostFtdcQryStockDisposalActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///½»Ò×ËùÖ¤È¯´¦ÖÃ²Ù×÷
-struct CThostFtdcExchangeStockDisposalActionField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö¤È¯´¦ÖÃ²Ù×÷±àºÅ
-	TThostFtdcStockDisposalSysIDType	StockDisposalSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÖ¤È¯´¦ÖÃ±àºÅ
-	TThostFtdcOrderLocalIDType	StockDisposalLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-};
-
-///´íÎóÖ¤È¯´¦ÖÃ²Ù×÷
-struct CThostFtdcQryExchangeStockDisposalActionField
-{
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///²éÑ¯´íÎóÖ¤È¯´¦ÖÃ²Ù×÷
-struct CThostFtdcQryErrStockDisposalActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-};
-
-///½»Ò×ËùÖ¤È¯´¦ÖÃ²Ù×÷´íÎó
-struct CThostFtdcExchangeStockDisposalActionErrorField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö¤È¯´¦ÖÃ±àºÅ
-	TThostFtdcStockDisposalSysIDType	StockDisposalSysID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÖ¤È¯´¦ÖÃ±àºÅ
-	TThostFtdcOrderLocalIDType	StockDisposalLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-};
-
-///´íÎóÖ¤È¯´¦ÖÃ²Ù×÷
-struct CThostFtdcErrStockDisposalActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö¤È¯´¦ÖÃ²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	StockDisposalActionRef;
-	///Ö¤È¯´¦ÖÃÒıÓÃ
-	TThostFtdcOrderRefType	StockDisposalRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö¤È¯´¦ÖÃ²Ù×÷±àºÅ
-	TThostFtdcStockDisposalSysIDType	StockDisposalSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///Í¶×ÊÕß·Ö¼¶
-struct CThostFtdcInvestorLevelField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×ÊÕß·Ö¼¶ÀàĞÍ
-	TThostFtdcLevelTypeType	LevelType;
-};
-
-///×éºÏºÏÔ¼°²È«ÏµÊı
-struct CThostFtdcCombInstrumentGuardField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///
-	TThostFtdcRatioType	GuarantRatio;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///×éºÏºÏÔ¼°²È«ÏµÊı²éÑ¯
-struct CThostFtdcQryCombInstrumentGuardField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///ÊäÈëµÄÉêÇë×éºÏ
-struct CThostFtdcInputCombActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///×éºÏÒıÓÃ
-	TThostFtdcOrderRefType	CombActionRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///×éºÏÖ¸Áî·½Ïò
-	TThostFtdcCombDirectionType	CombDirection;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///²ğ·Ö×éºÏ±àºÅ
-	TThostFtdcTradeIDType	ComTradeID;
-};
-
-///ÉêÇë×éºÏ
-struct CThostFtdcCombActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///×éºÏÒıÓÃ
-	TThostFtdcOrderRefType	CombActionRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///×éºÏÖ¸Áî·½Ïò
-	TThostFtdcCombDirectionType	CombDirection;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///±¾µØÉêÇë×éºÏ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///×éºÏ×´Ì¬
-	TThostFtdcOrderActionStatusType	ActionStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///×éºÏ±àºÅ
-	TThostFtdcTradeIDType	ComTradeID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///ÉêÇë×éºÏ²éÑ¯
-struct CThostFtdcQryCombActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///½»Ò×ËùÉêÇë×éºÏĞÅÏ¢
-struct CThostFtdcExchangeCombActionField
-{
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///×éºÏÖ¸Áî·½Ïò
-	TThostFtdcCombDirectionType	CombDirection;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///±¾µØÉêÇë×éºÏ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///×éºÏ×´Ì¬
-	TThostFtdcOrderActionStatusType	ActionStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///×éºÏ±àºÅ
-	TThostFtdcTradeIDType	ComTradeID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-};
-
-///½»Ò×ËùÉêÇë×éºÏ²éÑ¯
-struct CThostFtdcQryExchangeCombActionField
-{
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///²úÆ·±¨¼Û»ãÂÊ
-struct CThostFtdcProductExchRateField
-{
-	///²úÆ·´úÂë
-	TThostFtdcInstrumentIDType	ProductID;
-	///±¨¼Û±ÒÖÖÀàĞÍ
-	TThostFtdcCurrencyIDType	QuoteCurrencyID;
-	///»ãÂÊ
-	TThostFtdcExchangeRateType	ExchangeRate;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²úÆ·±¨¼Û»ãÂÊ²éÑ¯
-struct CThostFtdcQryProductExchRateField
-{
-	///²úÆ·´úÂë
-	TThostFtdcInstrumentIDType	ProductID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///ÊäÈëµÄÖ¸¶¨
-struct CThostFtdcInputDesignateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö¸¶¨µÇ¼ÇÒıÓÃ
-	TThostFtdcOrderRefType	DesignateRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Ö¸¶¨·½Ïò
-	TThostFtdcDesignateTypeType	DesignateType;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×µ¥Ôª
-	TThostFtdcTraderIDType	PBU;
-};
-
-///Ö¸¶¨
-struct CThostFtdcDesignateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö¸¶¨µÇ¼ÇÒıÓÃ
-	TThostFtdcOrderRefType	DesignateRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Ö¸¶¨·½Ïò
-	TThostFtdcDesignateTypeType	DesignateType;
-	///±¾µØÖ¸¶¨±àºÅ
-	TThostFtdcOrderLocalIDType	DesignateLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///Ö¸¶¨×´Ì¬
-	TThostFtdcOrderActionStatusType	DesignateStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///½»Ò×Ëù½»Ò×µ¥Ôª
-	TThostFtdcTraderIDType	PBU;
-};
-
-///ÉêÇëÖ¸¶¨
-struct CThostFtdcQryDesignateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///½»Ò×ËùÖ¸¶¨ĞÅÏ¢
-struct CThostFtdcExchangeDesignateField
-{
-	///Ö¸¶¨·½Ïò
-	TThostFtdcDesignateTypeType	DesignateType;
-	///±¾µØÖ¸¶¨±àºÅ
-	TThostFtdcOrderLocalIDType	DesignateLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///Ö¸¶¨×´Ì¬
-	TThostFtdcOrderActionStatusType	DesignateStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-};
-
-///ÊäÈëµÄÖ¤È¯´¦ÖÃ
-struct CThostFtdcInputStockDisposalField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö¤È¯´¦ÖÃµÇ¼ÇÒıÓÃ
-	TThostFtdcOrderRefType	StockDisposalRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///Ö¤È¯´¦ÖÃ·½Ïò
-	TThostFtdcStockDisposalTypeType	StockDisposalType;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///Ö¤È¯´¦ÖÃ
-struct CThostFtdcStockDisposalField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö¤È¯´¦ÖÃµÇ¼ÇÒıÓÃ
-	TThostFtdcOrderRefType	StockDisposalRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///Ö¤È¯´¦ÖÃ·½Ïò
-	TThostFtdcStockDisposalTypeType	StockDisposalType;
-	///±¾µØÖ¤È¯´¦ÖÃ±àºÅ
-	TThostFtdcOrderLocalIDType	StockDisposalLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///Ö¤È¯´¦ÖÃ×´Ì¬
-	TThostFtdcStockDisposalStatusType	StockDisposalStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Ö¤È¯´¦ÖÃ²Ù×÷±àºÅ
-	TThostFtdcStockDisposalSysIDType	StockDisposalSysID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-};
-
-///ÉêÇëÖ¤È¯´¦ÖÃ
-struct CThostFtdcQryStockDisposalField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///½»Ò×ËùÖ¤È¯´¦ÖÃĞÅÏ¢
-struct CThostFtdcExchangeStockDisposalField
-{
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///Ö¤È¯´¦ÖÃ·½Ïò
-	TThostFtdcStockDisposalTypeType	StockDisposalType;
-	///±¾µØÖ¤È¯´¦ÖÃ±àºÅ
-	TThostFtdcOrderLocalIDType	StockDisposalLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///Ö¤È¯´¦ÖÃ×´Ì¬
-	TThostFtdcStockDisposalStatusType	StockDisposalStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Ö¤È¯´¦ÖÃ²Ù×÷±àºÅ
-	TThostFtdcStockDisposalSysIDType	StockDisposalSysID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-};
-
-///²éÑ¯Í¶×ÊÕß·Ö¼¶
-struct CThostFtdcQryInvestorLevelField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²éÑ¯Ñ¯¼Û¼Û²î²ÎÊı
-struct CThostFtdcQryForQuoteParamField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///Ñ¯¼Û¼Û²î²ÎÊı
-struct CThostFtdcForQuoteParamField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///×îĞÂ¼Û
-	TThostFtdcPriceType	LastPrice;
-	///¼Û²î
-	TThostFtdcPriceType	PriceInterval;
-};
-
-///²éÑ¯ĞĞÈ¨¶³½á
-struct CThostFtdcQryExecFreezeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///ĞĞÈ¨¶³½á
-struct CThostFtdcExecFreezeField
-{
-	///±êµÄºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///³Ö²Ö¶à¿Õ·½Ïò
-	TThostFtdcPosiDirectionType	PosiDirection;
-	///ÆÚÈ¨ÀàĞÍ
-	TThostFtdcOptionsTypeType	OptionsType;
-	///¶³½áµÄÊıÁ¿_µ¥Î»¹É
-	TThostFtdcVolumeType	Volume;
-	///¶³½á½ğ¶î
-	TThostFtdcMoneyType	FrozenAmount;
-};
-
-///µ±Ç°×öÊĞÉÌÆÚÈ¨ºÏÔ¼ÊÖĞø·ÑµÄÏêÏ¸ÄÚÈİ
-struct CThostFtdcMMOptionInstrCommRateField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¿ª²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	OpenRatioByMoney;
-	///¿ª²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	OpenRatioByVolume;
-	///Æ½²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseRatioByMoney;
-	///Æ½²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseRatioByVolume;
-	///Æ½½ñÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseTodayRatioByMoney;
-	///Æ½½ñÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseTodayRatioByVolume;
-	///Ö´ĞĞÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	StrikeRatioByMoney;
-	///Ö´ĞĞÊÖĞø·Ñ
-	TThostFtdcRatioType	StrikeRatioByVolume;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///×öÊĞÉÌÆÚÈ¨ÊÖĞø·ÑÂÊ²éÑ¯
-struct CThostFtdcQryMMOptionInstrCommRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///×öÊĞÉÌºÏÔ¼ÊÖĞø·ÑÂÊ
-struct CThostFtdcMMInstrumentCommissionRateField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¿ª²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	OpenRatioByMoney;
-	///¿ª²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	OpenRatioByVolume;
-	///Æ½²ÖÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseRatioByMoney;
-	///Æ½²ÖÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseRatioByVolume;
-	///Æ½½ñÊÖĞø·ÑÂÊ
-	TThostFtdcRatioType	CloseTodayRatioByMoney;
-	///Æ½½ñÊÖĞø·Ñ
-	TThostFtdcRatioType	CloseTodayRatioByVolume;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²éÑ¯×öÊĞÉÌºÏÔ¼ÊÖĞø·ÑÂÊ
-struct CThostFtdcQryMMInstrumentCommissionRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///µ±Ç°±¨µ¥ÊÖĞø·ÑµÄÏêÏ¸ÄÚÈİ
-struct CThostFtdcInstrumentOrderCommRateField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///±¨µ¥ÊÖĞø·Ñ
-	TThostFtdcRatioType	OrderCommByVolume;
-	///³·µ¥ÊÖĞø·Ñ
-	TThostFtdcRatioType	OrderActionCommByVolume;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///±¨µ¥ÊÖĞø·ÑÂÊ²éÑ¯
-struct CThostFtdcQryInstrumentOrderCommRateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///Í¶×ÊÕß½ğ¶îÏŞÖÆ
-struct CThostFtdcLimitAmountField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¶àÍ·³Ö²Ö½ğ¶îÏŞÖÆ
-	TThostFtdcMoneyType	LongAmount;
-	///¶àÍ·³Ö²Ö½ğ¶î¶³½á
-	TThostFtdcMoneyType	LongAmountFrozen;
-};
-
-///²éÑ¯Í¶×ÊÕß½ğ¶îÏŞÖÆ
-struct CThostFtdcQryLimitAmountField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///Í¶×ÊÕß½ğ¶îÏŞÖÆ²ÎÊı
-struct CThostFtdcLimitAmountParamField
-{
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¶àÍ·³Ö²Ö½ğ¶îÏŞÖÆ
-	TThostFtdcMoneyType	LongAmount;
-};
-
-///µ±Ç°ÆÚÈ¨ºÏÔ¼±£Ö¤½ğ±£ÕÏÏµÊı
-struct CThostFtdcOptionInstrMarginGuardField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶»ú¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcRatioType	SShortMarginRatioByMoney;
-	///Í¶»ú¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcMoneyType	SShortMarginRatioByVolume;
-	///±£Öµ¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcRatioType	HShortMarginRatioByMoney;
-	///±£Öµ¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcMoneyType	HShortMarginRatioByVolume;
-	///Ì×Àû¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcRatioType	AShortMarginRatioByMoney;
-	///Ì×Àû¿ÕÍ·±£Ö¤½ğµ÷ÕûÏµÊı
-	TThostFtdcMoneyType	AShortMarginRatioByVolume;
-	///ÊÇ·ñ¸úËæ½»Ò×ËùÊÕÈ¡
-	TThostFtdcBoolType	IsRelative;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///½»Ò×²ÎÊı
-struct CThostFtdcTradeParamField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///²ÎÊı´úÂë
-	TThostFtdcTradeParamIDType	TradeParamID;
-	///²ÎÊı´úÂëÖµ
-	TThostFtdcSettlementParamValueType	TradeParamValue;
-	///±¸×¢
-	TThostFtdcMemoType	Memo;
-};
-
-///ÈÏÖ¤Âë
-struct CThostFtdcAuthenticationCodeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///ÈÏÖ¤Âë
-	TThostFtdcAuthCodeType	AuthCode;
-	///¾ÉÈÏÖ¤Âë
-	TThostFtdcAuthCodeType	PreAuthCode;
-};
-
-///Éú³É¶ÌĞÅÑéÖ¤ÂëÇëÇó
-struct CThostFtdcReqSmsCodeGenerateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///ÖÕ¶ËIPµØÖ·
-	TThostFtdcIPAddressType	ClientIPAddress;
-};
-
-///Éú³É¶ÌĞÅÑéÖ¤ÂëÓ¦´ğ
-struct CThostFtdcRspSmsCodeGenerateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-};
-
-///ÓÃ»§ÑéÖ¤·½Ê½
-struct CThostFtdcBrokerUserAuthMethodField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊÇ·ñÆôÓÃ¶ÌĞÅÑéÖ¤Âë
-	TThostFtdcBoolType	IsSms;
-};
-
-///¾­¼Í¹«Ë¾ÓÃ»§¶ÌĞÅÑéÖ¤Âë
-struct CThostFtdcBrokerUserSmsCodeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊÖ»ú
-	TThostFtdcMobileType	Mobile;
-	///¶ÌĞÅÑéÖ¤Âë
-	TThostFtdcSmsCodeType	SmsCode;
-	///ĞòÁĞºÅ
-	TThostFtdcSeqNoType	SeqNo;
-	///·¢ËÍ×´Ì¬
-	TThostFtdcSmsCodeStatusType	Status;
-};
-
-///ºÏÔ¼±£Ö¤½ğÂÊµ÷Õû
-struct CThostFtdcInstrumentMarginRateULField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///¶àÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	LongMarginRatioByMoney;
-	///¶àÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	LongMarginRatioByVolume;
-	///¿ÕÍ·±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	ShortMarginRatioByMoney;
-	///¿ÕÍ·±£Ö¤½ğ·Ñ
-	TThostFtdcMoneyType	ShortMarginRatioByVolume;
-};
-
-///ÆÚ»õ³Ö²ÖÏŞÖÆ²ÎÊı
-struct CThostFtdcFutureLimitPosiParamField
-{
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///²úÆ·´úÂë
-	TThostFtdcInstrumentIDType	ProductID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///µ±ÈÕÍ¶»ú¿ª²ÖÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	SpecOpenVolume;
-	///µ±ÈÕÌ×Àû¿ª²ÖÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	ArbiOpenVolume;
-	///µ±ÈÕÍ¶»ú+Ì×Àû¿ª²ÖÊıÁ¿ÏŞÖÆ
-	TThostFtdcVolumeType	OpenVolume;
-};
-
-///½ûÖ¹µÇÂ¼IP
-struct CThostFtdcLoginForbiddenIPField
-{
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-};
-
-///IPÁĞ±í
-struct CThostFtdcIPListField
-{
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///ÊÇ·ñ°×Ãûµ¥
-	TThostFtdcBoolType	IsWhite;
-};
-
-///ÊäÈëµÄÆÚÈ¨×Ô¶Ô³å
-struct CThostFtdcInputOptionSelfCloseField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÆÚÈ¨×Ô¶Ô³åÒıÓÃ
-	TThostFtdcOrderRefType	OptionSelfCloseRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///ÆÚÈ¨ĞĞÈ¨µÄÍ·´çÊÇ·ñ×Ô¶Ô³å
-	TThostFtdcOptSelfCloseFlagType	OptSelfCloseFlag;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///½»Ò×±àÂë
-	TThostFtdcClientIDType	ClientID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÊäÈëÆÚÈ¨×Ô¶Ô³å²Ù×÷
-struct CThostFtdcInputOptionSelfCloseActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ÆÚÈ¨×Ô¶Ô³å²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	OptionSelfCloseActionRef;
-	///ÆÚÈ¨×Ô¶Ô³åÒıÓÃ
-	TThostFtdcOrderRefType	OptionSelfCloseRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ÆÚÈ¨×Ô¶Ô³å²Ù×÷±àºÅ
-	TThostFtdcOrderSysIDType	OptionSelfCloseSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÆÚÈ¨×Ô¶Ô³å
-struct CThostFtdcOptionSelfCloseField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÆÚÈ¨×Ô¶Ô³åÒıÓÃ
-	TThostFtdcOrderRefType	OptionSelfCloseRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///ÆÚÈ¨ĞĞÈ¨µÄÍ·´çÊÇ·ñ×Ô¶Ô³å
-	TThostFtdcOptSelfCloseFlagType	OptSelfCloseFlag;
-	///±¾µØÆÚÈ¨×Ô¶Ô³å±àºÅ
-	TThostFtdcOrderLocalIDType	OptionSelfCloseLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÆÚÈ¨×Ô¶Ô³åÌá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///ÆÚÈ¨×Ô¶Ô³å±àºÅ
-	TThostFtdcOrderSysIDType	OptionSelfCloseSysID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///×Ô¶Ô³å½á¹û
-	TThostFtdcOrderActionStatusType	OptionSelfCloseStatus;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///²Ù×÷ÓÃ»§´úÂë
-	TThostFtdcUserIDType	ActiveUserID;
-	///¾­¼Í¹«Ë¾±¨µ¥±àºÅ
-	TThostFtdcSequenceNoType	BrokerOptionSelfCloseSeq;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÆÚÈ¨×Ô¶Ô³å²Ù×÷
-struct CThostFtdcOptionSelfCloseActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ÆÚÈ¨×Ô¶Ô³å²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	OptionSelfCloseActionRef;
-	///ÆÚÈ¨×Ô¶Ô³åÒıÓÃ
-	TThostFtdcOrderRefType	OptionSelfCloseRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ÆÚÈ¨×Ô¶Ô³å²Ù×÷±àºÅ
-	TThostFtdcOrderSysIDType	OptionSelfCloseSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÆÚÈ¨×Ô¶Ô³å±àºÅ
-	TThostFtdcOrderLocalIDType	OptionSelfCloseLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÆÚÈ¨×Ô¶Ô³å²éÑ¯
-struct CThostFtdcQryOptionSelfCloseField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ÆÚÈ¨×Ô¶Ô³å±àºÅ
-	TThostFtdcOrderSysIDType	OptionSelfCloseSysID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	InsertTimeStart;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	InsertTimeEnd;
-};
-
-///½»Ò×ËùÆÚÈ¨×Ô¶Ô³åĞÅÏ¢
-struct CThostFtdcExchangeOptionSelfCloseField
-{
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///ÆÚÈ¨ĞĞÈ¨µÄÍ·´çÊÇ·ñ×Ô¶Ô³å
-	TThostFtdcOptSelfCloseFlagType	OptSelfCloseFlag;
-	///±¾µØÆÚÈ¨×Ô¶Ô³å±àºÅ
-	TThostFtdcOrderLocalIDType	OptionSelfCloseLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÆÚÈ¨×Ô¶Ô³åÌá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///ÆÚÈ¨×Ô¶Ô³å±àºÅ
-	TThostFtdcOrderSysIDType	OptionSelfCloseSysID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///×Ô¶Ô³å½á¹û
-	TThostFtdcOrderActionStatusType	OptionSelfCloseStatus;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÆÚÈ¨×Ô¶Ô³å²Ù×÷²éÑ¯
-struct CThostFtdcQryOptionSelfCloseActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///½»Ò×ËùÆÚÈ¨×Ô¶Ô³å²Ù×÷
-struct CThostFtdcExchangeOptionSelfCloseActionField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ÆÚÈ¨×Ô¶Ô³å²Ù×÷±àºÅ
-	TThostFtdcOrderSysIDType	OptionSelfCloseSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÆÚÈ¨×Ô¶Ô³å±àºÅ
-	TThostFtdcOrderLocalIDType	OptionSelfCloseLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÑÓÊ±»»»ãÍ¬²½
-struct CThostFtdcSyncDelaySwapField
-{
-	///»»»ãÁ÷Ë®ºÅ
-	TThostFtdcDepositSeqNoType	DelaySwapSeqNo;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ô´±ÒÖÖ
-	TThostFtdcCurrencyIDType	FromCurrencyID;
-	///Ô´½ğ¶î
-	TThostFtdcMoneyType	FromAmount;
-	///Ô´»»»ã¶³½á½ğ¶î
-	TThostFtdcMoneyType	FromFrozenSwap;
-	///Ä¿±ê±ÒÖÖ
-	TThostFtdcCurrencyIDType	ToCurrencyID;
-	///Ä¿±ê½ğ¶î
-	TThostFtdcMoneyType	ToAmount;
-	///Ä¿±ê»»»ã¶³½á½ğ¶î
-	TThostFtdcMoneyType	ToFrozenSwap;
-};
-
-///²éÑ¯ÑÓÊ±»»»ãÍ¬²½
-struct CThostFtdcQrySyncDelaySwapField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÑÓÊ±»»»ãÁ÷Ë®ºÅ
-	TThostFtdcDepositSeqNoType	DelaySwapSeqNo;
-};
-
-///Í¶×Êµ¥Ôª
-struct CThostFtdcInvestUnitField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///Í¶×ÊÕßµ¥ÔªÃû³Æ
-	TThostFtdcPartyNameType	InvestorUnitName;
-	///Í¶×ÊÕß·Ö×é´úÂë
-	TThostFtdcInvestorIDType	InvestorGroupID;
-	///ÊÖĞø·ÑÂÊÄ£°å´úÂë
-	TThostFtdcInvestorIDType	CommModelID;
-	///±£Ö¤½ğÂÊÄ£°å´úÂë
-	TThostFtdcInvestorIDType	MarginModelID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///²éÑ¯Í¶×Êµ¥Ôª
-struct CThostFtdcQryInvestUnitField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///ÊĞ³¡ĞĞÇé
-struct CThostFtdcMarketDataField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///×îĞÂ¼Û
-	TThostFtdcPriceType	LastPrice;
-	///ÉÏ´Î½áËã¼Û
-	TThostFtdcPriceType	PreSettlementPrice;
-	///×òÊÕÅÌ
-	TThostFtdcPriceType	PreClosePrice;
-	///×ò³Ö²ÖÁ¿
-	TThostFtdcLargeVolumeType	PreOpenInterest;
-	///½ñ¿ªÅÌ
-	TThostFtdcPriceType	OpenPrice;
-	///×î¸ß¼Û
-	TThostFtdcPriceType	HighestPrice;
-	///×îµÍ¼Û
-	TThostFtdcPriceType	LowestPrice;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///³É½»½ğ¶î
-	TThostFtdcMoneyType	Turnover;
-	///³Ö²ÖÁ¿
-	TThostFtdcLargeVolumeType	OpenInterest;
-	///½ñÊÕÅÌ
-	TThostFtdcPriceType	ClosePrice;
-	///±¾´Î½áËã¼Û
-	TThostFtdcPriceType	SettlementPrice;
-	///ÕÇÍ£°å¼Û
-	TThostFtdcPriceType	UpperLimitPrice;
-	///µøÍ£°å¼Û
-	TThostFtdcPriceType	LowerLimitPrice;
-	///×òĞéÊµ¶È
-	TThostFtdcRatioType	PreDelta;
-	///½ñĞéÊµ¶È
-	TThostFtdcRatioType	CurrDelta;
-	///×îºóĞŞ¸ÄÊ±¼ä
-	TThostFtdcTimeType	UpdateTime;
-	///×îºóĞŞ¸ÄºÁÃë
-	TThostFtdcMillisecType	UpdateMillisec;
-	///ÒµÎñÈÕÆÚ
-	TThostFtdcDateType	ActionDay;
-};
-
-///ĞĞÇé»ù´¡ÊôĞÔ
-struct CThostFtdcMarketDataBaseField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///ÉÏ´Î½áËã¼Û
-	TThostFtdcPriceType	PreSettlementPrice;
-	///×òÊÕÅÌ
-	TThostFtdcPriceType	PreClosePrice;
-	///×ò³Ö²ÖÁ¿
-	TThostFtdcLargeVolumeType	PreOpenInterest;
-	///×òĞéÊµ¶È
-	TThostFtdcRatioType	PreDelta;
-};
-
-///ĞĞÇé¾²Ì¬ÊôĞÔ
-struct CThostFtdcMarketDataStaticField
-{
-	///½ñ¿ªÅÌ
-	TThostFtdcPriceType	OpenPrice;
-	///×î¸ß¼Û
-	TThostFtdcPriceType	HighestPrice;
-	///×îµÍ¼Û
-	TThostFtdcPriceType	LowestPrice;
-	///½ñÊÕÅÌ
-	TThostFtdcPriceType	ClosePrice;
-	///ÕÇÍ£°å¼Û
-	TThostFtdcPriceType	UpperLimitPrice;
-	///µøÍ£°å¼Û
-	TThostFtdcPriceType	LowerLimitPrice;
-	///±¾´Î½áËã¼Û
-	TThostFtdcPriceType	SettlementPrice;
-	///½ñĞéÊµ¶È
-	TThostFtdcRatioType	CurrDelta;
-};
-
-///ĞĞÇé×îĞÂ³É½»ÊôĞÔ
-struct CThostFtdcMarketDataLastMatchField
-{
-	///×îĞÂ¼Û
-	TThostFtdcPriceType	LastPrice;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///³É½»½ğ¶î
-	TThostFtdcMoneyType	Turnover;
-	///³Ö²ÖÁ¿
-	TThostFtdcLargeVolumeType	OpenInterest;
-};
-
-///ĞĞÇé×îÓÅ¼ÛÊôĞÔ
-struct CThostFtdcMarketDataBestPriceField
-{
-	///ÉêÂò¼ÛÒ»
-	TThostFtdcPriceType	BidPrice1;
-	///ÉêÂòÁ¿Ò»
-	TThostFtdcVolumeType	BidVolume1;
-	///ÉêÂô¼ÛÒ»
-	TThostFtdcPriceType	AskPrice1;
-	///ÉêÂôÁ¿Ò»
-	TThostFtdcVolumeType	AskVolume1;
-};
-
-///ĞĞÇéÉêÂò¶ş¡¢ÈıÊôĞÔ
-struct CThostFtdcMarketDataBid23Field
-{
-	///ÉêÂò¼Û¶ş
-	TThostFtdcPriceType	BidPrice2;
-	///ÉêÂòÁ¿¶ş
-	TThostFtdcVolumeType	BidVolume2;
-	///ÉêÂò¼ÛÈı
-	TThostFtdcPriceType	BidPrice3;
-	///ÉêÂòÁ¿Èı
-	TThostFtdcVolumeType	BidVolume3;
-};
-
-///ĞĞÇéÉêÂô¶ş¡¢ÈıÊôĞÔ
-struct CThostFtdcMarketDataAsk23Field
-{
-	///ÉêÂô¼Û¶ş
-	TThostFtdcPriceType	AskPrice2;
-	///ÉêÂôÁ¿¶ş
-	TThostFtdcVolumeType	AskVolume2;
-	///ÉêÂô¼ÛÈı
-	TThostFtdcPriceType	AskPrice3;
-	///ÉêÂôÁ¿Èı
-	TThostFtdcVolumeType	AskVolume3;
-};
-
-///ĞĞÇéÉêÂòËÄ¡¢ÎåÊôĞÔ
-struct CThostFtdcMarketDataBid45Field
-{
-	///ÉêÂò¼ÛËÄ
-	TThostFtdcPriceType	BidPrice4;
-	///ÉêÂòÁ¿ËÄ
-	TThostFtdcVolumeType	BidVolume4;
-	///ÉêÂò¼ÛÎå
-	TThostFtdcPriceType	BidPrice5;
-	///ÉêÂòÁ¿Îå
-	TThostFtdcVolumeType	BidVolume5;
-};
-
-///ĞĞÇéÉêÂôËÄ¡¢ÎåÊôĞÔ
-struct CThostFtdcMarketDataAsk45Field
-{
-	///ÉêÂô¼ÛËÄ
-	TThostFtdcPriceType	AskPrice4;
-	///ÉêÂôÁ¿ËÄ
-	TThostFtdcVolumeType	AskVolume4;
-	///ÉêÂô¼ÛÎå
-	TThostFtdcPriceType	AskPrice5;
-	///ÉêÂôÁ¿Îå
-	TThostFtdcVolumeType	AskVolume5;
-};
-
-///ĞĞÇé¸üĞÂÊ±¼äÊôĞÔ
-struct CThostFtdcMarketDataUpdateTimeField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///×îºóĞŞ¸ÄÊ±¼ä
-	TThostFtdcTimeType	UpdateTime;
-	///×îºóĞŞ¸ÄºÁÃë
-	TThostFtdcMillisecType	UpdateMillisec;
-	///ÒµÎñÈÕÆÚ
-	TThostFtdcDateType	ActionDay;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///ĞĞÇé½»Ò×Ëù´úÂëÊôĞÔ
-struct CThostFtdcMarketDataExchangeField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///Ö¸¶¨µÄºÏÔ¼
-struct CThostFtdcSpecificInstrumentField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-};
-
-///ºÏÔ¼×´Ì¬
-struct CThostFtdcInstrumentStatusField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½áËã×é´úÂë
-	TThostFtdcSettlementGroupIDType	SettlementGroupID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ºÏÔ¼½»Ò××´Ì¬
-	TThostFtdcInstrumentStatusType	InstrumentStatus;
-	///½»Ò×½×¶Î±àºÅ
-	TThostFtdcTradingSegmentSNType	TradingSegmentSN;
-	///½øÈë±¾×´Ì¬Ê±¼ä
-	TThostFtdcTimeType	EnterTime;
-	///½øÈë±¾×´Ì¬Ô­Òò
-	TThostFtdcInstStatusEnterReasonType	EnterReason;
-};
-
-///²éÑ¯ºÏÔ¼×´Ì¬
-struct CThostFtdcQryInstrumentStatusField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-};
-
-///Í¶×ÊÕßÕË»§
-struct CThostFtdcInvestorAccountField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÒµÎñÀàĞÍ
-	TThostFtdcBizTypeType	BizType;
-};
-
-///¸¡¶¯Ó¯¿÷Ëã·¨
-struct CThostFtdcPositionProfitAlgorithmField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///Ó¯¿÷Ëã·¨
-	TThostFtdcAlgorithmType	Algorithm;
-	///±¸×¢
-	TThostFtdcMemoType	Memo;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///»áÔ±×Ê½ğÕÛ¿Û
-struct CThostFtdcDiscountField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///×Ê½ğÕÛ¿Û±ÈÀı
-	TThostFtdcRatioType	Discount;
-};
-
-///²éÑ¯×ªÕÊÒøĞĞ
-struct CThostFtdcQryTransferBankField
-{
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖĞĞÄ´úÂë
-	TThostFtdcBankBrchIDType	BankBrchID;
-};
-
-///×ªÕÊÒøĞĞ
-struct CThostFtdcTransferBankField
-{
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖĞĞÄ´úÂë
-	TThostFtdcBankBrchIDType	BankBrchID;
-	///ÒøĞĞÃû³Æ
-	TThostFtdcBankNameType	BankName;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-};
-
-///²éÑ¯Í¶×ÊÕß³Ö²ÖÃ÷Ï¸
-struct CThostFtdcQryInvestorPositionDetailField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///Í¶×ÊÕß³Ö²ÖÃ÷Ï¸
-struct CThostFtdcInvestorPositionDetailField
-{
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///ÂòÂô
-	TThostFtdcDirectionType	Direction;
-	///¿ª²ÖÈÕÆÚ
-	TThostFtdcDateType	OpenDate;
-	///³É½»±àºÅ
-	TThostFtdcTradeIDType	TradeID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///¿ª²Ö¼Û
-	TThostFtdcPriceType	OpenPrice;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///³É½»ÀàĞÍ
-	TThostFtdcTradeTypeType	TradeType;
-	///×éºÏºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	CombInstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ÖğÈÕ¶¢ÊĞÆ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfitByDate;
-	///Öğ±Ê¶Ô³åÆ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfitByTrade;
-	///ÖğÈÕ¶¢ÊĞ³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	PositionProfitByDate;
-	///Öğ±Ê¶Ô³å³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	PositionProfitByTrade;
-	///Í¶×ÊÕß±£Ö¤½ğ
-	TThostFtdcMoneyType	Margin;
-	///½»Ò×Ëù±£Ö¤½ğ
-	TThostFtdcMoneyType	ExchMargin;
-	///±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	MarginRateByMoney;
-	///±£Ö¤½ğÂÊ(°´ÊÖÊı)
-	TThostFtdcRatioType	MarginRateByVolume;
-	///×ò½áËã¼Û
-	TThostFtdcPriceType	LastSettlementPrice;
-	///½áËã¼Û
-	TThostFtdcPriceType	SettlementPrice;
-	///Æ½²ÖÁ¿
-	TThostFtdcVolumeType	CloseVolume;
-	///Æ½²Ö½ğ¶î
-	TThostFtdcMoneyType	CloseAmount;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///×Ê½ğÕË»§¿ÚÁîÓò
-struct CThostFtdcTradingAccountPasswordField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///½»Ò×ËùĞĞÇé±¨ÅÌ»ú
-struct CThostFtdcMDTraderOfferField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///ÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///½»Ò×Ëù½»Ò×Ô±Á¬½Ó×´Ì¬
-	TThostFtdcTraderConnectStatusType	TraderConnectStatus;
-	///·¢³öÁ¬½ÓÇëÇóµÄÈÕÆÚ
-	TThostFtdcDateType	ConnectRequestDate;
-	///·¢³öÁ¬½ÓÇëÇóµÄÊ±¼ä
-	TThostFtdcTimeType	ConnectRequestTime;
-	///ÉÏ´Î±¨¸æÈÕÆÚ
-	TThostFtdcDateType	LastReportDate;
-	///ÉÏ´Î±¨¸æÊ±¼ä
-	TThostFtdcTimeType	LastReportTime;
-	///Íê³ÉÁ¬½ÓÈÕÆÚ
-	TThostFtdcDateType	ConnectDate;
-	///Íê³ÉÁ¬½ÓÊ±¼ä
-	TThostFtdcTimeType	ConnectTime;
-	///Æô¶¯ÈÕÆÚ
-	TThostFtdcDateType	StartDate;
-	///Æô¶¯Ê±¼ä
-	TThostFtdcTimeType	StartTime;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///±¾Ï¯Î»×î´ó³É½»±àºÅ
-	TThostFtdcTradeIDType	MaxTradeID;
-	///±¾Ï¯Î»×î´ó±¨µ¥±¸¿½
-	TThostFtdcReturnCodeType	MaxOrderMessageReference;
-	///ÒµÎñÀàĞÍ
-	TThostFtdcBizTypeType	BizType;
-};
-
-///²éÑ¯ĞĞÇé±¨ÅÌ»ú
-struct CThostFtdcQryMDTraderOfferField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-};
-
-///²éÑ¯¿Í»§Í¨Öª
-struct CThostFtdcQryNoticeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-};
-
-///¿Í»§Í¨Öª
-struct CThostFtdcNoticeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÏûÏ¢ÕıÎÄ
-	TThostFtdcContentType	Content;
-	///¾­¼Í¹«Ë¾Í¨ÖªÄÚÈİĞòÁĞºÅ
-	TThostFtdcSequenceLabelType	SequenceLabel;
-};
-
-///ÓÃ»§È¨ÏŞ
-struct CThostFtdcUserRightField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///¿Í»§È¨ÏŞÀàĞÍ
-	TThostFtdcUserRightTypeType	UserRightType;
-	///ÊÇ·ñ½ûÖ¹
-	TThostFtdcBoolType	IsForbidden;
-};
-
-///²éÑ¯½áËãĞÅÏ¢È·ÈÏÓò
-struct CThostFtdcQrySettlementInfoConfirmField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///×°ÔØ½áËãĞÅÏ¢
-struct CThostFtdcLoadSettlementInfoField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-};
-
-///¾­¼Í¹«Ë¾¿ÉÌá×Ê½ğËã·¨±í
-struct CThostFtdcBrokerWithdrawAlgorithmField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///¿ÉÌá×Ê½ğËã·¨
-	TThostFtdcAlgorithmType	WithdrawAlgorithm;
-	///×Ê½ğÊ¹ÓÃÂÊ
-	TThostFtdcRatioType	UsingRatio;
-	///¿ÉÌáÊÇ·ñ°üº¬Æ½²ÖÓ¯Àû
-	TThostFtdcIncludeCloseProfitType	IncludeCloseProfit;
-	///±¾ÈÕÎŞ²ÖÇÒÎŞ³É½»¿Í»§ÊÇ·ñÊÜ¿ÉÌá±ÈÀıÏŞÖÆ
-	TThostFtdcAllWithoutTradeType	AllWithoutTrade;
-	///¿ÉÓÃÊÇ·ñ°üº¬Æ½²ÖÓ¯Àû
-	TThostFtdcIncludeCloseProfitType	AvailIncludeCloseProfit;
-	///ÊÇ·ñÆôÓÃÓÃ»§ÊÂ¼ş
-	TThostFtdcBoolType	IsBrokerUserEvent;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»õ±ÒÖÊÑº±ÈÂÊ
-	TThostFtdcRatioType	FundMortgageRatio;
-	///È¨ÒæËã·¨
-	TThostFtdcBalanceAlgorithmType	BalanceAlgorithm;
-};
-
-///×Ê½ğÕË»§¿ÚÁî±ä¸üÓò
-struct CThostFtdcTradingAccountPasswordUpdateV1Field
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ô­À´µÄ¿ÚÁî
-	TThostFtdcPasswordType	OldPassword;
-	///ĞÂµÄ¿ÚÁî
-	TThostFtdcPasswordType	NewPassword;
-};
-
-///×Ê½ğÕË»§¿ÚÁî±ä¸üÓò
-struct CThostFtdcTradingAccountPasswordUpdateField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///Ô­À´µÄ¿ÚÁî
-	TThostFtdcPasswordType	OldPassword;
-	///ĞÂµÄ¿ÚÁî
-	TThostFtdcPasswordType	NewPassword;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///²éÑ¯×éºÏºÏÔ¼·ÖÍÈ
-struct CThostFtdcQryCombinationLegField
-{
-	///×éºÏºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	CombInstrumentID;
-	///µ¥ÍÈ±àºÅ
-	TThostFtdcLegIDType	LegID;
-	///µ¥ÍÈºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	LegInstrumentID;
-};
-
-///²éÑ¯×éºÏºÏÔ¼·ÖÍÈ
-struct CThostFtdcQrySyncStatusField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-};
-
-///×éºÏ½»Ò×ºÏÔ¼µÄµ¥ÍÈ
-struct CThostFtdcCombinationLegField
-{
-	///×éºÏºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	CombInstrumentID;
-	///µ¥ÍÈ±àºÅ
-	TThostFtdcLegIDType	LegID;
-	///µ¥ÍÈºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	LegInstrumentID;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///µ¥ÍÈ³ËÊı
-	TThostFtdcLegMultipleType	LegMultiple;
-	///ÅÉÉú²ãÊı
-	TThostFtdcImplyLevelType	ImplyLevel;
-};
-
-///Êı¾İÍ¬²½×´Ì¬
-struct CThostFtdcSyncStatusField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///Êı¾İÍ¬²½×´Ì¬
-	TThostFtdcDataSyncStatusType	DataSyncStatus;
-};
-
-///²éÑ¯ÁªÏµÈË
-struct CThostFtdcQryLinkManField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-};
-
-///ÁªÏµÈË
-struct CThostFtdcLinkManField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ÁªÏµÈËÀàĞÍ
-	TThostFtdcPersonTypeType	PersonType;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdentifiedCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///Ãû³Æ
-	TThostFtdcPartyNameType	PersonName;
-	///ÁªÏµµç»°
-	TThostFtdcTelephoneType	Telephone;
-	///Í¨Ñ¶µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊÕş±àÂë
-	TThostFtdcZipCodeType	ZipCode;
-	///ÓÅÏÈ¼¶
-	TThostFtdcPriorityType	Priority;
-	///¿ª»§ÓÊÕş±àÂë
-	TThostFtdcUOAZipCodeType	UOAZipCode;
-	///È«³Æ
-	TThostFtdcInvestorFullNameType	PersonFullName;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾ÓÃ»§ÊÂ¼ş
-struct CThostFtdcQryBrokerUserEventField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÓÃ»§ÊÂ¼şÀàĞÍ
-	TThostFtdcUserEventTypeType	UserEventType;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾ÓÃ»§ÊÂ¼ş
-struct CThostFtdcBrokerUserEventField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÓÃ»§ÊÂ¼şÀàĞÍ
-	TThostFtdcUserEventTypeType	UserEventType;
-	///ÓÃ»§ÊÂ¼şĞòºÅ
-	TThostFtdcSequenceNoType	EventSequenceNo;
-	///ÊÂ¼ş·¢ÉúÈÕÆÚ
-	TThostFtdcDateType	EventDate;
-	///ÊÂ¼ş·¢ÉúÊ±¼ä
-	TThostFtdcTimeType	EventTime;
-	///ÓÃ»§ÊÂ¼şĞÅÏ¢
-	TThostFtdcUserEventInfoType	UserEventInfo;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///²éÑ¯Ç©Ô¼ÒøĞĞÇëÇó
-struct CThostFtdcQryContractBankField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖĞĞÄ´úÂë
-	TThostFtdcBankBrchIDType	BankBrchID;
-};
-
-///²éÑ¯Ç©Ô¼ÒøĞĞÏìÓ¦
-struct CThostFtdcContractBankField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖĞĞÄ´úÂë
-	TThostFtdcBankBrchIDType	BankBrchID;
-	///ÒøĞĞÃû³Æ
-	TThostFtdcBankNameType	BankName;
-};
-
-///Í¶×ÊÕß×éºÏ³Ö²ÖÃ÷Ï¸
-struct CThostFtdcInvestorPositionCombineDetailField
-{
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///¿ª²ÖÈÕÆÚ
-	TThostFtdcDateType	OpenDate;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///×éºÏ±àºÅ
-	TThostFtdcTradeIDType	ComTradeID;
-	///´éºÏ±àºÅ
-	TThostFtdcTradeIDType	TradeID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///ÂòÂô
-	TThostFtdcDirectionType	Direction;
-	///³Ö²ÖÁ¿
-	TThostFtdcVolumeType	TotalAmt;
-	///Í¶×ÊÕß±£Ö¤½ğ
-	TThostFtdcMoneyType	Margin;
-	///½»Ò×Ëù±£Ö¤½ğ
-	TThostFtdcMoneyType	ExchMargin;
-	///±£Ö¤½ğÂÊ
-	TThostFtdcRatioType	MarginRateByMoney;
-	///±£Ö¤½ğÂÊ(°´ÊÖÊı)
-	TThostFtdcRatioType	MarginRateByVolume;
-	///µ¥ÍÈ±àºÅ
-	TThostFtdcLegIDType	LegID;
-	///µ¥ÍÈ³ËÊı
-	TThostFtdcLegMultipleType	LegMultiple;
-	///×éºÏ³Ö²ÖºÏÔ¼±àÂë
-	TThostFtdcInstrumentIDType	CombInstrumentID;
-	///³É½»×éºÅ
-	TThostFtdcTradeGroupIDType	TradeGroupID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///Ô¤Âñµ¥
-struct CThostFtdcParkedOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	OrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///±¨µ¥¼Û¸ñÌõ¼ş
-	TThostFtdcOrderPriceTypeType	OrderPriceType;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///×éºÏ¿ªÆ½±êÖ¾
-	TThostFtdcCombOffsetFlagType	CombOffsetFlag;
-	///×éºÏÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcCombHedgeFlagType	CombHedgeFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	VolumeTotalOriginal;
-	///ÓĞĞ§ÆÚÀàĞÍ
-	TThostFtdcTimeConditionType	TimeCondition;
-	///GTDÈÕÆÚ
-	TThostFtdcDateType	GTDDate;
-	///³É½»Á¿ÀàĞÍ
-	TThostFtdcVolumeConditionType	VolumeCondition;
-	///×îĞ¡³É½»Á¿
-	TThostFtdcVolumeType	MinVolume;
-	///´¥·¢Ìõ¼ş
-	TThostFtdcContingentConditionType	ContingentCondition;
-	///Ö¹Ëğ¼Û
-	TThostFtdcPriceType	StopPrice;
-	///Ç¿Æ½Ô­Òò
-	TThostFtdcForceCloseReasonType	ForceCloseReason;
-	///×Ô¶¯¹ÒÆğ±êÖ¾
-	TThostFtdcBoolType	IsAutoSuspend;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÓÃ»§Ç¿ÆÀ±êÖ¾
-	TThostFtdcBoolType	UserForceClose;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ô¤Âñ±¨µ¥±àºÅ
-	TThostFtdcParkedOrderIDType	ParkedOrderID;
-	///ÓÃ»§ÀàĞÍ
-	TThostFtdcUserTypeType	UserType;
-	///Ô¤Âñµ¥×´Ì¬
-	TThostFtdcParkedOrderStatusType	Status;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///»¥»»µ¥±êÖ¾
-	TThostFtdcBoolType	IsSwapOrder;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///½»Ò×±àÂë
-	TThostFtdcClientIDType	ClientID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÊäÈëÔ¤Âñµ¥²Ù×÷
-struct CThostFtdcParkedOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±¨µ¥²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	OrderActionRef;
-	///±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	OrderRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿±ä»¯
-	TThostFtdcVolumeType	VolumeChange;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Ô¤Âñ³·µ¥µ¥±àºÅ
-	TThostFtdcParkedOrderActionIDType	ParkedOrderActionID;
-	///ÓÃ»§ÀàĞÍ
-	TThostFtdcUserTypeType	UserType;
-	///Ô¤Âñ³·µ¥×´Ì¬
-	TThostFtdcParkedOrderStatusType	Status;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///²éÑ¯Ô¤Âñµ¥
-struct CThostFtdcQryParkedOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯Ô¤Âñ³·µ¥
-struct CThostFtdcQryParkedOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///É¾³ıÔ¤Âñµ¥
-struct CThostFtdcRemoveParkedOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ô¤Âñ±¨µ¥±àºÅ
-	TThostFtdcParkedOrderIDType	ParkedOrderID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///É¾³ıÔ¤Âñ³·µ¥
-struct CThostFtdcRemoveParkedOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ô¤Âñ³·µ¥±àºÅ
-	TThostFtdcParkedOrderActionIDType	ParkedOrderActionID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///¾­¼Í¹«Ë¾¿ÉÌá×Ê½ğËã·¨±í
-struct CThostFtdcInvestorWithdrawAlgorithmField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¿ÉÌá×Ê½ğ±ÈÀı
-	TThostFtdcRatioType	UsingRatio;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»õ±ÒÖÊÑº±ÈÂÊ
-	TThostFtdcRatioType	FundMortgageRatio;
-};
-
-///²éÑ¯×éºÏ³Ö²ÖÃ÷Ï¸
-struct CThostFtdcQryInvestorPositionCombineDetailField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///×éºÏ³Ö²ÖºÏÔ¼±àÂë
-	TThostFtdcInstrumentIDType	CombInstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///³É½»¾ù¼Û
-struct CThostFtdcMarketDataAveragePriceField
-{
-	///µ±ÈÕ¾ù¼Û
-	TThostFtdcPriceType	AveragePrice;
-};
-
-///Ğ£ÑéÍ¶×ÊÕßÃÜÂë
-struct CThostFtdcVerifyInvestorPasswordField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ÃÜÂë
-	TThostFtdcPasswordType	Password;
-};
-
-///ÓÃ»§IP
-struct CThostFtdcUserIPField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///IPµØÖ·ÑÚÂë
-	TThostFtdcIPAddressType	IPMask;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÓÃ»§ÊÂ¼şÍ¨ÖªĞÅÏ¢
-struct CThostFtdcTradingNoticeInfoField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///·¢ËÍÊ±¼ä
-	TThostFtdcTimeType	SendTime;
-	///ÏûÏ¢ÕıÎÄ
-	TThostFtdcContentType	FieldContent;
-	///ĞòÁĞÏµÁĞºÅ
-	TThostFtdcSequenceSeriesType	SequenceSeries;
-	///ĞòÁĞºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///ÓÃ»§ÊÂ¼şÍ¨Öª
-struct CThostFtdcTradingNoticeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß·¶Î§
-	TThostFtdcInvestorRangeType	InvestorRange;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ĞòÁĞÏµÁĞºÅ
-	TThostFtdcSequenceSeriesType	SequenceSeries;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///·¢ËÍÊ±¼ä
-	TThostFtdcTimeType	SendTime;
-	///ĞòÁĞºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///ÏûÏ¢ÕıÎÄ
-	TThostFtdcContentType	FieldContent;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯½»Ò×ÊÂ¼şÍ¨Öª
-struct CThostFtdcQryTradingNoticeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯´íÎó±¨µ¥
-struct CThostFtdcQryErrOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-};
-
-///´íÎó±¨µ¥
-struct CThostFtdcErrOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	OrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///±¨µ¥¼Û¸ñÌõ¼ş
-	TThostFtdcOrderPriceTypeType	OrderPriceType;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///×éºÏ¿ªÆ½±êÖ¾
-	TThostFtdcCombOffsetFlagType	CombOffsetFlag;
-	///×éºÏÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcCombHedgeFlagType	CombHedgeFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	VolumeTotalOriginal;
-	///ÓĞĞ§ÆÚÀàĞÍ
-	TThostFtdcTimeConditionType	TimeCondition;
-	///GTDÈÕÆÚ
-	TThostFtdcDateType	GTDDate;
-	///³É½»Á¿ÀàĞÍ
-	TThostFtdcVolumeConditionType	VolumeCondition;
-	///×îĞ¡³É½»Á¿
-	TThostFtdcVolumeType	MinVolume;
-	///´¥·¢Ìõ¼ş
-	TThostFtdcContingentConditionType	ContingentCondition;
-	///Ö¹Ëğ¼Û
-	TThostFtdcPriceType	StopPrice;
-	///Ç¿Æ½Ô­Òò
-	TThostFtdcForceCloseReasonType	ForceCloseReason;
-	///×Ô¶¯¹ÒÆğ±êÖ¾
-	TThostFtdcBoolType	IsAutoSuspend;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÓÃ»§Ç¿ÆÀ±êÖ¾
-	TThostFtdcBoolType	UserForceClose;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///»¥»»µ¥±êÖ¾
-	TThostFtdcBoolType	IsSwapOrder;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///½»Ò×±àÂë
-	TThostFtdcClientIDType	ClientID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///²éÑ¯´íÎó±¨µ¥²Ù×÷
-struct CThostFtdcErrorConditionalOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	OrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///±¨µ¥¼Û¸ñÌõ¼ş
-	TThostFtdcOrderPriceTypeType	OrderPriceType;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///×éºÏ¿ªÆ½±êÖ¾
-	TThostFtdcCombOffsetFlagType	CombOffsetFlag;
-	///×éºÏÍ¶»úÌ×±£±êÖ¾
-	TThostFtdcCombHedgeFlagType	CombHedgeFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	VolumeTotalOriginal;
-	///ÓĞĞ§ÆÚÀàĞÍ
-	TThostFtdcTimeConditionType	TimeCondition;
-	///GTDÈÕÆÚ
-	TThostFtdcDateType	GTDDate;
-	///³É½»Á¿ÀàĞÍ
-	TThostFtdcVolumeConditionType	VolumeCondition;
-	///×îĞ¡³É½»Á¿
-	TThostFtdcVolumeType	MinVolume;
-	///´¥·¢Ìõ¼ş
-	TThostFtdcContingentConditionType	ContingentCondition;
-	///Ö¹Ëğ¼Û
-	TThostFtdcPriceType	StopPrice;
-	///Ç¿Æ½Ô­Òò
-	TThostFtdcForceCloseReasonType	ForceCloseReason;
-	///×Ô¶¯¹ÒÆğ±êÖ¾
-	TThostFtdcBoolType	IsAutoSuspend;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¨µ¥Ìá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///±¨µ¥À´Ô´
-	TThostFtdcOrderSourceType	OrderSource;
-	///±¨µ¥×´Ì¬
-	TThostFtdcOrderStatusType	OrderStatus;
-	///±¨µ¥ÀàĞÍ
-	TThostFtdcOrderTypeType	OrderType;
-	///½ñ³É½»ÊıÁ¿
-	TThostFtdcVolumeType	VolumeTraded;
-	///Ê£ÓàÊıÁ¿
-	TThostFtdcVolumeType	VolumeTotal;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///Î¯ÍĞÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///¼¤»îÊ±¼ä
-	TThostFtdcTimeType	ActiveTime;
-	///¹ÒÆğÊ±¼ä
-	TThostFtdcTimeType	SuspendTime;
-	///×îºóĞŞ¸ÄÊ±¼ä
-	TThostFtdcTimeType	UpdateTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///×îºóĞŞ¸Ä½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	ActiveTraderID;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///ÓÃ»§Ç¿ÆÀ±êÖ¾
-	TThostFtdcBoolType	UserForceClose;
-	///²Ù×÷ÓÃ»§´úÂë
-	TThostFtdcUserIDType	ActiveUserID;
-	///¾­¼Í¹«Ë¾±¨µ¥±àºÅ
-	TThostFtdcSequenceNoType	BrokerOrderSeq;
-	///Ïà¹Ø±¨µ¥
-	TThostFtdcOrderSysIDType	RelativeOrderSysID;
-	///Ö£ÉÌËù³É½»ÊıÁ¿
-	TThostFtdcVolumeType	ZCETotalTradedVolume;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///»¥»»µ¥±êÖ¾
-	TThostFtdcBoolType	IsSwapOrder;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///²éÑ¯´íÎó±¨µ¥²Ù×÷
-struct CThostFtdcQryErrOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-};
-
-///´íÎó±¨µ¥²Ù×÷
-struct CThostFtdcErrOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±¨µ¥²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	OrderActionRef;
-	///±¨µ¥ÒıÓÃ
-	TThostFtdcOrderRefType	OrderRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///±¨µ¥±àºÅ
-	TThostFtdcOrderSysIDType	OrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///¼Û¸ñ
-	TThostFtdcPriceType	LimitPrice;
-	///ÊıÁ¿±ä»¯
-	TThostFtdcVolumeType	VolumeChange;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØ±¨µ¥±àºÅ
-	TThostFtdcOrderLocalIDType	OrderLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///²éÑ¯½»Ò×Ëù×´Ì¬
-struct CThostFtdcQryExchangeSequenceField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///½»Ò×Ëù×´Ì¬
-struct CThostFtdcExchangeSequenceField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///ºÏÔ¼½»Ò××´Ì¬
-	TThostFtdcInstrumentStatusType	MarketStatus;
-};
-
-///¸ù¾İ¼Û¸ñ²éÑ¯×î´ó±¨µ¥ÊıÁ¿
-struct CThostFtdcQueryMaxOrderVolumeWithPriceField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///¿ªÆ½±êÖ¾
-	TThostFtdcOffsetFlagType	OffsetFlag;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///×î´óÔÊĞí±¨µ¥ÊıÁ¿
-	TThostFtdcVolumeType	MaxVolume;
-	///±¨µ¥¼Û¸ñ
-	TThostFtdcPriceType	Price;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾½»Ò×²ÎÊı
-struct CThostFtdcQryBrokerTradingParamsField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-};
-
-///¾­¼Í¹«Ë¾½»Ò×²ÎÊı
-struct CThostFtdcBrokerTradingParamsField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±£Ö¤½ğ¼Û¸ñÀàĞÍ
-	TThostFtdcMarginPriceTypeType	MarginPriceType;
-	///Ó¯¿÷Ëã·¨
-	TThostFtdcAlgorithmType	Algorithm;
-	///¿ÉÓÃÊÇ·ñ°üº¬Æ½²ÖÓ¯Àû
-	TThostFtdcIncludeCloseProfitType	AvailIncludeCloseProfit;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÆÚÈ¨È¨Àû½ğ¼Û¸ñÀàĞÍ
-	TThostFtdcOptionRoyaltyPriceTypeType	OptionRoyaltyPriceType;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾½»Ò×Ëã·¨
-struct CThostFtdcQryBrokerTradingAlgosField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-};
-
-///¾­¼Í¹«Ë¾½»Ò×Ëã·¨
-struct CThostFtdcBrokerTradingAlgosField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///³Ö²Ö´¦ÀíËã·¨±àºÅ
-	TThostFtdcHandlePositionAlgoIDType	HandlePositionAlgoID;
-	///Ñ°ÕÒ±£Ö¤½ğÂÊËã·¨±àºÅ
-	TThostFtdcFindMarginRateAlgoIDType	FindMarginRateAlgoID;
-	///×Ê½ğ´¦ÀíËã·¨±àºÅ
-	TThostFtdcHandleTradingAccountAlgoIDType	HandleTradingAccountAlgoID;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾×Ê½ğ
-struct CThostFtdcQueryBrokerDepositField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///¾­¼Í¹«Ë¾×Ê½ğ
-struct CThostFtdcBrokerDepositField
-{
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradingDay;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ÉÏ´Î½áËã×¼±¸½ğ
-	TThostFtdcMoneyType	PreBalance;
-	///µ±Ç°±£Ö¤½ğ×Ü¶î
-	TThostFtdcMoneyType	CurrMargin;
-	///Æ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfit;
-	///ÆÚ»õ½áËã×¼±¸½ğ
-	TThostFtdcMoneyType	Balance;
-	///Èë½ğ½ğ¶î
-	TThostFtdcMoneyType	Deposit;
-	///³ö½ğ½ğ¶î
-	TThostFtdcMoneyType	Withdraw;
-	///¿ÉÌá×Ê½ğ
-	TThostFtdcMoneyType	Available;
-	///»ù±¾×¼±¸½ğ
-	TThostFtdcMoneyType	Reserve;
-	///¶³½áµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	FrozenMargin;
-};
-
-///²éÑ¯±£Ö¤½ğ¼à¹ÜÏµÍ³¾­¼Í¹«Ë¾ÃÜÔ¿
-struct CThostFtdcQryCFMMCBrokerKeyField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-};
-
-///±£Ö¤½ğ¼à¹ÜÏµÍ³¾­¼Í¹«Ë¾ÃÜÔ¿
-struct CThostFtdcCFMMCBrokerKeyField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///¾­¼Í¹«Ë¾Í³Ò»±àÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///ÃÜÔ¿Éú³ÉÈÕÆÚ
-	TThostFtdcDateType	CreateDate;
-	///ÃÜÔ¿Éú³ÉÊ±¼ä
-	TThostFtdcTimeType	CreateTime;
-	///ÃÜÔ¿±àºÅ
-	TThostFtdcSequenceNoType	KeyID;
-	///¶¯Ì¬ÃÜÔ¿
-	TThostFtdcCFMMCKeyType	CurrentKey;
-	///¶¯Ì¬ÃÜÔ¿ÀàĞÍ
-	TThostFtdcCFMMCKeyKindType	KeyKind;
-};
-
-///±£Ö¤½ğ¼à¹ÜÏµÍ³¾­¼Í¹«Ë¾×Ê½ğÕË»§ÃÜÔ¿
-struct CThostFtdcCFMMCTradingAccountKeyField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///¾­¼Í¹«Ë¾Í³Ò»±àÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÃÜÔ¿±àºÅ
-	TThostFtdcSequenceNoType	KeyID;
-	///¶¯Ì¬ÃÜÔ¿
-	TThostFtdcCFMMCKeyType	CurrentKey;
-};
-
-///ÇëÇó²éÑ¯±£Ö¤½ğ¼à¹ÜÏµÍ³¾­¼Í¹«Ë¾×Ê½ğÕË»§ÃÜÔ¿
-struct CThostFtdcQryCFMMCTradingAccountKeyField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-};
-
-///ÓÃ»§¶¯Ì¬ÁîÅÆ²ÎÊı
-struct CThostFtdcBrokerUserOTPParamField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///¶¯Ì¬ÁîÅÆÌá¹©ÉÌ
-	TThostFtdcOTPVendorsIDType	OTPVendorsID;
-	///¶¯Ì¬ÁîÅÆĞòÁĞºÅ
-	TThostFtdcSerialNumberType	SerialNumber;
-	///ÁîÅÆÃÜÔ¿
-	TThostFtdcAuthKeyType	AuthKey;
-	///Æ¯ÒÆÖµ
-	TThostFtdcLastDriftType	LastDrift;
-	///³É¹¦Öµ
-	TThostFtdcLastSuccessType	LastSuccess;
-	///¶¯Ì¬ÁîÅÆÀàĞÍ
-	TThostFtdcOTPTypeType	OTPType;
-};
-
-///ÊÖ¹¤Í¬²½ÓÃ»§¶¯Ì¬ÁîÅÆ
-struct CThostFtdcManualSyncBrokerUserOTPField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///¶¯Ì¬ÁîÅÆÀàĞÍ
-	TThostFtdcOTPTypeType	OTPType;
-	///µÚÒ»¸ö¶¯Ì¬ÃÜÂë
-	TThostFtdcPasswordType	FirstOTP;
-	///µÚ¶ş¸ö¶¯Ì¬ÃÜÂë
-	TThostFtdcPasswordType	SecondOTP;
-};
-
-///Í¶×ÊÕßÊÖĞø·ÑÂÊÄ£°å
-struct CThostFtdcCommRateModelField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÊÖĞø·ÑÂÊÄ£°å´úÂë
-	TThostFtdcInvestorIDType	CommModelID;
-	///Ä£°åÃû³Æ
-	TThostFtdcCommModelNameType	CommModelName;
-};
-
-///ÇëÇó²éÑ¯Í¶×ÊÕßÊÖĞø·ÑÂÊÄ£°å
-struct CThostFtdcQryCommRateModelField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÊÖĞø·ÑÂÊÄ£°å´úÂë
-	TThostFtdcInvestorIDType	CommModelID;
-};
-
-///Í¶×ÊÕß±£Ö¤½ğÂÊÄ£°å
-struct CThostFtdcMarginModelField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///±£Ö¤½ğÂÊÄ£°å´úÂë
-	TThostFtdcInvestorIDType	MarginModelID;
-	///Ä£°åÃû³Æ
-	TThostFtdcCommModelNameType	MarginModelName;
-};
-
-///ÇëÇó²éÑ¯Í¶×ÊÕß±£Ö¤½ğÂÊÄ£°å
-struct CThostFtdcQryMarginModelField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///±£Ö¤½ğÂÊÄ£°å´úÂë
-	TThostFtdcInvestorIDType	MarginModelID;
-};
-
-///²Öµ¥ÕÛµÖĞÅÏ¢
-struct CThostFtdcEWarrantOffsetField
-{
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradingDay;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÂòÂô·½Ïò
-	TThostFtdcDirectionType	Direction;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯²Öµ¥ÕÛµÖĞÅÏ¢
-struct CThostFtdcQryEWarrantOffsetField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯Í¶×ÊÕßÆ·ÖÖ/¿çÆ·ÖÖ±£Ö¤½ğ
-struct CThostFtdcQryInvestorProductGroupMarginField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Æ·ÖÖ/¿çÆ·ÖÖ±êÊ¾
-	TThostFtdcInstrumentIDType	ProductGroupID;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///Í¶×ÊÕßÆ·ÖÖ/¿çÆ·ÖÖ±£Ö¤½ğ
-struct CThostFtdcInvestorProductGroupMarginField
-{
-	///Æ·ÖÖ/¿çÆ·ÖÖ±êÊ¾
-	TThostFtdcInstrumentIDType	ProductGroupID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///¶³½áµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	FrozenMargin;
-	///¶àÍ·¶³½áµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	LongFrozenMargin;
-	///¿ÕÍ·¶³½áµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	ShortFrozenMargin;
-	///Õ¼ÓÃµÄ±£Ö¤½ğ
-	TThostFtdcMoneyType	UseMargin;
-	///¶àÍ·±£Ö¤½ğ
-	TThostFtdcMoneyType	LongUseMargin;
-	///¿ÕÍ·±£Ö¤½ğ
-	TThostFtdcMoneyType	ShortUseMargin;
-	///½»Ò×Ëù±£Ö¤½ğ
-	TThostFtdcMoneyType	ExchMargin;
-	///½»Ò×Ëù¶àÍ·±£Ö¤½ğ
-	TThostFtdcMoneyType	LongExchMargin;
-	///½»Ò×Ëù¿ÕÍ·±£Ö¤½ğ
-	TThostFtdcMoneyType	ShortExchMargin;
-	///Æ½²ÖÓ¯¿÷
-	TThostFtdcMoneyType	CloseProfit;
-	///¶³½áµÄÊÖĞø·Ñ
-	TThostFtdcMoneyType	FrozenCommission;
-	///ÊÖĞø·Ñ
-	TThostFtdcMoneyType	Commission;
-	///¶³½áµÄ×Ê½ğ
-	TThostFtdcMoneyType	FrozenCash;
-	///×Ê½ğ²î¶î
-	TThostFtdcMoneyType	CashIn;
-	///³Ö²ÖÓ¯¿÷
-	TThostFtdcMoneyType	PositionProfit;
-	///ÕÛµÖ×Ü½ğ¶î
-	TThostFtdcMoneyType	OffsetAmount;
-	///¶àÍ·ÕÛµÖ×Ü½ğ¶î
-	TThostFtdcMoneyType	LongOffsetAmount;
-	///¿ÕÍ·ÕÛµÖ×Ü½ğ¶î
-	TThostFtdcMoneyType	ShortOffsetAmount;
-	///½»Ò×ËùÕÛµÖ×Ü½ğ¶î
-	TThostFtdcMoneyType	ExchOffsetAmount;
-	///½»Ò×Ëù¶àÍ·ÕÛµÖ×Ü½ğ¶î
-	TThostFtdcMoneyType	LongExchOffsetAmount;
-	///½»Ò×Ëù¿ÕÍ·ÕÛµÖ×Ü½ğ¶î
-	TThostFtdcMoneyType	ShortExchOffsetAmount;
-	///Í¶»úÌ×±£±êÖ¾
-	TThostFtdcHedgeFlagType	HedgeFlag;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///²éÑ¯¼à¿ØÖĞĞÄÓÃ»§ÁîÅÆ
-struct CThostFtdcQueryCFMMCTradingAccountTokenField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-};
-
-///¼à¿ØÖĞĞÄÓÃ»§ÁîÅÆ
-struct CThostFtdcCFMMCTradingAccountTokenField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///¾­¼Í¹«Ë¾Í³Ò»±àÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÃÜÔ¿±àºÅ
-	TThostFtdcSequenceNoType	KeyID;
-	///¶¯Ì¬ÁîÅÆ
-	TThostFtdcCFMMCTokenType	Token;
-};
-
-///Í¶×ÊÕßÖ¸ÁîÈ¨ÏŞ
-struct CThostFtdcInstructionRightField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö¸ÁîÈ¨ÏŞÀàĞÍ
-	TThostFtdcInstructionRightTypeType	InstructionRight;
-	///ÊÇ·ñ½ûÖ¹
-	TThostFtdcBoolType	IsForbidden;
-};
-
-///²éÑ¯²úÆ·×é
-struct CThostFtdcQryProductGroupField
-{
-	///²úÆ·´úÂë
-	TThostFtdcInstrumentIDType	ProductID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-};
-
-///Í¶×ÊÕßÆ·ÖÖ/¿çÆ·ÖÖ±£Ö¤½ğ²úÆ·×é
-struct CThostFtdcProductGroupField
-{
-	///²úÆ·´úÂë
-	TThostFtdcInstrumentIDType	ProductID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///²úÆ·×é´úÂë
-	TThostFtdcInstrumentIDType	ProductGroupID;
-};
-
-///½»Ò×Ëù¹«¸æ
-struct CThostFtdcBulletinField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///¹«¸æ±àºÅ
-	TThostFtdcBulletinIDType	BulletinID;
-	///ĞòÁĞºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///¹«¸æÀàĞÍ
-	TThostFtdcNewsTypeType	NewsType;
-	///½ô¼±³Ì¶È
-	TThostFtdcNewsUrgencyType	NewsUrgency;
-	///·¢ËÍÊ±¼ä
-	TThostFtdcTimeType	SendTime;
-	///ÏûÏ¢ÕªÒª
-	TThostFtdcAbstractType	Abstract;
-	///ÏûÏ¢À´Ô´
-	TThostFtdcComeFromType	ComeFrom;
-	///ÏûÏ¢ÕıÎÄ
-	TThostFtdcContentType	Content;
-	///WEBµØÖ·
-	TThostFtdcURLLinkType	URLLink;
-	///ÊĞ³¡´úÂë
-	TThostFtdcMarketIDType	MarketID;
-};
-
-///²éÑ¯½»Ò×Ëù¹«¸æ
-struct CThostFtdcQryBulletinField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¹«¸æ±àºÅ
-	TThostFtdcBulletinIDType	BulletinID;
-	///ĞòÁĞºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///¹«¸æÀàĞÍ
-	TThostFtdcNewsTypeType	NewsType;
-	///½ô¼±³Ì¶È
-	TThostFtdcNewsUrgencyType	NewsUrgency;
-};
-
-///×ªÕÊ¿ª»§ÇëÇó
-struct CThostFtdcReqOpenAccountField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»ã³®±êÖ¾
-	TThostFtdcCashExchangeCodeType	CashExchangeCode;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///Ö¤È¯×Ê½ğÈÕ³õÓà¶î
-	TThostFtdcTradeAmountType	SecDaBeBl;
-	///ÒøĞĞ×ªÕËÍ¨µÀ
-	TThostFtdcBankChannelType	BankChal;
-};
-
-///×ªÕÊÏú»§ÇëÇó
-struct CThostFtdcReqCancelAccountField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»ã³®±êÖ¾
-	TThostFtdcCashExchangeCodeType	CashExchangeCode;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///Ö¤È¯×Ê½ğÈÕ³õÓà¶î
-	TThostFtdcTradeAmountType	SecDaBeBl;
-	///ÒøĞĞ×ªÕËÍ¨µÀ
-	TThostFtdcBankChannelType	BankChal;
-};
-
-///±ä¸üÒøĞĞÕË»§ÇëÇó
-struct CThostFtdcReqChangeAccountField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///ĞÂÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	NewBankAccount;
-	///ĞÂÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	NewBankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-};
-
-///×ªÕËÇëÇó
-struct CThostFtdcReqTransferField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÆÚ»õ¹«Ë¾Á÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureSerial;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///×ªÕÊ½ğ¶î
-	TThostFtdcTradeAmountType	TradeAmount;
-	///ÆÚ»õ¿ÉÈ¡½ğ¶î
-	TThostFtdcTradeAmountType	FutureFetchAmount;
-	///·ÑÓÃÖ§¸¶±êÖ¾
-	TThostFtdcFeePayFlagType	FeePayFlag;
-	///Ó¦ÊÕ¿Í»§·ÑÓÃ
-	TThostFtdcCustFeeType	CustFee;
-	///Ó¦ÊÕÆÚ»õ¹«Ë¾·ÑÓÃ
-	TThostFtdcFutureFeeType	BrokerFee;
-	///·¢ËÍ·½¸ø½ÓÊÕ·½µÄÏûÏ¢
-	TThostFtdcAddInfoType	Message;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///×ªÕË½»Ò××´Ì¬
-	TThostFtdcTransferStatusType	TransferStatus;
-};
-
-///ÒøĞĞ·¢ÆğÒøĞĞ×Ê½ğ×ªÆÚ»õÏìÓ¦
-struct CThostFtdcRspTransferField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÆÚ»õ¹«Ë¾Á÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureSerial;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///×ªÕÊ½ğ¶î
-	TThostFtdcTradeAmountType	TradeAmount;
-	///ÆÚ»õ¿ÉÈ¡½ğ¶î
-	TThostFtdcTradeAmountType	FutureFetchAmount;
-	///·ÑÓÃÖ§¸¶±êÖ¾
-	TThostFtdcFeePayFlagType	FeePayFlag;
-	///Ó¦ÊÕ¿Í»§·ÑÓÃ
-	TThostFtdcCustFeeType	CustFee;
-	///Ó¦ÊÕÆÚ»õ¹«Ë¾·ÑÓÃ
-	TThostFtdcFutureFeeType	BrokerFee;
-	///·¢ËÍ·½¸ø½ÓÊÕ·½µÄÏûÏ¢
-	TThostFtdcAddInfoType	Message;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///×ªÕË½»Ò××´Ì¬
-	TThostFtdcTransferStatusType	TransferStatus;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///³åÕıÇëÇó
-struct CThostFtdcReqRepealField
-{
-	///³åÕıÊ±¼ä¼ä¸ô
-	TThostFtdcRepealTimeIntervalType	RepealTimeInterval;
-	///ÒÑ¾­³åÕı´ÎÊı
-	TThostFtdcRepealedTimesType	RepealedTimes;
-	///ÒøĞĞ³åÕı±êÖ¾
-	TThostFtdcBankRepealFlagType	BankRepealFlag;
-	///ÆÚÉÌ³åÕı±êÖ¾
-	TThostFtdcBrokerRepealFlagType	BrokerRepealFlag;
-	///±»³åÕıÆ½Ì¨Á÷Ë®ºÅ
-	TThostFtdcPlateSerialType	PlateRepealSerial;
-	///±»³åÕıÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankRepealSerial;
-	///±»³åÕıÆÚ»õÁ÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureRepealSerial;
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÆÚ»õ¹«Ë¾Á÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureSerial;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///×ªÕÊ½ğ¶î
-	TThostFtdcTradeAmountType	TradeAmount;
-	///ÆÚ»õ¿ÉÈ¡½ğ¶î
-	TThostFtdcTradeAmountType	FutureFetchAmount;
-	///·ÑÓÃÖ§¸¶±êÖ¾
-	TThostFtdcFeePayFlagType	FeePayFlag;
-	///Ó¦ÊÕ¿Í»§·ÑÓÃ
-	TThostFtdcCustFeeType	CustFee;
-	///Ó¦ÊÕÆÚ»õ¹«Ë¾·ÑÓÃ
-	TThostFtdcFutureFeeType	BrokerFee;
-	///·¢ËÍ·½¸ø½ÓÊÕ·½µÄÏûÏ¢
-	TThostFtdcAddInfoType	Message;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///×ªÕË½»Ò××´Ì¬
-	TThostFtdcTransferStatusType	TransferStatus;
-};
-
-///³åÕıÏìÓ¦
-struct CThostFtdcRspRepealField
-{
-	///³åÕıÊ±¼ä¼ä¸ô
-	TThostFtdcRepealTimeIntervalType	RepealTimeInterval;
-	///ÒÑ¾­³åÕı´ÎÊı
-	TThostFtdcRepealedTimesType	RepealedTimes;
-	///ÒøĞĞ³åÕı±êÖ¾
-	TThostFtdcBankRepealFlagType	BankRepealFlag;
-	///ÆÚÉÌ³åÕı±êÖ¾
-	TThostFtdcBrokerRepealFlagType	BrokerRepealFlag;
-	///±»³åÕıÆ½Ì¨Á÷Ë®ºÅ
-	TThostFtdcPlateSerialType	PlateRepealSerial;
-	///±»³åÕıÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankRepealSerial;
-	///±»³åÕıÆÚ»õÁ÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureRepealSerial;
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÆÚ»õ¹«Ë¾Á÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureSerial;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///×ªÕÊ½ğ¶î
-	TThostFtdcTradeAmountType	TradeAmount;
-	///ÆÚ»õ¿ÉÈ¡½ğ¶î
-	TThostFtdcTradeAmountType	FutureFetchAmount;
-	///·ÑÓÃÖ§¸¶±êÖ¾
-	TThostFtdcFeePayFlagType	FeePayFlag;
-	///Ó¦ÊÕ¿Í»§·ÑÓÃ
-	TThostFtdcCustFeeType	CustFee;
-	///Ó¦ÊÕÆÚ»õ¹«Ë¾·ÑÓÃ
-	TThostFtdcFutureFeeType	BrokerFee;
-	///·¢ËÍ·½¸ø½ÓÊÕ·½µÄÏûÏ¢
-	TThostFtdcAddInfoType	Message;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///×ªÕË½»Ò××´Ì¬
-	TThostFtdcTransferStatusType	TransferStatus;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///²éÑ¯ÕË»§ĞÅÏ¢ÇëÇó
-struct CThostFtdcReqQueryAccountField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÆÚ»õ¹«Ë¾Á÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureSerial;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-};
-
-///²éÑ¯ÕË»§ĞÅÏ¢ÏìÓ¦
-struct CThostFtdcRspQueryAccountField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÆÚ»õ¹«Ë¾Á÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureSerial;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÒøĞĞ¿ÉÓÃ½ğ¶î
-	TThostFtdcTradeAmountType	BankUseAmount;
-	///ÒøĞĞ¿ÉÈ¡½ğ¶î
-	TThostFtdcTradeAmountType	BankFetchAmount;
-};
-
-///ÆÚÉÌÇ©µ½Ç©ÍË
-struct CThostFtdcFutureSignIOField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-};
-
-///ÆÚÉÌÇ©µ½ÏìÓ¦
-struct CThostFtdcRspFutureSignInField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///PINÃÜÔ¿
-	TThostFtdcPasswordKeyType	PinKey;
-	///MACÃÜÔ¿
-	TThostFtdcPasswordKeyType	MacKey;
-};
-
-///ÆÚÉÌÇ©ÍËÇëÇó
-struct CThostFtdcReqFutureSignOutField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-};
-
-///ÆÚÉÌÇ©ÍËÏìÓ¦
-struct CThostFtdcRspFutureSignOutField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///²éÑ¯Ö¸¶¨Á÷Ë®ºÅµÄ½»Ò×½á¹ûÇëÇó
-struct CThostFtdcReqQueryTradeResultBySerialField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///Á÷Ë®ºÅ
-	TThostFtdcSerialType	Reference;
-	///±¾Á÷Ë®ºÅ·¢²¼ÕßµÄ»ú¹¹ÀàĞÍ
-	TThostFtdcInstitutionTypeType	RefrenceIssureType;
-	///±¾Á÷Ë®ºÅ·¢²¼Õß»ú¹¹±àÂë
-	TThostFtdcOrganCodeType	RefrenceIssure;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///×ªÕÊ½ğ¶î
-	TThostFtdcTradeAmountType	TradeAmount;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-};
-
-///²éÑ¯Ö¸¶¨Á÷Ë®ºÅµÄ½»Ò×½á¹ûÏìÓ¦
-struct CThostFtdcRspQueryTradeResultBySerialField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///Á÷Ë®ºÅ
-	TThostFtdcSerialType	Reference;
-	///±¾Á÷Ë®ºÅ·¢²¼ÕßµÄ»ú¹¹ÀàĞÍ
-	TThostFtdcInstitutionTypeType	RefrenceIssureType;
-	///±¾Á÷Ë®ºÅ·¢²¼Õß»ú¹¹±àÂë
-	TThostFtdcOrganCodeType	RefrenceIssure;
-	///Ô­Ê¼·µ»Ø´úÂë
-	TThostFtdcReturnCodeType	OriginReturnCode;
-	///Ô­Ê¼·µ»ØÂëÃèÊö
-	TThostFtdcDescrInfoForReturnCodeType	OriginDescrInfoForReturnCode;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///×ªÕÊ½ğ¶î
-	TThostFtdcTradeAmountType	TradeAmount;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-};
-
-///ÈÕÖÕÎÄ¼ş¾ÍĞ÷ÇëÇó
-struct CThostFtdcReqDayEndFileReadyField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÎÄ¼şÒµÎñ¹¦ÄÜ
-	TThostFtdcFileBusinessCodeType	FileBusinessCode;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-};
-
-///ÈÕÖÕÎÄ¼ş¾ÍĞ÷ÏìÓ¦
-struct CThostFtdcRspDayEndFileReadyField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÎÄ¼şÒµÎñ¹¦ÄÜ
-	TThostFtdcFileBusinessCodeType	FileBusinessCode;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///ÈÕÖÕÎÄ¼ş¾ÍĞ÷ÏìÓ¦
-struct CThostFtdcDayEndFileReadyField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÎÄ¼şÒµÎñ¹¦ÄÜ
-	TThostFtdcFileBusinessCodeType	FileBusinessCode;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///·µ»Ø½á¹û
-struct CThostFtdcReturnResultField
-{
-	///·µ»Ø´úÂë
-	TThostFtdcReturnCodeType	ReturnCode;
-	///·µ»ØÂëÃèÊö
-	TThostFtdcDescrInfoForReturnCodeType	DescrInfoForReturnCode;
-};
-
-///ÑéÖ¤ÆÚ»õ×Ê½ğÃÜÂë
-struct CThostFtdcVerifyFuturePasswordField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///ÑéÖ¤¿Í»§ĞÅÏ¢
-struct CThostFtdcVerifyCustInfoField
-{
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-};
-
-///ÑéÖ¤ÆÚ»õ×Ê½ğÃÜÂëºÍ¿Í»§ĞÅÏ¢
-struct CThostFtdcVerifyFuturePasswordAndCustInfoField
-{
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///ÑéÖ¤ÆÚ»õ×Ê½ğÃÜÂëºÍ¿Í»§ĞÅÏ¢
-struct CThostFtdcDepositResultInformField
-{
-	///³öÈë½ğÁ÷Ë®ºÅ£¬¸ÃÁ÷Ë®ºÅÎªÒøÆÚ±¨ÅÌ·µ»ØµÄÁ÷Ë®ºÅ
-	TThostFtdcDepositSeqNoType	DepositSeqNo;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Èë½ğ½ğ¶î
-	TThostFtdcMoneyType	Deposit;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///·µ»Ø´úÂë
-	TThostFtdcReturnCodeType	ReturnCode;
-	///·µ»ØÂëÃèÊö
-	TThostFtdcDescrInfoForReturnCodeType	DescrInfoForReturnCode;
-};
-
-///½»Ò×ºËĞÄÏòÒøÆÚ±¨ÅÌ·¢³öÃÜÔ¿Í¬²½ÇëÇó
-struct CThostFtdcReqSyncKeyField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///½»Ò×ºËĞÄ¸øÒøÆÚ±¨ÅÌµÄÏûÏ¢
-	TThostFtdcAddInfoType	Message;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-};
-
-///½»Ò×ºËĞÄÏòÒøÆÚ±¨ÅÌ·¢³öÃÜÔ¿Í¬²½ÏìÓ¦
-struct CThostFtdcRspSyncKeyField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///½»Ò×ºËĞÄ¸øÒøÆÚ±¨ÅÌµÄÏûÏ¢
-	TThostFtdcAddInfoType	Message;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///²éÑ¯ÕË»§ĞÅÏ¢Í¨Öª
-struct CThostFtdcNotifyQueryAccountField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÆÚ»õ¹«Ë¾Á÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureSerial;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÒøĞĞ¿ÉÓÃ½ğ¶î
-	TThostFtdcTradeAmountType	BankUseAmount;
-	///ÒøĞĞ¿ÉÈ¡½ğ¶î
-	TThostFtdcTradeAmountType	BankFetchAmount;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///ÒøÆÚ×ªÕË½»Ò×Á÷Ë®±í
-struct CThostFtdcTransferSerialField
-{
-	///Æ½Ì¨Á÷Ë®ºÅ
-	TThostFtdcPlateSerialType	PlateSerial;
-	///½»Ò×·¢Æğ·½ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcDateType	TradingDay;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///½»Ò×´úÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÒøĞĞ±àÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹±àÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///ÆÚ»õ¹«Ë¾±àÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///ÆÚ»õ¹«Ë¾ÕÊºÅÀàĞÍ
-	TThostFtdcFutureAccTypeType	FutureAccType;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ÆÚ»õ¹«Ë¾Á÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureSerial;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///½»Ò×½ğ¶î
-	TThostFtdcTradeAmountType	TradeAmount;
-	///Ó¦ÊÕ¿Í»§·ÑÓÃ
-	TThostFtdcCustFeeType	CustFee;
-	///Ó¦ÊÕÆÚ»õ¹«Ë¾·ÑÓÃ
-	TThostFtdcFutureFeeType	BrokerFee;
-	///ÓĞĞ§±êÖ¾
-	TThostFtdcAvailabilityFlagType	AvailabilityFlag;
-	///²Ù×÷Ô±
-	TThostFtdcOperatorCodeType	OperatorCode;
-	///ĞÂÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankNewAccount;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///ÇëÇó²éÑ¯×ªÕÊÁ÷Ë®
-struct CThostFtdcQryTransferSerialField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÒøĞĞ±àÂë
-	TThostFtdcBankIDType	BankID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///ÆÚÉÌÇ©µ½Í¨Öª
-struct CThostFtdcNotifyFutureSignInField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///PINÃÜÔ¿
-	TThostFtdcPasswordKeyType	PinKey;
-	///MACÃÜÔ¿
-	TThostFtdcPasswordKeyType	MacKey;
-};
-
-///ÆÚÉÌÇ©ÍËÍ¨Öª
-struct CThostFtdcNotifyFutureSignOutField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///½»Ò×ºËĞÄÏòÒøÆÚ±¨ÅÌ·¢³öÃÜÔ¿Í¬²½´¦Àí½á¹ûµÄÍ¨Öª
-struct CThostFtdcNotifySyncKeyField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///½»Ò×ºËĞÄ¸øÒøÆÚ±¨ÅÌµÄÏûÏ¢
-	TThostFtdcAddInfoType	Message;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///ÇëÇó²éÑ¯ÒøÆÚÇ©Ô¼¹ØÏµ
-struct CThostFtdcQryAccountregisterField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÒøĞĞ±àÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹±àÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///¿Í»§¿ªÏú»§ĞÅÏ¢±í
-struct CThostFtdcAccountregisterField
-{
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDay;
-	///ÒøĞĞ±àÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹±àÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÆÚ»õ¹«Ë¾±àÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚ»õ¹«Ë¾·ÖÖ§»ú¹¹±àÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///¿ªÏú»§Àà±ğ
-	TThostFtdcOpenOrDestroyType	OpenOrDestroy;
-	///Ç©Ô¼ÈÕÆÚ
-	TThostFtdcTradeDateType	RegDate;
-	///½âÔ¼ÈÕÆÚ
-	TThostFtdcTradeDateType	OutDate;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-};
-
-///ÒøÆÚ¿ª»§ĞÅÏ¢
-struct CThostFtdcOpenAccountField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»ã³®±êÖ¾
-	TThostFtdcCashExchangeCodeType	CashExchangeCode;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-	///Ö¤È¯×Ê½ğÈÕ³õÓà¶î
-	TThostFtdcTradeAmountType	SecDaBeBl;
-	///ÒøĞĞ×ªÕËÍ¨µÀ
-	TThostFtdcBankChannelType	BankChal;
-};
-
-///ÒøÆÚÏú»§ĞÅÏ¢
-struct CThostFtdcCancelAccountField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»ã³®±êÖ¾
-	TThostFtdcCashExchangeCodeType	CashExchangeCode;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///Ö¤È¯×Ê½ğÈÕ³õÓà¶î
-	TThostFtdcTradeAmountType	SecDaBeBl;
-	///ÒøĞĞ×ªÕËÍ¨µÀ
-	TThostFtdcBankChannelType	BankChal;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///ÒøÆÚ±ä¸üÒøĞĞÕËºÅĞÅÏ¢
-struct CThostFtdcChangeAccountField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///ĞÂÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	NewBankAccount;
-	///ĞÂÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	NewBankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///¶ş¼¶´úÀí²Ù×÷Ô±ÒøÆÚÈ¨ÏŞ
-struct CThostFtdcSecAgentACIDMapField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///×Ê½ğÕË»§
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///¾³ÍâÖĞ½é»ú¹¹×Ê½ğÕÊºÅ
-	TThostFtdcAccountIDType	BrokerSecAgentID;
-};
-
-///¶ş¼¶´úÀí²Ù×÷Ô±ÒøÆÚÈ¨ÏŞ²éÑ¯
-struct CThostFtdcQrySecAgentACIDMapField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///×Ê½ğÕË»§
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///ÔÖ±¸ÖĞĞÄ½»Ò×È¨ÏŞ
-struct CThostFtdcUserRightsAssignField
-{
-	///Ó¦ÓÃµ¥Ôª´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///½»Ò×ÖĞĞÄ´úÂë
-	TThostFtdcDRIdentityIDType	DRIdentityID;
-};
-
-///¾­¼Ã¹«Ë¾ÊÇ·ñÓĞÔÚ±¾±êÊ¾µÄ½»Ò×È¨ÏŞ
-struct CThostFtdcBrokerUserRightAssignField
-{
-	///Ó¦ÓÃµ¥Ôª´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×ÖĞĞÄ´úÂë
-	TThostFtdcDRIdentityIDType	DRIdentityID;
-	///ÄÜ·ñ½»Ò×
-	TThostFtdcBoolType	Tradeable;
-};
-
-///ÔÖ±¸½»Ò××ª»»±¨ÎÄ
-struct CThostFtdcDRTransferField
-{
-	///Ô­½»Ò×ÖĞĞÄ´úÂë
-	TThostFtdcDRIdentityIDType	OrigDRIdentityID;
-	///Ä¿±ê½»Ò×ÖĞĞÄ´úÂë
-	TThostFtdcDRIdentityIDType	DestDRIdentityID;
-	///Ô­Ó¦ÓÃµ¥Ôª´úÂë
-	TThostFtdcBrokerIDType	OrigBrokerID;
-	///Ä¿±êÒ×ÓÃµ¥Ôª´úÂë
-	TThostFtdcBrokerIDType	DestBrokerID;
-};
-
-///FensÓÃ»§ĞÅÏ¢
-struct CThostFtdcFensUserInfoField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///µÇÂ¼Ä£Ê½
-	TThostFtdcLoginModeType	LoginMode;
-};
-
-///µ±Ç°ÒøÆÚËùÊô½»Ò×ÖĞĞÄ
-struct CThostFtdcCurrTransferIdentityField
-{
-	///½»Ò×ÖĞĞÄ´úÂë
-	TThostFtdcDRIdentityIDType	IdentityID;
-};
-
-///½ûÖ¹µÇÂ¼ÓÃ»§
-struct CThostFtdcLoginForbiddenUserField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-};
-
-///²éÑ¯½ûÖ¹µÇÂ¼ÓÃ»§
-struct CThostFtdcQryLoginForbiddenUserField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-};
-
-///UDP×é²¥×éĞÅÏ¢
-struct CThostFtdcMulticastGroupInfoField
-{
-	///×é²¥×éIPµØÖ·
-	TThostFtdcIPAddressType	GroupIP;
-	///×é²¥×éIP¶Ë¿Ú
-	TThostFtdcIPPortType	GroupPort;
-	///Ô´µØÖ·
-	TThostFtdcIPAddressType	SourceIP;
-};
-
-///×Ê½ğÕË»§»ù±¾×¼±¸½ğ
-struct CThostFtdcTradingAccountReserveField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///»ù±¾×¼±¸½ğ
-	TThostFtdcMoneyType	Reserve;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///²éÑ¯½ûÖ¹µÇÂ¼IP
-struct CThostFtdcQryLoginForbiddenIPField
-{
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-};
-
-///²éÑ¯IPÁĞ±í
-struct CThostFtdcQryIPListField
-{
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-};
-
-///²éÑ¯ÓÃ»§ÏÂµ¥È¨ÏŞ·ÖÅä±í
-struct CThostFtdcQryUserRightsAssignField
-{
-	///Ó¦ÓÃµ¥Ôª´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-};
-
-///DBF¼ÇÂ¼
-struct CThostFtdcDBFRecordField
-{
-	///DBFÃüÁîÀàĞÍ
-	TThostFtdcDBFComdTypeType	DBFComdType;
-	///DBFÊ±¼äÀàĞÍ
-	TThostFtdcDBFComTimeType	DBFComTime;
-	///DBFÔ­Ê¼Á÷Ë®ºÅÀàĞÍ
-	TThostFtdcDBFComNoType	DBFOComNo;
-	///DBFÁ÷Ë®ºÅÀàĞÍ
-	TThostFtdcDBFComNoType	DBFComNo;
-	///DBF×Ö¶ÎÀàĞÍ
-	TThostFtdcDBFFdNameType	DBFFdName1;
-	///DBF×Ö¶ÎÄÚÈİÀàĞÍ
-	TThostFtdcDBFFdContentType	DBFFdContent1;
-	///DBF×Ö¶ÎÀàĞÍ
-	TThostFtdcDBFFdNameType	DBFFdName2;
-	///DBF×Ö¶ÎÄÚÈİÀàĞÍ
-	TThostFtdcDBFFdContentType	DBFFdContent2;
-	///DBF×Ö¶ÎÀàĞÍ
-	TThostFtdcDBFFdNameType	DBFFdName3;
-	///DBF×Ö¶ÎÄÚÈİÀàĞÍ
-	TThostFtdcDBFFdContentType	DBFFdContent3;
-	///DBF×Ö¶ÎÀàĞÍ
-	TThostFtdcDBFFdNameType	DBFFdName4;
-	///DBF×Ö¶ÎÄÚÈİÀàĞÍ
-	TThostFtdcDBFFdContentType	DBFFdContent4;
-};
-
-///ÒøĞĞÕË»§ÊôĞÔ
-struct CThostFtdcAccountPropertyField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÒøĞĞÍ³Ò»±êÊ¶ÀàĞÍ
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞÕË»§
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÕË»§µÄ¿ª»§ÈËÃû³Æ
-	TThostFtdcInvestorFullNameType	OpenName;
-	///ÒøĞĞÕË»§µÄ¿ª»§ĞĞ
-	TThostFtdcOpenBankType	OpenBank;
-	///ÊÇ·ñ»îÔ¾
-	TThostFtdcBoolType	IsActive;
-	///ÕË»§À´Ô´
-	TThostFtdcAccountSourceTypeType	AccountSourceType;
-	///¿ª»§ÈÕÆÚ
-	TThostFtdcDateType	OpenDate;
-	///×¢ÏúÈÕÆÚ
-	TThostFtdcDateType	CancelDate;
-	///Â¼ÈëÔ±´úÂë
-	TThostFtdcOperatorIDType	OperatorID;
-	///Â¼ÈëÈÕÆÚ
-	TThostFtdcDateType	OperateDate;
-	///Â¼ÈëÊ±¼ä
-	TThostFtdcTimeType	OperateTime;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-};
-
-///²éÑ¯µ±Ç°½»Ò×ÖĞĞÄ
-struct CThostFtdcQryCurrDRIdentityField
-{
-	///½»Ò×ÖĞĞÄ´úÂë
-	TThostFtdcDRIdentityIDType	DRIdentityID;
-};
-
-///µ±Ç°½»Ò×ÖĞĞÄ
-struct CThostFtdcCurrDRIdentityField
-{
-	///½»Ò×ÖĞĞÄ´úÂë
-	TThostFtdcDRIdentityIDType	DRIdentityID;
-};
-
-///µÚÈı·½´æ¹ÜÒµÎñ¿ª»§Ô¤Ö¸¶¨ÇëÇó
-struct CThostFtdcReqReserveOpenAccountTpdField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»ã³®±êÖ¾
-	TThostFtdcCashExchangeCodeType	CashExchangeCode;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///Ö¤È¯×Ê½ğÈÕ³õÓà¶î
-	TThostFtdcTradeAmountType	SecDaBeBl;
-	///ÒøĞĞ×ªÕËÍ¨µÀ
-	TThostFtdcBankChannelType	BankChal;
-};
-
-///µÚÈı·½´æ¹ÜÒµÎñ¿ª»§Ô¤Ö¸¶¨
-struct CThostFtdcReserveOpenAccountTpdField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»ã³®±êÖ¾
-	TThostFtdcCashExchangeCodeType	CashExchangeCode;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///Ö¤È¯×Ê½ğÈÕ³õÓà¶î
-	TThostFtdcTradeAmountType	SecDaBeBl;
-	///ÒøĞĞ×ªÕËÍ¨µÀ
-	TThostFtdcBankChannelType	BankChal;
-	///Ô¤Ô¼¿ª»§×´Ì¬
-	TThostFtdcReserveOpenAccStasType	ReserveOpenAccStas;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///µÚÈı·½´æ¹ÜÒµÎñ¿ª»§È·ÈÏÇëÇó
-struct CThostFtdcReqResOpenAccConfirmTpdField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»ã³®±êÖ¾
-	TThostFtdcCashExchangeCodeType	CashExchangeCode;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-};
-
-///µÚÈı·½´æ¹ÜÒµÎñ¿ª»§È·ÈÏ
-struct CThostFtdcResOpenAccConfirmTpdField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»ã³®±êÖ¾
-	TThostFtdcCashExchangeCodeType	CashExchangeCode;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///µÚÈı·½´æ¹ÜÖ¤È¯×Ê½ğ½áÏ¢ÇëÇó
-struct CThostFtdcReqSecuritiesDepositInterestField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÆÚ»õ¹«Ë¾Á÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureSerial;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»ã³®±êÖ¾
-	TThostFtdcCashExchangeCodeType	CashExchangeCode;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///½áÏ¢¾»¶î
-	TThostFtdcTradeAmountType	DepositInterest;
-};
-
-///µÚÈı·½´æ¹ÜÖ¤È¯×Ê½ğ½áÏ¢
-struct CThostFtdcSecuritiesDepositInterestField
-{
-	///ÒµÎñ¹¦ÄÜÂë
-	TThostFtdcTradeCodeType	TradeCode;
-	///ÒøĞĞ´úÂë
-	TThostFtdcBankIDType	BankID;
-	///ÒøĞĞ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcBankBrchIDType	BankBranchID;
-	///ÆÚÉÌ´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÆÚÉÌ·ÖÖ§»ú¹¹´úÂë
-	TThostFtdcFutureBranchIDType	BrokerBranchID;
-	///½»Ò×ÈÕÆÚ
-	TThostFtdcTradeDateType	TradeDate;
-	///½»Ò×Ê±¼ä
-	TThostFtdcTradeTimeType	TradeTime;
-	///ÒøĞĞÁ÷Ë®ºÅ
-	TThostFtdcBankSerialType	BankSerial;
-	///½»Ò×ÏµÍ³ÈÕÆÚ 
-	TThostFtdcTradeDateType	TradingDay;
-	///ÒøÆÚÆ½Ì¨ÏûÏ¢Á÷Ë®ºÅ
-	TThostFtdcSerialType	PlateSerial;
-	///×îºó·ÖÆ¬±êÖ¾
-	TThostFtdcLastFragmentType	LastFragment;
-	///»á»°ºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///¿Í»§ĞÕÃû
-	TThostFtdcIndividualNameType	CustomerName;
-	///Ö¤¼şÀàĞÍ
-	TThostFtdcIdCardTypeType	IdCardType;
-	///Ö¤¼şºÅÂë
-	TThostFtdcIdentifiedCardNoType	IdentifiedCardNo;
-	///ĞÔ±ğ
-	TThostFtdcGenderType	Gender;
-	///¹ú¼Ò´úÂë
-	TThostFtdcCountryCodeType	CountryCode;
-	///¿Í»§ÀàĞÍ
-	TThostFtdcCustTypeType	CustType;
-	///µØÖ·
-	TThostFtdcAddressType	Address;
-	///ÓÊ±à
-	TThostFtdcZipCodeType	ZipCode;
-	///µç»°ºÅÂë
-	TThostFtdcTelephoneType	Telephone;
-	///ÊÖ»ú
-	TThostFtdcMobilePhoneType	MobilePhone;
-	///´«Õæ
-	TThostFtdcFaxType	Fax;
-	///µç×ÓÓÊ¼ş
-	TThostFtdcEMailType	EMail;
-	///×Ê½ğÕË»§×´Ì¬
-	TThostFtdcMoneyAccountStatusType	MoneyAccountStatus;
-	///ÒøĞĞÕÊºÅ
-	TThostFtdcBankAccountType	BankAccount;
-	///ÒøĞĞÃÜÂë
-	TThostFtdcPasswordType	BankPassWord;
-	///Í¶×ÊÕßÕÊºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///ÆÚ»õÃÜÂë
-	TThostFtdcPasswordType	Password;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///ÆÚ»õ¹«Ë¾Á÷Ë®ºÅ
-	TThostFtdcFutureSerialType	FutureSerial;
-	///ÑéÖ¤¿Í»§Ö¤¼şºÅÂë±êÖ¾
-	TThostFtdcYesNoIndicatorType	VerifyCertNoFlag;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///»ã³®±êÖ¾
-	TThostFtdcCashExchangeCodeType	CashExchangeCode;
-	///ÕªÒª
-	TThostFtdcDigestType	Digest;
-	///ÒøĞĞÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankAccType;
-	///ÇşµÀ±êÖ¾
-	TThostFtdcDeviceIDType	DeviceID;
-	///ÆÚ»õµ¥Î»ÕÊºÅÀàĞÍ
-	TThostFtdcBankAccTypeType	BankSecuAccType;
-	///ÆÚ»õ¹«Ë¾ÒøĞĞ±àÂë
-	TThostFtdcBankCodingForFutureType	BrokerIDByBank;
-	///ÆÚ»õµ¥Î»ÕÊºÅ
-	TThostFtdcBankAccountType	BankSecuAcc;
-	///ÒøĞĞÃÜÂë±êÖ¾
-	TThostFtdcPwdFlagType	BankPwdFlag;
-	///ÆÚ»õ×Ê½ğÃÜÂëºË¶Ô±êÖ¾
-	TThostFtdcPwdFlagType	SecuPwdFlag;
-	///½»Ò×¹ñÔ±
-	TThostFtdcOperNoType	OperNo;
-	///½»Ò×ID
-	TThostFtdcTIDType	TID;
-	///ÓÃ»§±êÊ¶
-	TThostFtdcUserIDType	UserID;
-	///½áÏ¢¾»¶î
-	TThostFtdcTradeAmountType	DepositInterest;
-	///½áÏ¢ÀàĞÍ
-	TThostFtdcSFInterestTypeType	InterestType;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
-///¾­¼Í¹«Ë¾·Ç½»Ò×Ê±¼ä¶Î
-struct CThostFtdcBrokerBreakSectionField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	TimeStart;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	TimeEnd;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-};
-
-///¾­¼Í¹«Ë¾Ëø¶¨¿Í»§ÏÖÈ¯
-struct CThostFtdcBrokerLockInvestorStockField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///±êµÄºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-};
-
-///²éÑ¯¾­¼Í¹«Ë¾Ëø¶¨¿Í»§ÏÖÈ¯
-struct CThostFtdcQryBrokerLockInvestorStockField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///ºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	InstrumentID;
-};
-
-///ĞĞÈ¨Ê±ÊÇ·ñ¼ì²é±êµÄÏÖÈ¯
-struct CThostFtdcExecIsCheckUnderlyingField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»ù´¡ÉÌÆ·´úÂë
-	TThostFtdcInstrumentIDType	UnderlyingInstrID;
-	///ÊÇ·ñ¼ì²é
-	TThostFtdcBoolType	IsCheck;
-};
-
-///²éÑ¯ĞĞÈ¨Ê±ÊÇ·ñ¼ì²é±êµÄÏÖÈ¯
-struct CThostFtdcQryExecIsCheckUnderlyingField
-{
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»ù´¡ÉÌÆ·´úÂë
-	TThostFtdcInstrumentIDType	UnderlyingInstrID;
-};
-
-///Í¶×ÊÕßÓëPBUÖ¸¶¨¹ØÏµ
-struct CThostFtdcPBUInvestorMapField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö¸¶¨½»Ò×µ¥ÔªºÅ
-	TThostFtdcTraderIDType	PBU;
-	///Ö¤È¯ÕË»§
-	TThostFtdcClientIDType	ClientID;
-	///ÈÕÆÚ
-	TThostFtdcDateType	OperationDate;
-	///Ê±¼ä
-	TThostFtdcTimeType	OperationTime;
-};
-
-///ÊäÈëµÄĞĞÈ¨Ö¸ÁîºÏ²¢
-struct CThostFtdcInputExecCombineOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¿´ÕÇºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	CallInstrumentID;
-	///¿´µøºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	PutInstrumentID;
-	///Ö´ĞĞĞû¸æºÏ²¢ÒıÓÃ
-	TThostFtdcOrderRefType	ExecCombineOrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///½»Ò×±àÂë
-	TThostFtdcClientIDType	ClientID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ÊäÈëĞĞÈ¨Ö¸ÁîºÏ²¢²Ù×÷
-struct CThostFtdcInputExecCombineOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö´ĞĞĞû¸æºÏ²¢²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	ExecCombineOrderActionRef;
-	///Ö´ĞĞĞû¸æºÏ²¢ÒıÓÃ
-	TThostFtdcOrderRefType	ExecCombineOrderRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞĞû¸æºÏ²¢²Ù×÷±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecCombineOrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ĞĞÈ¨Ö¸ÁîºÏ²¢
-struct CThostFtdcExecCombineOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¿´ÕÇºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	CallInstrumentID;
-	///¿´µøºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	PutInstrumentID;
-	///Ö´ĞĞĞû¸æºÏ²¢ÒıÓÃ
-	TThostFtdcOrderRefType	ExecCombineOrderRef;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÊıÁ¿
-	TThostFtdcVolumeType	Volume;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///±¾µØÖ´ĞĞĞû¸æºÏ²¢±àºÅ
-	TThostFtdcOrderLocalIDType	ExecCombineOrderLocalID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///±êµÄºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	UnderlyingInstrID;
-	///¿´ÕÇºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangeCallInstID;
-	///¿´µøºÏÔ¼ÔÚ½»Ò×ËùµÄ´úÂë
-	TThostFtdcExchangeInstIDType	ExchangePutInstID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///Ö´ĞĞĞû¸æºÏ²¢Ìá½»×´Ì¬
-	TThostFtdcOrderSubmitStatusType	OrderSubmitStatus;
-	///±¨µ¥ÌáÊ¾ĞòºÅ
-	TThostFtdcSequenceNoType	NotifySequence;
-	///½»Ò×ÈÕ
-	TThostFtdcDateType	TradingDay;
-	///½áËã±àºÅ
-	TThostFtdcSettlementIDType	SettlementID;
-	///Ö´ĞĞĞû¸æºÏ²¢±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecCombineOrderSysID;
-	///±¨µ¥ÈÕÆÚ
-	TThostFtdcDateType	InsertDate;
-	///²åÈëÊ±¼ä
-	TThostFtdcTimeType	InsertTime;
-	///³·ÏúÊ±¼ä
-	TThostFtdcTimeType	CancelTime;
-	///Ö´ĞĞ½á¹û
-	TThostFtdcExecResultType	ExecResult;
-	///½áËã»áÔ±±àºÅ
-	TThostFtdcParticipantIDType	ClearingPartID;
-	///ĞòºÅ
-	TThostFtdcSequenceNoType	SequenceNo;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-	TThostFtdcProductInfoType	UserProductInfo;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///²Ù×÷ÓÃ»§´úÂë
-	TThostFtdcUserIDType	ActiveUserID;
-	///¾­¼Í¹«Ë¾±¨µ¥±àºÅ
-	TThostFtdcSequenceNoType	BrokerExecCombineOrderSeq;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///×Ê½ğÕËºÅ
-	TThostFtdcAccountIDType	AccountID;
-	///±ÒÖÖ´úÂë
-	TThostFtdcCurrencyIDType	CurrencyID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ĞĞÈ¨Ö¸ÁîºÏ²¢²Ù×÷
-struct CThostFtdcExecCombineOrderActionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///Ö´ĞĞĞû¸æºÏ²¢²Ù×÷ÒıÓÃ
-	TThostFtdcOrderActionRefType	ExecCombineOrderActionRef;
-	///Ö´ĞĞĞû¸æºÏ²¢ÒıÓÃ
-	TThostFtdcOrderRefType	ExecCombineOrderRef;
-	///ÇëÇó±àºÅ
-	TThostFtdcRequestIDType	RequestID;
-	///Ç°ÖÃ±àºÅ
-	TThostFtdcFrontIDType	FrontID;
-	///»á»°±àºÅ
-	TThostFtdcSessionIDType	SessionID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞĞû¸æºÏ²¢²Ù×÷±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecCombineOrderSysID;
-	///²Ù×÷±êÖ¾
-	TThostFtdcActionFlagType	ActionFlag;
-	///²Ù×÷ÈÕÆÚ
-	TThostFtdcDateType	ActionDate;
-	///²Ù×÷Ê±¼ä
-	TThostFtdcTimeType	ActionTime;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÖ´ĞĞĞû¸æºÏ²¢±àºÅ
-	TThostFtdcOrderLocalIDType	ExecCombineOrderLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///»áÔ±´úÂë
-	TThostFtdcParticipantIDType	ParticipantID;
-	///¿Í»§´úÂë
-	TThostFtdcClientIDType	ClientID;
-	///ÒµÎñµ¥Ôª
-	TThostFtdcBusinessUnitType	BusinessUnit;
-	///±¨µ¥²Ù×÷×´Ì¬
-	TThostFtdcOrderActionStatusType	OrderActionStatus;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///Ö´ĞĞÀàĞÍ
-	TThostFtdcActionTypeType	ActionType;
-	///×´Ì¬ĞÅÏ¢
-	TThostFtdcErrorMsgType	StatusMsg;
-	///¿´ÕÇºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	CallInstrumentID;
-	///¿´µøºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	PutInstrumentID;
-	///ÓªÒµ²¿±àºÅ
-	TThostFtdcBranchIDType	BranchID;
-	///Í¶×Êµ¥Ôª´úÂë
-	TThostFtdcInvestUnitIDType	InvestUnitID;
-	///IPµØÖ·
-	TThostFtdcIPAddressType	IPAddress;
-	///MacµØÖ·
-	TThostFtdcMacAddressType	MacAddress;
-};
-
-///ĞĞÈ¨Ö¸ÁîºÏ²¢²éÑ¯
-struct CThostFtdcQryExecCombineOrderField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///Í¶×ÊÕß´úÂë
-	TThostFtdcInvestorIDType	InvestorID;
-	///¿´ÕÇºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	CallInstrumentID;
-	///¿´µøºÏÔ¼´úÂë
-	TThostFtdcInstrumentIDType	PutInstrumentID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞĞû¸æºÏ²¢±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecCombineOrderSysID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	InsertTimeStart;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	InsertTimeEnd;
-};
-
-///ÓÃ»§ÏµÍ³ĞÅÏ¢
-struct CThostFtdcUserSystemInfoField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///ÓÃ»§´úÂë
-	TThostFtdcUserIDType	UserID;
-	///ÓÃ»§¶ËÏµÍ³ÄÚ²¿ĞÅÏ¢³¤¶È
-	TThostFtdcSystemInfoLenType	ClientSystemInfoLen;
-	///ÓÃ»§¶ËÏµÍ³ÄÚ²¿ĞÅÏ¢
-	TThostFtdcClientSystemInfoType	ClientSystemInfo;
-	///ÓÃ»§¹«ÍøIP
-	TThostFtdcIPAddressType	ClientPublicIP;
-	///ÖÕ¶ËIP¶Ë¿Ú
-	TThostFtdcIPPortType	ClientIPPort;
-	///µÇÂ¼³É¹¦Ê±¼ä
-	TThostFtdcTimeType	ClientLoginTime;
-	///App´úÂë
-	TThostFtdcAppIDType	ClientAppID;
-};
-
-///apiÎÕÊÖÇëÇó
-struct CThostFtdcReqApiHandshakeField
-{
-	///apiÓëfrontÍ¨ĞÅÃÜÔ¿°æ±¾ºÅ
-	TThostFtdcCryptoKeyVersionType	CryptoKeyVersion;
-};
-
-///front·¢¸øapiµÄÎÕÊÖ»Ø¸´
-struct CThostFtdcRspApiHandshakeField
-{
-	///ÎÕÊÖ»Ø¸´Êı¾İ³¤¶È
-	TThostFtdcHandshakeDataLenType	FrontHandshakeDataLen;
-	///ÎÕÊÖ»Ø¸´Êı¾İ
-	TThostFtdcHandshakeDataType	FrontHandshakeData;
-	///APIÈÏÖ¤ÊÇ·ñ¿ªÆô
-	TThostFtdcBoolType	IsApiAuthEnabled;
-};
-
-///api¸øfrontµÄÑéÖ¤keyµÄÇëÇó
-struct CThostFtdcReqVerifyApiKeyField
-{
-	///ÎÕÊÖ»Ø¸´Êı¾İ³¤¶È
-	TThostFtdcHandshakeDataLenType	ApiHandshakeDataLen;
-	///ÎÕÊÖ»Ø¸´Êı¾İ
-	TThostFtdcHandshakeDataType	ApiHandshakeData;
-};
-
-///App¿Í»§¶ËÈ¨ÏŞ·ÖÅä
-struct CThostFtdcAppIDAuthAssignField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///App´úÂë
-	TThostFtdcAppIDType	AppID;
-	///½»Ò×ÖĞĞÄ´úÂë
-	TThostFtdcDRIdentityIDType	DRIdentityID;
-};
-
-///AppÈÏÖ¤Âë
-struct CThostFtdcAppAuthenticationCodeField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///App´úÂë
-	TThostFtdcAppIDType	AppID;
-	///ÈÏÖ¤Âë
-	TThostFtdcAuthCodeType	AuthCode;
-	///¾ÉÈÏÖ¤Âë
-	TThostFtdcAuthCodeType	PreAuthCode;
-	///AppÀàĞÍ
-	TThostFtdcAppTypeType	AppType;
-};
-
-///²éÑ¯ÆµÂÊ£¬Ã¿Ãë²éÑ¯±ÈÊı
-struct CThostFtdcQueryFreqField
-{
-	///²éÑ¯ÆµÂÊ
-	TThostFtdcQueryFreqType	QueryFreq;
-};
-
-///ºÏ²¢ĞĞÈ¨Ê±¼ä¶Î
-struct CThostFtdcExecCombineTimeSectionField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///¿ªÊ¼Ê±¼ä
-	TThostFtdcTimeType	StartTime;
-	///½áÊøÊ±¼ä
-	TThostFtdcTimeType	EndTime;
-	///¹Òµ¥ÔÊĞíĞĞÈ¨ÆğÊ¼Ê±¼ä
-	TThostFtdcTimeType	CloseFrozExecTime;
-};
-
-///½»Ò×Ëù²Ù×÷´íÎó
-struct CThostFtdcExchangeExecCombineOrderActionErrorField
-{
-	///¾­¼Í¹«Ë¾´úÂë
-	TThostFtdcBrokerIDType	BrokerID;
-	///½»Ò×Ëù´úÂë
-	TThostFtdcExchangeIDType	ExchangeID;
-	///Ö´ĞĞĞû¸æºÏ²¢±àºÅ
-	TThostFtdcExecOrderSysIDType	ExecCombineOrderSysID;
-	///½»Ò×Ëù½»Ò×Ô±´úÂë
-	TThostFtdcTraderIDType	TraderID;
-	///°²×°±àºÅ
-	TThostFtdcInstallIDType	InstallID;
-	///±¾µØÖ´ĞĞĞû¸æºÏ²¢±àºÅ
-	TThostFtdcOrderLocalIDType	ExecCombineOrderLocalID;
-	///²Ù×÷±¾µØ±àºÅ
-	TThostFtdcOrderLocalIDType	ActionLocalID;
-	///´íÎó´úÂë
-	TThostFtdcErrorIDType	ErrorID;
-	///´íÎóĞÅÏ¢
-	TThostFtdcErrorMsgType	ErrorMsg;
-};
-
+	/// ä¿¡æ¯åˆ†å‘
+	struct CThostFtdcDisseminationField
+	{
+		/// åºåˆ—ç³»åˆ—å·
+		TThostFtdcSequenceSeriesType SequenceSeries;
+		/// åºåˆ—å·
+		TThostFtdcSequenceNoType SequenceNo;
+	};
+
+	/// ç”¨æˆ·ç™»å½•è¯·æ±‚
+	struct CThostFtdcReqUserLoginField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// æ¥å£ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType InterfaceProductInfo;
+		/// åè®®ä¿¡æ¯
+		TThostFtdcProtocolInfoType ProtocolInfo;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// åŠ¨æ€å¯†ç 
+		TThostFtdcPasswordType OneTimePassword;
+		/// ç»ˆç«¯IPåœ°å€
+		TThostFtdcIPAddressType ClientIPAddress;
+		/// ç™»å½•å¤‡æ³¨
+		TThostFtdcLoginRemarkType LoginRemark;
+		/// ç»ˆç«¯IPç«¯å£
+		TThostFtdcIPPortType ClientIPPort;
+	};
+
+	/// ç”¨æˆ·ç™»å½•åº”ç­”
+	struct CThostFtdcRspUserLoginField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç™»å½•æˆåŠŸæ—¶é—´
+		TThostFtdcTimeType LoginTime;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// äº¤æ˜“ç³»ç»Ÿåç§°
+		TThostFtdcSystemNameType SystemName;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// æœ€å¤§æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType MaxOrderRef;
+		/// ä¸ŠæœŸæ‰€æ—¶é—´
+		TThostFtdcTimeType SHFETime;
+		/// å¤§å•†æ‰€æ—¶é—´
+		TThostFtdcTimeType DCETime;
+		/// éƒ‘å•†æ‰€æ—¶é—´
+		TThostFtdcTimeType CZCETime;
+		/// ä¸­é‡‘æ‰€æ—¶é—´
+		TThostFtdcTimeType FFEXTime;
+		/// èƒ½æºä¸­å¿ƒæ—¶é—´
+		TThostFtdcTimeType INETime;
+	};
+
+	/// ç”¨æˆ·ç™»å‡ºè¯·æ±‚
+	struct CThostFtdcUserLogoutField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+	};
+
+	/// å¼ºåˆ¶äº¤æ˜“å‘˜é€€å‡º
+	struct CThostFtdcForceUserLogoutField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+	};
+
+	/// å®¢æˆ·ç«¯è®¤è¯è¯·æ±‚
+	struct CThostFtdcReqAuthenticateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// è®¤è¯ç 
+		TThostFtdcAuthCodeType AuthCode;
+		/// Appä»£ç 
+		TThostFtdcAppIDType AppID;
+	};
+
+	/// å®¢æˆ·ç«¯è®¤è¯å“åº”
+	struct CThostFtdcRspAuthenticateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// Appä»£ç 
+		TThostFtdcAppIDType AppID;
+		/// Appç±»å‹
+		TThostFtdcAppTypeType AppType;
+	};
+
+	/// å®¢æˆ·ç«¯è®¤è¯ä¿¡æ¯
+	struct CThostFtdcAuthenticationInfoField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// è®¤è¯ä¿¡æ¯
+		TThostFtdcAuthInfoType AuthInfo;
+		/// æ˜¯å¦ä¸ºè®¤è¯ç»“æœ
+		TThostFtdcBoolType IsResult;
+		/// Appä»£ç 
+		TThostFtdcAppIDType AppID;
+		/// Appç±»å‹
+		TThostFtdcAppTypeType AppType;
+	};
+
+	/// å®‰å…¨ç”¨æˆ·ç™»å½•åº”ç­”
+	struct CThostFtdcRspUserLoginSafelyField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç™»å½•æˆåŠŸæ—¶é—´
+		TThostFtdcTimeType LoginTime;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// äº¤æ˜“ç³»ç»Ÿåç§°
+		TThostFtdcSystemNameType SystemName;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// æœ€å¤§æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType MaxOrderRef;
+		/// ä¸ŠæœŸæ‰€æ—¶é—´
+		TThostFtdcTimeType SHFETime;
+		/// å¤§å•†æ‰€æ—¶é—´
+		TThostFtdcTimeType DCETime;
+		/// éƒ‘å•†æ‰€æ—¶é—´
+		TThostFtdcTimeType CZCETime;
+		/// ä¸­é‡‘æ‰€æ—¶é—´
+		TThostFtdcTimeType FFEXTime;
+		/// èƒ½æºä¸­å¿ƒæ—¶é—´
+		TThostFtdcTimeType INETime;
+		/// éšæœºä¸²
+		TThostFtdcRandomStringType RandomString;
+	};
+
+	/// é“¶æœŸè½¬å¸æŠ¥æ–‡å¤´
+	struct CThostFtdcTransferHeaderField
+	{
+		/// ç‰ˆæœ¬å·ï¼Œå¸¸é‡ï¼Œ1.0
+		TThostFtdcVersionType Version;
+		/// äº¤æ˜“ä»£ç ï¼Œå¿…å¡«
+		TThostFtdcTradeCodeType TradeCode;
+		/// äº¤æ˜“æ—¥æœŸï¼Œå¿…å¡«ï¼Œæ ¼å¼ï¼šyyyymmdd
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´ï¼Œå¿…å¡«ï¼Œæ ¼å¼ï¼šhhmmss
+		TThostFtdcTradeTimeType TradeTime;
+		/// å‘èµ·æ–¹æµæ°´å·ï¼ŒN/A
+		TThostFtdcTradeSerialType TradeSerial;
+		/// æœŸè´§å…¬å¸ä»£ç ï¼Œå¿…å¡«
+		TThostFtdcFutureIDType FutureID;
+		/// é“¶è¡Œä»£ç ï¼Œæ ¹æ®æŸ¥è¯¢é“¶è¡Œå¾—åˆ°ï¼Œå¿…å¡«
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†ä¸­å¿ƒä»£ç ï¼Œæ ¹æ®æŸ¥è¯¢é“¶è¡Œå¾—åˆ°ï¼Œå¿…å¡«
+		TThostFtdcBankBrchIDType BankBrchID;
+		/// æ“ä½œå‘˜ï¼ŒN/A
+		TThostFtdcOperNoType OperNo;
+		/// äº¤æ˜“è®¾å¤‡ç±»å‹ï¼ŒN/A
+		TThostFtdcDeviceIDType DeviceID;
+		/// è®°å½•æ•°ï¼ŒN/A
+		TThostFtdcRecordNumType RecordNum;
+		/// ä¼šè¯ç¼–å·ï¼ŒN/A
+		TThostFtdcSessionIDType SessionID;
+		/// è¯·æ±‚ç¼–å·ï¼ŒN/A
+		TThostFtdcRequestIDType RequestID;
+	};
+
+	/// é“¶è¡Œèµ„é‡‘è½¬æœŸè´§è¯·æ±‚ï¼ŒTradeCode=202001
+	struct CThostFtdcTransferBankToFutureReqField
+	{
+		/// æœŸè´§èµ„é‡‘è´¦æˆ·
+		TThostFtdcAccountIDType FutureAccount;
+		/// å¯†ç æ ‡å¿—
+		TThostFtdcFuturePwdFlagType FuturePwdFlag;
+		/// å¯†ç 
+		TThostFtdcFutureAccPwdType FutureAccPwd;
+		/// è½¬è´¦é‡‘é¢
+		TThostFtdcMoneyType TradeAmt;
+		/// å®¢æˆ·æ‰‹ç»­è´¹
+		TThostFtdcMoneyType CustFee;
+		/// å¸ç§ï¼šRMB-äººæ°‘å¸ USD-ç¾åœ† HKD-æ¸¯å…ƒ
+		TThostFtdcCurrencyCodeType CurrencyCode;
+	};
+
+	/// é“¶è¡Œèµ„é‡‘è½¬æœŸè´§è¯·æ±‚å“åº”
+	struct CThostFtdcTransferBankToFutureRspField
+	{
+		/// å“åº”ä»£ç 
+		TThostFtdcRetCodeType RetCode;
+		/// å“åº”ä¿¡æ¯
+		TThostFtdcRetInfoType RetInfo;
+		/// èµ„é‡‘è´¦æˆ·
+		TThostFtdcAccountIDType FutureAccount;
+		/// è½¬å¸é‡‘é¢
+		TThostFtdcMoneyType TradeAmt;
+		/// åº”æ”¶å®¢æˆ·æ‰‹ç»­è´¹
+		TThostFtdcMoneyType CustFee;
+		/// å¸ç§
+		TThostFtdcCurrencyCodeType CurrencyCode;
+	};
+
+	/// æœŸè´§èµ„é‡‘è½¬é“¶è¡Œè¯·æ±‚ï¼ŒTradeCode=202002
+	struct CThostFtdcTransferFutureToBankReqField
+	{
+		/// æœŸè´§èµ„é‡‘è´¦æˆ·
+		TThostFtdcAccountIDType FutureAccount;
+		/// å¯†ç æ ‡å¿—
+		TThostFtdcFuturePwdFlagType FuturePwdFlag;
+		/// å¯†ç 
+		TThostFtdcFutureAccPwdType FutureAccPwd;
+		/// è½¬è´¦é‡‘é¢
+		TThostFtdcMoneyType TradeAmt;
+		/// å®¢æˆ·æ‰‹ç»­è´¹
+		TThostFtdcMoneyType CustFee;
+		/// å¸ç§ï¼šRMB-äººæ°‘å¸ USD-ç¾åœ† HKD-æ¸¯å…ƒ
+		TThostFtdcCurrencyCodeType CurrencyCode;
+	};
+
+	/// æœŸè´§èµ„é‡‘è½¬é“¶è¡Œè¯·æ±‚å“åº”
+	struct CThostFtdcTransferFutureToBankRspField
+	{
+		/// å“åº”ä»£ç 
+		TThostFtdcRetCodeType RetCode;
+		/// å“åº”ä¿¡æ¯
+		TThostFtdcRetInfoType RetInfo;
+		/// èµ„é‡‘è´¦æˆ·
+		TThostFtdcAccountIDType FutureAccount;
+		/// è½¬å¸é‡‘é¢
+		TThostFtdcMoneyType TradeAmt;
+		/// åº”æ”¶å®¢æˆ·æ‰‹ç»­è´¹
+		TThostFtdcMoneyType CustFee;
+		/// å¸ç§
+		TThostFtdcCurrencyCodeType CurrencyCode;
+	};
+
+	/// æŸ¥è¯¢é“¶è¡Œèµ„é‡‘è¯·æ±‚ï¼ŒTradeCode=204002
+	struct CThostFtdcTransferQryBankReqField
+	{
+		/// æœŸè´§èµ„é‡‘è´¦æˆ·
+		TThostFtdcAccountIDType FutureAccount;
+		/// å¯†ç æ ‡å¿—
+		TThostFtdcFuturePwdFlagType FuturePwdFlag;
+		/// å¯†ç 
+		TThostFtdcFutureAccPwdType FutureAccPwd;
+		/// å¸ç§ï¼šRMB-äººæ°‘å¸ USD-ç¾åœ† HKD-æ¸¯å…ƒ
+		TThostFtdcCurrencyCodeType CurrencyCode;
+	};
+
+	/// æŸ¥è¯¢é“¶è¡Œèµ„é‡‘è¯·æ±‚å“åº”
+	struct CThostFtdcTransferQryBankRspField
+	{
+		/// å“åº”ä»£ç 
+		TThostFtdcRetCodeType RetCode;
+		/// å“åº”ä¿¡æ¯
+		TThostFtdcRetInfoType RetInfo;
+		/// èµ„é‡‘è´¦æˆ·
+		TThostFtdcAccountIDType FutureAccount;
+		/// é“¶è¡Œä½™é¢
+		TThostFtdcMoneyType TradeAmt;
+		/// é“¶è¡Œå¯ç”¨ä½™é¢
+		TThostFtdcMoneyType UseAmt;
+		/// é“¶è¡Œå¯å–ä½™é¢
+		TThostFtdcMoneyType FetchAmt;
+		/// å¸ç§
+		TThostFtdcCurrencyCodeType CurrencyCode;
+	};
+
+	/// æŸ¥è¯¢é“¶è¡Œäº¤æ˜“æ˜ç»†è¯·æ±‚ï¼ŒTradeCode=204999
+	struct CThostFtdcTransferQryDetailReqField
+	{
+		/// æœŸè´§èµ„é‡‘è´¦æˆ·
+		TThostFtdcAccountIDType FutureAccount;
+	};
+
+	/// æŸ¥è¯¢é“¶è¡Œäº¤æ˜“æ˜ç»†è¯·æ±‚å“åº”
+	struct CThostFtdcTransferQryDetailRspField
+	{
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// äº¤æ˜“ä»£ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// æœŸè´§æµæ°´å·
+		TThostFtdcTradeSerialNoType FutureSerial;
+		/// æœŸè´§å…¬å¸ä»£ç 
+		TThostFtdcFutureIDType FutureID;
+		/// èµ„é‡‘å¸å·
+		TThostFtdcFutureAccountType FutureAccount;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcTradeSerialNoType BankSerial;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†ä¸­å¿ƒä»£ç 
+		TThostFtdcBankBrchIDType BankBrchID;
+		/// é“¶è¡Œè´¦å·
+		TThostFtdcBankAccountType BankAccount;
+		/// è¯ä»¶å·ç 
+		TThostFtdcCertCodeType CertCode;
+		/// è´§å¸ä»£ç 
+		TThostFtdcCurrencyCodeType CurrencyCode;
+		/// å‘ç”Ÿé‡‘é¢
+		TThostFtdcMoneyType TxAmount;
+		/// æœ‰æ•ˆæ ‡å¿—
+		TThostFtdcTransferValidFlagType Flag;
+	};
+
+	/// å“åº”ä¿¡æ¯
+	struct CThostFtdcRspInfoField
+	{
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// äº¤æ˜“æ‰€
+	struct CThostFtdcExchangeField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€åç§°
+		TThostFtdcExchangeNameType ExchangeName;
+		/// äº¤æ˜“æ‰€å±æ€§
+		TThostFtdcExchangePropertyType ExchangeProperty;
+	};
+
+	/// äº§å“
+	struct CThostFtdcProductField
+	{
+		/// äº§å“ä»£ç 
+		TThostFtdcInstrumentIDType ProductID;
+		/// äº§å“åç§°
+		TThostFtdcProductNameType ProductName;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº§å“ç±»å‹
+		TThostFtdcProductClassType ProductClass;
+		/// åˆçº¦æ•°é‡ä¹˜æ•°
+		TThostFtdcVolumeMultipleType VolumeMultiple;
+		/// æœ€å°å˜åŠ¨ä»·ä½
+		TThostFtdcPriceType PriceTick;
+		/// å¸‚ä»·å•æœ€å¤§ä¸‹å•é‡
+		TThostFtdcVolumeType MaxMarketOrderVolume;
+		/// å¸‚ä»·å•æœ€å°ä¸‹å•é‡
+		TThostFtdcVolumeType MinMarketOrderVolume;
+		/// é™ä»·å•æœ€å¤§ä¸‹å•é‡
+		TThostFtdcVolumeType MaxLimitOrderVolume;
+		/// é™ä»·å•æœ€å°ä¸‹å•é‡
+		TThostFtdcVolumeType MinLimitOrderVolume;
+		/// æŒä»“ç±»å‹
+		TThostFtdcPositionTypeType PositionType;
+		/// æŒä»“æ—¥æœŸç±»å‹
+		TThostFtdcPositionDateTypeType PositionDateType;
+		/// å¹³ä»“å¤„ç†ç±»å‹
+		TThostFtdcCloseDealTypeType CloseDealType;
+		/// äº¤æ˜“å¸ç§ç±»å‹
+		TThostFtdcCurrencyIDType TradeCurrencyID;
+		/// è´¨æŠ¼èµ„é‡‘å¯ç”¨èŒƒå›´
+		TThostFtdcMortgageFundUseRangeType MortgageFundUseRange;
+		/// äº¤æ˜“æ‰€äº§å“ä»£ç 
+		TThostFtdcInstrumentIDType ExchangeProductID;
+		/// åˆçº¦åŸºç¡€å•†å“ä¹˜æ•°
+		TThostFtdcUnderlyingMultipleType UnderlyingMultiple;
+	};
+
+	/// åˆçº¦
+	struct CThostFtdcInstrumentField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦åç§°
+		TThostFtdcInstrumentNameType InstrumentName;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº§å“ä»£ç 
+		TThostFtdcInstrumentIDType ProductID;
+		/// äº§å“ç±»å‹
+		TThostFtdcProductClassType ProductClass;
+		/// äº¤å‰²å¹´ä»½
+		TThostFtdcYearType DeliveryYear;
+		/// äº¤å‰²æœˆ
+		TThostFtdcMonthType DeliveryMonth;
+		/// å¸‚ä»·å•æœ€å¤§ä¸‹å•é‡
+		TThostFtdcVolumeType MaxMarketOrderVolume;
+		/// å¸‚ä»·å•æœ€å°ä¸‹å•é‡
+		TThostFtdcVolumeType MinMarketOrderVolume;
+		/// é™ä»·å•æœ€å¤§ä¸‹å•é‡
+		TThostFtdcVolumeType MaxLimitOrderVolume;
+		/// é™ä»·å•æœ€å°ä¸‹å•é‡
+		TThostFtdcVolumeType MinLimitOrderVolume;
+		/// åˆçº¦æ•°é‡ä¹˜æ•°
+		TThostFtdcVolumeMultipleType VolumeMultiple;
+		/// æœ€å°å˜åŠ¨ä»·ä½
+		TThostFtdcPriceType PriceTick;
+		/// åˆ›å»ºæ—¥
+		TThostFtdcDateType CreateDate;
+		/// ä¸Šå¸‚æ—¥
+		TThostFtdcDateType OpenDate;
+		/// åˆ°æœŸæ—¥
+		TThostFtdcDateType ExpireDate;
+		/// å¼€å§‹äº¤å‰²æ—¥
+		TThostFtdcDateType StartDelivDate;
+		/// ç»“æŸäº¤å‰²æ—¥
+		TThostFtdcDateType EndDelivDate;
+		/// åˆçº¦ç”Ÿå‘½å‘¨æœŸçŠ¶æ€
+		TThostFtdcInstLifePhaseType InstLifePhase;
+		/// å½“å‰æ˜¯å¦äº¤æ˜“
+		TThostFtdcBoolType IsTrading;
+		/// æŒä»“ç±»å‹
+		TThostFtdcPositionTypeType PositionType;
+		/// æŒä»“æ—¥æœŸç±»å‹
+		TThostFtdcPositionDateTypeType PositionDateType;
+		/// å¤šå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType LongMarginRatio;
+		/// ç©ºå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType ShortMarginRatio;
+		/// æ˜¯å¦ä½¿ç”¨å¤§é¢å•è¾¹ä¿è¯é‡‘ç®—æ³•
+		TThostFtdcMaxMarginSideAlgorithmType MaxMarginSideAlgorithm;
+		/// åŸºç¡€å•†å“ä»£ç 
+		TThostFtdcInstrumentIDType UnderlyingInstrID;
+		/// æ‰§è¡Œä»·
+		TThostFtdcPriceType StrikePrice;
+		/// æœŸæƒç±»å‹
+		TThostFtdcOptionsTypeType OptionsType;
+		/// åˆçº¦åŸºç¡€å•†å“ä¹˜æ•°
+		TThostFtdcUnderlyingMultipleType UnderlyingMultiple;
+		/// ç»„åˆç±»å‹
+		TThostFtdcCombinationTypeType CombinationType;
+		/// æœ€å°ä¹°ä¸‹å•å•ä½
+		TThostFtdcVolumeType MinBuyVolume;
+		/// æœ€å°å–ä¸‹å•å•ä½
+		TThostFtdcVolumeType MinSellVolume;
+		/// åˆçº¦æ ‡è¯†ç 
+		TThostFtdcInstrumentCodeType InstrumentCode;
+	};
+
+	/// ç»çºªå…¬å¸
+	struct CThostFtdcBrokerField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç»çºªå…¬å¸ç®€ç§°
+		TThostFtdcBrokerAbbrType BrokerAbbr;
+		/// ç»çºªå…¬å¸åç§°
+		TThostFtdcBrokerNameType BrokerName;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+	};
+
+	/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜
+	struct CThostFtdcTraderField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…æ•°é‡
+		TThostFtdcInstallCountType InstallCount;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+	};
+
+	/// æŠ•èµ„è€…
+	struct CThostFtdcInvestorField
+	{
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…åˆ†ç»„ä»£ç 
+		TThostFtdcInvestorIDType InvestorGroupID;
+		/// æŠ•èµ„è€…åç§°
+		TThostFtdcPartyNameType InvestorName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdentifiedCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+		/// è”ç³»ç”µè¯
+		TThostFtdcTelephoneType Telephone;
+		/// é€šè®¯åœ°å€
+		TThostFtdcAddressType Address;
+		/// å¼€æˆ·æ—¥æœŸ
+		TThostFtdcDateType OpenDate;
+		/// æ‰‹æœº
+		TThostFtdcMobileType Mobile;
+		/// æ‰‹ç»­è´¹ç‡æ¨¡æ¿ä»£ç 
+		TThostFtdcInvestorIDType CommModelID;
+		/// ä¿è¯é‡‘ç‡æ¨¡æ¿ä»£ç 
+		TThostFtdcInvestorIDType MarginModelID;
+	};
+
+	/// äº¤æ˜“ç¼–ç 
+	struct CThostFtdcTradingCodeField
+	{
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+		/// äº¤æ˜“ç¼–ç ç±»å‹
+		TThostFtdcClientIDTypeType ClientIDType;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// ä¸šåŠ¡ç±»å‹
+		TThostFtdcBizTypeType BizType;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// ä¼šå‘˜ç¼–ç å’Œç»çºªå…¬å¸ç¼–ç å¯¹ç…§è¡¨
+	struct CThostFtdcPartBrokerField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+	};
+
+	/// ç®¡ç†ç”¨æˆ·
+	struct CThostFtdcSuperUserField
+	{
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç”¨æˆ·åç§°
+		TThostFtdcUserNameType UserName;
+		/// å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+	};
+
+	/// ç®¡ç†ç”¨æˆ·åŠŸèƒ½æƒé™
+	struct CThostFtdcSuperUserFunctionField
+	{
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åŠŸèƒ½ä»£ç 
+		TThostFtdcFunctionCodeType FunctionCode;
+	};
+
+	/// æŠ•èµ„è€…ç»„
+	struct CThostFtdcInvestorGroupField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…åˆ†ç»„ä»£ç 
+		TThostFtdcInvestorIDType InvestorGroupID;
+		/// æŠ•èµ„è€…åˆ†ç»„åç§°
+		TThostFtdcInvestorGroupNameType InvestorGroupName;
+	};
+
+	/// èµ„é‡‘è´¦æˆ·
+	struct CThostFtdcTradingAccountField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// ä¸Šæ¬¡è´¨æŠ¼é‡‘é¢
+		TThostFtdcMoneyType PreMortgage;
+		/// ä¸Šæ¬¡ä¿¡ç”¨é¢åº¦
+		TThostFtdcMoneyType PreCredit;
+		/// ä¸Šæ¬¡å­˜æ¬¾é¢
+		TThostFtdcMoneyType PreDeposit;
+		/// ä¸Šæ¬¡ç»“ç®—å‡†å¤‡é‡‘
+		TThostFtdcMoneyType PreBalance;
+		/// ä¸Šæ¬¡å ç”¨çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType PreMargin;
+		/// åˆ©æ¯åŸºæ•°
+		TThostFtdcMoneyType InterestBase;
+		/// åˆ©æ¯æ”¶å…¥
+		TThostFtdcMoneyType Interest;
+		/// å…¥é‡‘é‡‘é¢
+		TThostFtdcMoneyType Deposit;
+		/// å‡ºé‡‘é‡‘é¢
+		TThostFtdcMoneyType Withdraw;
+		/// å†»ç»“çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType FrozenMargin;
+		/// å†»ç»“çš„èµ„é‡‘
+		TThostFtdcMoneyType FrozenCash;
+		/// å†»ç»“çš„æ‰‹ç»­è´¹
+		TThostFtdcMoneyType FrozenCommission;
+		/// å½“å‰ä¿è¯é‡‘æ€»é¢
+		TThostFtdcMoneyType CurrMargin;
+		/// èµ„é‡‘å·®é¢
+		TThostFtdcMoneyType CashIn;
+		/// æ‰‹ç»­è´¹
+		TThostFtdcMoneyType Commission;
+		/// å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfit;
+		/// æŒä»“ç›ˆäº
+		TThostFtdcMoneyType PositionProfit;
+		/// æœŸè´§ç»“ç®—å‡†å¤‡é‡‘
+		TThostFtdcMoneyType Balance;
+		/// å¯ç”¨èµ„é‡‘
+		TThostFtdcMoneyType Available;
+		/// å¯å–èµ„é‡‘
+		TThostFtdcMoneyType WithdrawQuota;
+		/// åŸºæœ¬å‡†å¤‡é‡‘
+		TThostFtdcMoneyType Reserve;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// ä¿¡ç”¨é¢åº¦
+		TThostFtdcMoneyType Credit;
+		/// è´¨æŠ¼é‡‘é¢
+		TThostFtdcMoneyType Mortgage;
+		/// äº¤æ˜“æ‰€ä¿è¯é‡‘
+		TThostFtdcMoneyType ExchangeMargin;
+		/// æŠ•èµ„è€…äº¤å‰²ä¿è¯é‡‘
+		TThostFtdcMoneyType DeliveryMargin;
+		/// äº¤æ˜“æ‰€äº¤å‰²ä¿è¯é‡‘
+		TThostFtdcMoneyType ExchangeDeliveryMargin;
+		/// ä¿åº•æœŸè´§ç»“ç®—å‡†å¤‡é‡‘
+		TThostFtdcMoneyType ReserveBalance;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// ä¸Šæ¬¡è´§å¸è´¨å…¥é‡‘é¢
+		TThostFtdcMoneyType PreFundMortgageIn;
+		/// ä¸Šæ¬¡è´§å¸è´¨å‡ºé‡‘é¢
+		TThostFtdcMoneyType PreFundMortgageOut;
+		/// è´§å¸è´¨å…¥é‡‘é¢
+		TThostFtdcMoneyType FundMortgageIn;
+		/// è´§å¸è´¨å‡ºé‡‘é¢
+		TThostFtdcMoneyType FundMortgageOut;
+		/// è´§å¸è´¨æŠ¼ä½™é¢
+		TThostFtdcMoneyType FundMortgageAvailable;
+		/// å¯è´¨æŠ¼è´§å¸é‡‘é¢
+		TThostFtdcMoneyType MortgageableFund;
+		/// ç‰¹æ®Šäº§å“å ç”¨ä¿è¯é‡‘
+		TThostFtdcMoneyType SpecProductMargin;
+		/// ç‰¹æ®Šäº§å“å†»ç»“ä¿è¯é‡‘
+		TThostFtdcMoneyType SpecProductFrozenMargin;
+		/// ç‰¹æ®Šäº§å“æ‰‹ç»­è´¹
+		TThostFtdcMoneyType SpecProductCommission;
+		/// ç‰¹æ®Šäº§å“å†»ç»“æ‰‹ç»­è´¹
+		TThostFtdcMoneyType SpecProductFrozenCommission;
+		/// ç‰¹æ®Šäº§å“æŒä»“ç›ˆäº
+		TThostFtdcMoneyType SpecProductPositionProfit;
+		/// ç‰¹æ®Šäº§å“å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType SpecProductCloseProfit;
+		/// æ ¹æ®æŒä»“ç›ˆäºç®—æ³•è®¡ç®—çš„ç‰¹æ®Šäº§å“æŒä»“ç›ˆäº
+		TThostFtdcMoneyType SpecProductPositionProfitByAlg;
+		/// ç‰¹æ®Šäº§å“äº¤æ˜“æ‰€ä¿è¯é‡‘
+		TThostFtdcMoneyType SpecProductExchangeMargin;
+		/// ä¸šåŠ¡ç±»å‹
+		TThostFtdcBizTypeType BizType;
+		/// å»¶æ—¶æ¢æ±‡å†»ç»“é‡‘é¢
+		TThostFtdcMoneyType FrozenSwap;
+		/// å‰©ä½™æ¢æ±‡é¢åº¦
+		TThostFtdcMoneyType RemainSwap;
+	};
+
+	/// æŠ•èµ„è€…æŒä»“
+	struct CThostFtdcInvestorPositionField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŒä»“å¤šç©ºæ–¹å‘
+		TThostFtdcPosiDirectionType PosiDirection;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æŒä»“æ—¥æœŸ
+		TThostFtdcPositionDateType PositionDate;
+		/// ä¸Šæ—¥æŒä»“
+		TThostFtdcVolumeType YdPosition;
+		/// ä»Šæ—¥æŒä»“
+		TThostFtdcVolumeType Position;
+		/// å¤šå¤´å†»ç»“
+		TThostFtdcVolumeType LongFrozen;
+		/// ç©ºå¤´å†»ç»“
+		TThostFtdcVolumeType ShortFrozen;
+		/// å¼€ä»“å†»ç»“é‡‘é¢
+		TThostFtdcMoneyType LongFrozenAmount;
+		/// å¼€ä»“å†»ç»“é‡‘é¢
+		TThostFtdcMoneyType ShortFrozenAmount;
+		/// å¼€ä»“é‡
+		TThostFtdcVolumeType OpenVolume;
+		/// å¹³ä»“é‡
+		TThostFtdcVolumeType CloseVolume;
+		/// å¼€ä»“é‡‘é¢
+		TThostFtdcMoneyType OpenAmount;
+		/// å¹³ä»“é‡‘é¢
+		TThostFtdcMoneyType CloseAmount;
+		/// æŒä»“æˆæœ¬
+		TThostFtdcMoneyType PositionCost;
+		/// ä¸Šæ¬¡å ç”¨çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType PreMargin;
+		/// å ç”¨çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType UseMargin;
+		/// å†»ç»“çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType FrozenMargin;
+		/// å†»ç»“çš„èµ„é‡‘
+		TThostFtdcMoneyType FrozenCash;
+		/// å†»ç»“çš„æ‰‹ç»­è´¹
+		TThostFtdcMoneyType FrozenCommission;
+		/// èµ„é‡‘å·®é¢
+		TThostFtdcMoneyType CashIn;
+		/// æ‰‹ç»­è´¹
+		TThostFtdcMoneyType Commission;
+		/// å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfit;
+		/// æŒä»“ç›ˆäº
+		TThostFtdcMoneyType PositionProfit;
+		/// ä¸Šæ¬¡ç»“ç®—ä»·
+		TThostFtdcPriceType PreSettlementPrice;
+		/// æœ¬æ¬¡ç»“ç®—ä»·
+		TThostFtdcPriceType SettlementPrice;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// å¼€ä»“æˆæœ¬
+		TThostFtdcMoneyType OpenCost;
+		/// äº¤æ˜“æ‰€ä¿è¯é‡‘
+		TThostFtdcMoneyType ExchangeMargin;
+		/// ç»„åˆæˆäº¤å½¢æˆçš„æŒä»“
+		TThostFtdcVolumeType CombPosition;
+		/// ç»„åˆå¤šå¤´å†»ç»“
+		TThostFtdcVolumeType CombLongFrozen;
+		/// ç»„åˆç©ºå¤´å†»ç»“
+		TThostFtdcVolumeType CombShortFrozen;
+		/// é€æ—¥ç›¯å¸‚å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfitByDate;
+		/// é€ç¬”å¯¹å†²å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfitByTrade;
+		/// ä»Šæ—¥æŒä»“
+		TThostFtdcVolumeType TodayPosition;
+		/// ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType MarginRateByMoney;
+		/// ä¿è¯é‡‘ç‡(æŒ‰æ‰‹æ•°)
+		TThostFtdcRatioType MarginRateByVolume;
+		/// æ‰§è¡Œå†»ç»“
+		TThostFtdcVolumeType StrikeFrozen;
+		/// æ‰§è¡Œå†»ç»“é‡‘é¢
+		TThostFtdcMoneyType StrikeFrozenAmount;
+		/// æ”¾å¼ƒæ‰§è¡Œå†»ç»“
+		TThostFtdcVolumeType AbandonFrozen;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå†»ç»“çš„æ˜¨ä»“
+		TThostFtdcVolumeType YdStrikeFrozen;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// åˆçº¦ä¿è¯é‡‘ç‡
+	struct CThostFtdcInstrumentMarginRateField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// å¤šå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType LongMarginRatioByMoney;
+		/// å¤šå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType LongMarginRatioByVolume;
+		/// ç©ºå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType ShortMarginRatioByMoney;
+		/// ç©ºå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType ShortMarginRatioByVolume;
+		/// æ˜¯å¦ç›¸å¯¹äº¤æ˜“æ‰€æ”¶å–
+		TThostFtdcBoolType IsRelative;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// åˆçº¦æ‰‹ç»­è´¹ç‡
+	struct CThostFtdcInstrumentCommissionRateField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å¼€ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType OpenRatioByMoney;
+		/// å¼€ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType OpenRatioByVolume;
+		/// å¹³ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseRatioByMoney;
+		/// å¹³ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseRatioByVolume;
+		/// å¹³ä»Šæ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseTodayRatioByMoney;
+		/// å¹³ä»Šæ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseTodayRatioByVolume;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¸šåŠ¡ç±»å‹
+		TThostFtdcBizTypeType BizType;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æ·±åº¦è¡Œæƒ…
+	struct CThostFtdcDepthMarketDataField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// æœ€æ–°ä»·
+		TThostFtdcPriceType LastPrice;
+		/// ä¸Šæ¬¡ç»“ç®—ä»·
+		TThostFtdcPriceType PreSettlementPrice;
+		/// æ˜¨æ”¶ç›˜
+		TThostFtdcPriceType PreClosePrice;
+		/// æ˜¨æŒä»“é‡
+		TThostFtdcLargeVolumeType PreOpenInterest;
+		/// ä»Šå¼€ç›˜
+		TThostFtdcPriceType OpenPrice;
+		/// æœ€é«˜ä»·
+		TThostFtdcPriceType HighestPrice;
+		/// æœ€ä½ä»·
+		TThostFtdcPriceType LowestPrice;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// æˆäº¤é‡‘é¢
+		TThostFtdcMoneyType Turnover;
+		/// æŒä»“é‡
+		TThostFtdcLargeVolumeType OpenInterest;
+		/// ä»Šæ”¶ç›˜
+		TThostFtdcPriceType ClosePrice;
+		/// æœ¬æ¬¡ç»“ç®—ä»·
+		TThostFtdcPriceType SettlementPrice;
+		/// æ¶¨åœæ¿ä»·
+		TThostFtdcPriceType UpperLimitPrice;
+		/// è·Œåœæ¿ä»·
+		TThostFtdcPriceType LowerLimitPrice;
+		/// æ˜¨è™šå®åº¦
+		TThostFtdcRatioType PreDelta;
+		/// ä»Šè™šå®åº¦
+		TThostFtdcRatioType CurrDelta;
+		/// æœ€åä¿®æ”¹æ—¶é—´
+		TThostFtdcTimeType UpdateTime;
+		/// æœ€åä¿®æ”¹æ¯«ç§’
+		TThostFtdcMillisecType UpdateMillisec;
+		/// ç”³ä¹°ä»·ä¸€
+		TThostFtdcPriceType BidPrice1;
+		/// ç”³ä¹°é‡ä¸€
+		TThostFtdcVolumeType BidVolume1;
+		/// ç”³å–ä»·ä¸€
+		TThostFtdcPriceType AskPrice1;
+		/// ç”³å–é‡ä¸€
+		TThostFtdcVolumeType AskVolume1;
+		/// ç”³ä¹°ä»·äºŒ
+		TThostFtdcPriceType BidPrice2;
+		/// ç”³ä¹°é‡äºŒ
+		TThostFtdcVolumeType BidVolume2;
+		/// ç”³å–ä»·äºŒ
+		TThostFtdcPriceType AskPrice2;
+		/// ç”³å–é‡äºŒ
+		TThostFtdcVolumeType AskVolume2;
+		/// ç”³ä¹°ä»·ä¸‰
+		TThostFtdcPriceType BidPrice3;
+		/// ç”³ä¹°é‡ä¸‰
+		TThostFtdcVolumeType BidVolume3;
+		/// ç”³å–ä»·ä¸‰
+		TThostFtdcPriceType AskPrice3;
+		/// ç”³å–é‡ä¸‰
+		TThostFtdcVolumeType AskVolume3;
+		/// ç”³ä¹°ä»·å››
+		TThostFtdcPriceType BidPrice4;
+		/// ç”³ä¹°é‡å››
+		TThostFtdcVolumeType BidVolume4;
+		/// ç”³å–ä»·å››
+		TThostFtdcPriceType AskPrice4;
+		/// ç”³å–é‡å››
+		TThostFtdcVolumeType AskVolume4;
+		/// ç”³ä¹°ä»·äº”
+		TThostFtdcPriceType BidPrice5;
+		/// ç”³ä¹°é‡äº”
+		TThostFtdcVolumeType BidVolume5;
+		/// ç”³å–ä»·äº”
+		TThostFtdcPriceType AskPrice5;
+		/// ç”³å–é‡äº”
+		TThostFtdcVolumeType AskVolume5;
+		/// å½“æ—¥å‡ä»·
+		TThostFtdcPriceType AveragePrice;
+		/// ä¸šåŠ¡æ—¥æœŸ
+		TThostFtdcDateType ActionDay;
+	};
+
+	/// æŠ•èµ„è€…åˆçº¦äº¤æ˜“æƒé™
+	struct CThostFtdcInstrumentTradingRightField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æƒé™
+		TThostFtdcTradingRightType TradingRight;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¸šåŠ¡ç±»å‹
+		TThostFtdcBizTypeType BizType;
+	};
+
+	/// ç»çºªå…¬å¸ç”¨æˆ·
+	struct CThostFtdcBrokerUserField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç”¨æˆ·åç§°
+		TThostFtdcUserNameType UserName;
+		/// ç”¨æˆ·ç±»å‹
+		TThostFtdcUserTypeType UserType;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+		/// æ˜¯å¦ä½¿ç”¨ä»¤ç‰Œ
+		TThostFtdcBoolType IsUsingOTP;
+		/// æ˜¯å¦å¼ºåˆ¶ç»ˆç«¯è®¤è¯
+		TThostFtdcBoolType IsAuthForce;
+	};
+
+	/// ç»çºªå…¬å¸ç”¨æˆ·å£ä»¤
+	struct CThostFtdcBrokerUserPasswordField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// ä¸Šæ¬¡ä¿®æ”¹æ—¶é—´
+		TThostFtdcDateTimeType LastUpdateTime;
+		/// ä¸Šæ¬¡ç™»é™†æ—¶é—´
+		TThostFtdcDateTimeType LastLoginTime;
+		/// å¯†ç è¿‡æœŸæ—¶é—´
+		TThostFtdcDateType ExpireDate;
+		/// å¼±å¯†ç è¿‡æœŸæ—¶é—´
+		TThostFtdcDateType WeakExpireDate;
+	};
+
+	/// ç»çºªå…¬å¸ç”¨æˆ·åŠŸèƒ½æƒé™
+	struct CThostFtdcBrokerUserFunctionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç»çºªå…¬å¸åŠŸèƒ½ä»£ç 
+		TThostFtdcBrokerFunctionCodeType BrokerFunctionCode;
+	};
+
+	/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜æŠ¥ç›˜æœº
+	struct CThostFtdcTraderOfferField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜è¿æ¥çŠ¶æ€
+		TThostFtdcTraderConnectStatusType TraderConnectStatus;
+		/// å‘å‡ºè¿æ¥è¯·æ±‚çš„æ—¥æœŸ
+		TThostFtdcDateType ConnectRequestDate;
+		/// å‘å‡ºè¿æ¥è¯·æ±‚çš„æ—¶é—´
+		TThostFtdcTimeType ConnectRequestTime;
+		/// ä¸Šæ¬¡æŠ¥å‘Šæ—¥æœŸ
+		TThostFtdcDateType LastReportDate;
+		/// ä¸Šæ¬¡æŠ¥å‘Šæ—¶é—´
+		TThostFtdcTimeType LastReportTime;
+		/// å®Œæˆè¿æ¥æ—¥æœŸ
+		TThostFtdcDateType ConnectDate;
+		/// å®Œæˆè¿æ¥æ—¶é—´
+		TThostFtdcTimeType ConnectTime;
+		/// å¯åŠ¨æ—¥æœŸ
+		TThostFtdcDateType StartDate;
+		/// å¯åŠ¨æ—¶é—´
+		TThostFtdcTimeType StartTime;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœ¬å¸­ä½æœ€å¤§æˆäº¤ç¼–å·
+		TThostFtdcTradeIDType MaxTradeID;
+		/// æœ¬å¸­ä½æœ€å¤§æŠ¥å•å¤‡æ‹·
+		TThostFtdcReturnCodeType MaxOrderMessageReference;
+		/// ä¸šåŠ¡ç±»å‹
+		TThostFtdcBizTypeType BizType;
+	};
+
+	/// æŠ•èµ„è€…ç»“ç®—ç»“æœ
+	struct CThostFtdcSettlementInfoField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// æ¶ˆæ¯æ­£æ–‡
+		TThostFtdcContentType Content;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// åˆçº¦ä¿è¯é‡‘ç‡è°ƒæ•´
+	struct CThostFtdcInstrumentMarginRateAdjustField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// å¤šå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType LongMarginRatioByMoney;
+		/// å¤šå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType LongMarginRatioByVolume;
+		/// ç©ºå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType ShortMarginRatioByMoney;
+		/// ç©ºå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType ShortMarginRatioByVolume;
+		/// æ˜¯å¦ç›¸å¯¹äº¤æ˜“æ‰€æ”¶å–
+		TThostFtdcBoolType IsRelative;
+	};
+
+	/// äº¤æ˜“æ‰€ä¿è¯é‡‘ç‡
+	struct CThostFtdcExchangeMarginRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// å¤šå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType LongMarginRatioByMoney;
+		/// å¤šå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType LongMarginRatioByVolume;
+		/// ç©ºå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType ShortMarginRatioByMoney;
+		/// ç©ºå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType ShortMarginRatioByVolume;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// äº¤æ˜“æ‰€ä¿è¯é‡‘ç‡è°ƒæ•´
+	struct CThostFtdcExchangeMarginRateAdjustField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// è·Ÿéšäº¤æ˜“æ‰€æŠ•èµ„è€…å¤šå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType LongMarginRatioByMoney;
+		/// è·Ÿéšäº¤æ˜“æ‰€æŠ•èµ„è€…å¤šå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType LongMarginRatioByVolume;
+		/// è·Ÿéšäº¤æ˜“æ‰€æŠ•èµ„è€…ç©ºå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType ShortMarginRatioByMoney;
+		/// è·Ÿéšäº¤æ˜“æ‰€æŠ•èµ„è€…ç©ºå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType ShortMarginRatioByVolume;
+		/// äº¤æ˜“æ‰€å¤šå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType ExchLongMarginRatioByMoney;
+		/// äº¤æ˜“æ‰€å¤šå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType ExchLongMarginRatioByVolume;
+		/// äº¤æ˜“æ‰€ç©ºå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType ExchShortMarginRatioByMoney;
+		/// äº¤æ˜“æ‰€ç©ºå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType ExchShortMarginRatioByVolume;
+		/// ä¸è·Ÿéšäº¤æ˜“æ‰€æŠ•èµ„è€…å¤šå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType NoLongMarginRatioByMoney;
+		/// ä¸è·Ÿéšäº¤æ˜“æ‰€æŠ•èµ„è€…å¤šå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType NoLongMarginRatioByVolume;
+		/// ä¸è·Ÿéšäº¤æ˜“æ‰€æŠ•èµ„è€…ç©ºå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType NoShortMarginRatioByMoney;
+		/// ä¸è·Ÿéšäº¤æ˜“æ‰€æŠ•èµ„è€…ç©ºå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType NoShortMarginRatioByVolume;
+	};
+
+	/// æ±‡ç‡
+	struct CThostFtdcExchangeRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æºå¸ç§
+		TThostFtdcCurrencyIDType FromCurrencyID;
+		/// æºå¸ç§å•ä½æ•°é‡
+		TThostFtdcCurrencyUnitType FromCurrencyUnit;
+		/// ç›®æ ‡å¸ç§
+		TThostFtdcCurrencyIDType ToCurrencyID;
+		/// æ±‡ç‡
+		TThostFtdcExchangeRateType ExchangeRate;
+	};
+
+	/// ç»“ç®—å¼•ç”¨
+	struct CThostFtdcSettlementRefField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+	};
+
+	/// å½“å‰æ—¶é—´
+	struct CThostFtdcCurrentTimeField
+	{
+		/// å½“å‰æ—¥æœŸ
+		TThostFtdcDateType CurrDate;
+		/// å½“å‰æ—¶é—´
+		TThostFtdcTimeType CurrTime;
+		/// å½“å‰æ—¶é—´ï¼ˆæ¯«ç§’ï¼‰
+		TThostFtdcMillisecType CurrMillisec;
+		/// ä¸šåŠ¡æ—¥æœŸ
+		TThostFtdcDateType ActionDay;
+	};
+
+	/// é€šè®¯é˜¶æ®µ
+	struct CThostFtdcCommPhaseField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// é€šè®¯æ—¶æ®µç¼–å·
+		TThostFtdcCommPhaseNoType CommPhaseNo;
+		/// ç³»ç»Ÿç¼–å·
+		TThostFtdcSystemIDType SystemID;
+	};
+
+	/// ç™»å½•ä¿¡æ¯
+	struct CThostFtdcLoginInfoField
+	{
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç™»å½•æ—¥æœŸ
+		TThostFtdcDateType LoginDate;
+		/// ç™»å½•æ—¶é—´
+		TThostFtdcTimeType LoginTime;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// æ¥å£ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType InterfaceProductInfo;
+		/// åè®®ä¿¡æ¯
+		TThostFtdcProtocolInfoType ProtocolInfo;
+		/// ç³»ç»Ÿåç§°
+		TThostFtdcSystemNameType SystemName;
+		/// å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// æœ€å¤§æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType MaxOrderRef;
+		/// ä¸ŠæœŸæ‰€æ—¶é—´
+		TThostFtdcTimeType SHFETime;
+		/// å¤§å•†æ‰€æ—¶é—´
+		TThostFtdcTimeType DCETime;
+		/// éƒ‘å•†æ‰€æ—¶é—´
+		TThostFtdcTimeType CZCETime;
+		/// ä¸­é‡‘æ‰€æ—¶é—´
+		TThostFtdcTimeType FFEXTime;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// åŠ¨æ€å¯†ç 
+		TThostFtdcPasswordType OneTimePassword;
+		/// èƒ½æºä¸­å¿ƒæ—¶é—´
+		TThostFtdcTimeType INETime;
+		/// æŸ¥è¯¢æ—¶æ˜¯å¦éœ€è¦æµæ§
+		TThostFtdcBoolType IsQryControl;
+		/// ç™»å½•å¤‡æ³¨
+		TThostFtdcLoginRemarkType LoginRemark;
+		/// çŸ­ä¿¡éªŒè¯ç 
+		TThostFtdcSmsCodeType SmsCode;
+		/// å¯†ç åŠ å¯†ç±»å‹,0ä¸åŠ å¯†ï¼Œ1éšæœºåŠ å¯†ï¼Œ2ç®€å•åŠ å¯†
+		TThostFtdcPasswordEncryptTypeType EncryptType;
+	};
+
+	/// ç™»å½•ä¿¡æ¯
+	struct CThostFtdcLogoutAllField
+	{
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç³»ç»Ÿåç§°
+		TThostFtdcSystemNameType SystemName;
+	};
+
+	/// å‰ç½®çŠ¶æ€
+	struct CThostFtdcFrontStatusField
+	{
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¸Šæ¬¡æŠ¥å‘Šæ—¥æœŸ
+		TThostFtdcDateType LastReportDate;
+		/// ä¸Šæ¬¡æŠ¥å‘Šæ—¶é—´
+		TThostFtdcTimeType LastReportTime;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+	};
+
+	/// ç”¨æˆ·å£ä»¤å˜æ›´
+	struct CThostFtdcUserPasswordUpdateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åŸæ¥çš„å£ä»¤
+		TThostFtdcPasswordType OldPassword;
+		/// æ–°çš„å£ä»¤
+		TThostFtdcPasswordType NewPassword;
+		/// åŠ å¯†ç±»å‹
+		TThostFtdcPasswordEncryptTypeType EncryptType;
+	};
+
+	/// è¾“å…¥æŠ¥å•
+	struct CThostFtdcInputOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType OrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æŠ¥å•ä»·æ ¼æ¡ä»¶
+		TThostFtdcOrderPriceTypeType OrderPriceType;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// ç»„åˆå¼€å¹³æ ‡å¿—
+		TThostFtdcCombOffsetFlagType CombOffsetFlag;
+		/// ç»„åˆæŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcCombHedgeFlagType CombHedgeFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡
+		TThostFtdcVolumeType VolumeTotalOriginal;
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TThostFtdcTimeConditionType TimeCondition;
+		/// GTDæ—¥æœŸ
+		TThostFtdcDateType GTDDate;
+		/// æˆäº¤é‡ç±»å‹
+		TThostFtdcVolumeConditionType VolumeCondition;
+		/// æœ€å°æˆäº¤é‡
+		TThostFtdcVolumeType MinVolume;
+		/// è§¦å‘æ¡ä»¶
+		TThostFtdcContingentConditionType ContingentCondition;
+		/// æ­¢æŸä»·
+		TThostFtdcPriceType StopPrice;
+		/// å¼ºå¹³åŸå› 
+		TThostFtdcForceCloseReasonType ForceCloseReason;
+		/// è‡ªåŠ¨æŒ‚èµ·æ ‡å¿—
+		TThostFtdcBoolType IsAutoSuspend;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ç”¨æˆ·å¼ºè¯„æ ‡å¿—
+		TThostFtdcBoolType UserForceClose;
+		/// äº’æ¢å•æ ‡å¿—
+		TThostFtdcBoolType IsSwapOrder;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// äº¤æ˜“ç¼–ç 
+		TThostFtdcClientIDType ClientID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æŠ¥å•
+	struct CThostFtdcOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType OrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æŠ¥å•ä»·æ ¼æ¡ä»¶
+		TThostFtdcOrderPriceTypeType OrderPriceType;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// ç»„åˆå¼€å¹³æ ‡å¿—
+		TThostFtdcCombOffsetFlagType CombOffsetFlag;
+		/// ç»„åˆæŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcCombHedgeFlagType CombHedgeFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡
+		TThostFtdcVolumeType VolumeTotalOriginal;
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TThostFtdcTimeConditionType TimeCondition;
+		/// GTDæ—¥æœŸ
+		TThostFtdcDateType GTDDate;
+		/// æˆäº¤é‡ç±»å‹
+		TThostFtdcVolumeConditionType VolumeCondition;
+		/// æœ€å°æˆäº¤é‡
+		TThostFtdcVolumeType MinVolume;
+		/// è§¦å‘æ¡ä»¶
+		TThostFtdcContingentConditionType ContingentCondition;
+		/// æ­¢æŸä»·
+		TThostFtdcPriceType StopPrice;
+		/// å¼ºå¹³åŸå› 
+		TThostFtdcForceCloseReasonType ForceCloseReason;
+		/// è‡ªåŠ¨æŒ‚èµ·æ ‡å¿—
+		TThostFtdcBoolType IsAutoSuspend;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æŠ¥å•æäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// æŠ¥å•æ¥æº
+		TThostFtdcOrderSourceType OrderSource;
+		/// æŠ¥å•çŠ¶æ€
+		TThostFtdcOrderStatusType OrderStatus;
+		/// æŠ¥å•ç±»å‹
+		TThostFtdcOrderTypeType OrderType;
+		/// ä»Šæˆäº¤æ•°é‡
+		TThostFtdcVolumeType VolumeTraded;
+		/// å‰©ä½™æ•°é‡
+		TThostFtdcVolumeType VolumeTotal;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// å§”æ‰˜æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ¿€æ´»æ—¶é—´
+		TThostFtdcTimeType ActiveTime;
+		/// æŒ‚èµ·æ—¶é—´
+		TThostFtdcTimeType SuspendTime;
+		/// æœ€åä¿®æ”¹æ—¶é—´
+		TThostFtdcTimeType UpdateTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// æœ€åä¿®æ”¹äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType ActiveTraderID;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// ç”¨æˆ·å¼ºè¯„æ ‡å¿—
+		TThostFtdcBoolType UserForceClose;
+		/// æ“ä½œç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType ActiveUserID;
+		/// ç»çºªå…¬å¸æŠ¥å•ç¼–å·
+		TThostFtdcSequenceNoType BrokerOrderSeq;
+		/// ç›¸å…³æŠ¥å•
+		TThostFtdcOrderSysIDType RelativeOrderSysID;
+		/// éƒ‘å•†æ‰€æˆäº¤æ•°é‡
+		TThostFtdcVolumeType ZCETotalTradedVolume;
+		/// äº’æ¢å•æ ‡å¿—
+		TThostFtdcBoolType IsSwapOrder;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// äº¤æ˜“æ‰€æŠ¥å•
+	struct CThostFtdcExchangeOrderField
+	{
+		/// æŠ¥å•ä»·æ ¼æ¡ä»¶
+		TThostFtdcOrderPriceTypeType OrderPriceType;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// ç»„åˆå¼€å¹³æ ‡å¿—
+		TThostFtdcCombOffsetFlagType CombOffsetFlag;
+		/// ç»„åˆæŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcCombHedgeFlagType CombHedgeFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡
+		TThostFtdcVolumeType VolumeTotalOriginal;
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TThostFtdcTimeConditionType TimeCondition;
+		/// GTDæ—¥æœŸ
+		TThostFtdcDateType GTDDate;
+		/// æˆäº¤é‡ç±»å‹
+		TThostFtdcVolumeConditionType VolumeCondition;
+		/// æœ€å°æˆäº¤é‡
+		TThostFtdcVolumeType MinVolume;
+		/// è§¦å‘æ¡ä»¶
+		TThostFtdcContingentConditionType ContingentCondition;
+		/// æ­¢æŸä»·
+		TThostFtdcPriceType StopPrice;
+		/// å¼ºå¹³åŸå› 
+		TThostFtdcForceCloseReasonType ForceCloseReason;
+		/// è‡ªåŠ¨æŒ‚èµ·æ ‡å¿—
+		TThostFtdcBoolType IsAutoSuspend;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æŠ¥å•æäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// æŠ¥å•æ¥æº
+		TThostFtdcOrderSourceType OrderSource;
+		/// æŠ¥å•çŠ¶æ€
+		TThostFtdcOrderStatusType OrderStatus;
+		/// æŠ¥å•ç±»å‹
+		TThostFtdcOrderTypeType OrderType;
+		/// ä»Šæˆäº¤æ•°é‡
+		TThostFtdcVolumeType VolumeTraded;
+		/// å‰©ä½™æ•°é‡
+		TThostFtdcVolumeType VolumeTotal;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// å§”æ‰˜æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ¿€æ´»æ—¶é—´
+		TThostFtdcTimeType ActiveTime;
+		/// æŒ‚èµ·æ—¶é—´
+		TThostFtdcTimeType SuspendTime;
+		/// æœ€åä¿®æ”¹æ—¶é—´
+		TThostFtdcTimeType UpdateTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// æœ€åä¿®æ”¹äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType ActiveTraderID;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// äº¤æ˜“æ‰€æŠ¥å•æ’å…¥å¤±è´¥
+	struct CThostFtdcExchangeOrderInsertErrorField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// è¾“å…¥æŠ¥å•æ“ä½œ
+	struct CThostFtdcInputOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ¥å•æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType OrderActionRef;
+		/// æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType OrderRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡å˜åŒ–
+		TThostFtdcVolumeType VolumeChange;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æŠ¥å•æ“ä½œ
+	struct CThostFtdcOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ¥å•æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType OrderActionRef;
+		/// æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType OrderRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡å˜åŒ–
+		TThostFtdcVolumeType VolumeChange;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// äº¤æ˜“æ‰€æŠ¥å•æ“ä½œ
+	struct CThostFtdcExchangeOrderActionField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡å˜åŒ–
+		TThostFtdcVolumeType VolumeChange;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// äº¤æ˜“æ‰€æŠ¥å•æ“ä½œå¤±è´¥
+	struct CThostFtdcExchangeOrderActionErrorField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+	};
+
+	/// äº¤æ˜“æ‰€æˆäº¤
+	struct CThostFtdcExchangeTradeField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æˆäº¤ç¼–å·
+		TThostFtdcTradeIDType TradeID;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“è§’è‰²
+		TThostFtdcTradingRoleType TradingRole;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType OffsetFlag;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType Price;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// æˆäº¤æ—¶æœŸ
+		TThostFtdcDateType TradeDate;
+		/// æˆäº¤æ—¶é—´
+		TThostFtdcTimeType TradeTime;
+		/// æˆäº¤ç±»å‹
+		TThostFtdcTradeTypeType TradeType;
+		/// æˆäº¤ä»·æ¥æº
+		TThostFtdcPriceSourceType PriceSource;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// æˆäº¤æ¥æº
+		TThostFtdcTradeSourceType TradeSource;
+	};
+
+	/// æˆäº¤
+	struct CThostFtdcTradeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType OrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æˆäº¤ç¼–å·
+		TThostFtdcTradeIDType TradeID;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“è§’è‰²
+		TThostFtdcTradingRoleType TradingRole;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType OffsetFlag;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType Price;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// æˆäº¤æ—¶æœŸ
+		TThostFtdcDateType TradeDate;
+		/// æˆäº¤æ—¶é—´
+		TThostFtdcTimeType TradeTime;
+		/// æˆäº¤ç±»å‹
+		TThostFtdcTradeTypeType TradeType;
+		/// æˆäº¤ä»·æ¥æº
+		TThostFtdcPriceSourceType PriceSource;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// ç»çºªå…¬å¸æŠ¥å•ç¼–å·
+		TThostFtdcSequenceNoType BrokerOrderSeq;
+		/// æˆäº¤æ¥æº
+		TThostFtdcTradeSourceType TradeSource;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// ç”¨æˆ·ä¼šè¯
+	struct CThostFtdcUserSessionField
+	{
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç™»å½•æ—¥æœŸ
+		TThostFtdcDateType LoginDate;
+		/// ç™»å½•æ—¶é—´
+		TThostFtdcTimeType LoginTime;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// æ¥å£ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType InterfaceProductInfo;
+		/// åè®®ä¿¡æ¯
+		TThostFtdcProtocolInfoType ProtocolInfo;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// ç™»å½•å¤‡æ³¨
+		TThostFtdcLoginRemarkType LoginRemark;
+	};
+
+	/// æŸ¥è¯¢æœ€å¤§æŠ¥å•æ•°é‡
+	struct CThostFtdcQueryMaxOrderVolumeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType OffsetFlag;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æœ€å¤§å…è®¸æŠ¥å•æ•°é‡
+		TThostFtdcVolumeType MaxVolume;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŠ•èµ„è€…ç»“ç®—ç»“æœç¡®è®¤ä¿¡æ¯
+	struct CThostFtdcSettlementInfoConfirmField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// ç¡®è®¤æ—¥æœŸ
+		TThostFtdcDateType ConfirmDate;
+		/// ç¡®è®¤æ—¶é—´
+		TThostFtdcTimeType ConfirmTime;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// å‡ºå…¥é‡‘åŒæ­¥
+	struct CThostFtdcSyncDepositField
+	{
+		/// å‡ºå…¥é‡‘æµæ°´å·
+		TThostFtdcDepositSeqNoType DepositSeqNo;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å…¥é‡‘é‡‘é¢
+		TThostFtdcMoneyType Deposit;
+		/// æ˜¯å¦å¼ºåˆ¶è¿›è¡Œ
+		TThostFtdcBoolType IsForce;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// ä¸šåŠ¡ç±»å‹
+		TThostFtdcBizTypeType BizType;
+	};
+
+	/// è´§å¸è´¨æŠ¼åŒæ­¥
+	struct CThostFtdcSyncFundMortgageField
+	{
+		/// è´§å¸è´¨æŠ¼æµæ°´å·
+		TThostFtdcDepositSeqNoType MortgageSeqNo;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æºå¸ç§
+		TThostFtdcCurrencyIDType FromCurrencyID;
+		/// è´¨æŠ¼é‡‘é¢
+		TThostFtdcMoneyType MortgageAmount;
+		/// ç›®æ ‡å¸ç§
+		TThostFtdcCurrencyIDType ToCurrencyID;
+	};
+
+	/// ç»çºªå…¬å¸åŒæ­¥
+	struct CThostFtdcBrokerSyncField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+	};
+
+	/// æ­£åœ¨åŒæ­¥ä¸­çš„æŠ•èµ„è€…
+	struct CThostFtdcSyncingInvestorField
+	{
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…åˆ†ç»„ä»£ç 
+		TThostFtdcInvestorIDType InvestorGroupID;
+		/// æŠ•èµ„è€…åç§°
+		TThostFtdcPartyNameType InvestorName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdentifiedCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+		/// è”ç³»ç”µè¯
+		TThostFtdcTelephoneType Telephone;
+		/// é€šè®¯åœ°å€
+		TThostFtdcAddressType Address;
+		/// å¼€æˆ·æ—¥æœŸ
+		TThostFtdcDateType OpenDate;
+		/// æ‰‹æœº
+		TThostFtdcMobileType Mobile;
+		/// æ‰‹ç»­è´¹ç‡æ¨¡æ¿ä»£ç 
+		TThostFtdcInvestorIDType CommModelID;
+		/// ä¿è¯é‡‘ç‡æ¨¡æ¿ä»£ç 
+		TThostFtdcInvestorIDType MarginModelID;
+	};
+
+	/// æ­£åœ¨åŒæ­¥ä¸­çš„äº¤æ˜“ä»£ç 
+	struct CThostFtdcSyncingTradingCodeField
+	{
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+		/// äº¤æ˜“ç¼–ç ç±»å‹
+		TThostFtdcClientIDTypeType ClientIDType;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+	};
+
+	/// æ­£åœ¨åŒæ­¥ä¸­çš„æŠ•èµ„è€…åˆ†ç»„
+	struct CThostFtdcSyncingInvestorGroupField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…åˆ†ç»„ä»£ç 
+		TThostFtdcInvestorIDType InvestorGroupID;
+		/// æŠ•èµ„è€…åˆ†ç»„åç§°
+		TThostFtdcInvestorGroupNameType InvestorGroupName;
+	};
+
+	/// æ­£åœ¨åŒæ­¥ä¸­çš„äº¤æ˜“è´¦å·
+	struct CThostFtdcSyncingTradingAccountField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// ä¸Šæ¬¡è´¨æŠ¼é‡‘é¢
+		TThostFtdcMoneyType PreMortgage;
+		/// ä¸Šæ¬¡ä¿¡ç”¨é¢åº¦
+		TThostFtdcMoneyType PreCredit;
+		/// ä¸Šæ¬¡å­˜æ¬¾é¢
+		TThostFtdcMoneyType PreDeposit;
+		/// ä¸Šæ¬¡ç»“ç®—å‡†å¤‡é‡‘
+		TThostFtdcMoneyType PreBalance;
+		/// ä¸Šæ¬¡å ç”¨çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType PreMargin;
+		/// åˆ©æ¯åŸºæ•°
+		TThostFtdcMoneyType InterestBase;
+		/// åˆ©æ¯æ”¶å…¥
+		TThostFtdcMoneyType Interest;
+		/// å…¥é‡‘é‡‘é¢
+		TThostFtdcMoneyType Deposit;
+		/// å‡ºé‡‘é‡‘é¢
+		TThostFtdcMoneyType Withdraw;
+		/// å†»ç»“çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType FrozenMargin;
+		/// å†»ç»“çš„èµ„é‡‘
+		TThostFtdcMoneyType FrozenCash;
+		/// å†»ç»“çš„æ‰‹ç»­è´¹
+		TThostFtdcMoneyType FrozenCommission;
+		/// å½“å‰ä¿è¯é‡‘æ€»é¢
+		TThostFtdcMoneyType CurrMargin;
+		/// èµ„é‡‘å·®é¢
+		TThostFtdcMoneyType CashIn;
+		/// æ‰‹ç»­è´¹
+		TThostFtdcMoneyType Commission;
+		/// å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfit;
+		/// æŒä»“ç›ˆäº
+		TThostFtdcMoneyType PositionProfit;
+		/// æœŸè´§ç»“ç®—å‡†å¤‡é‡‘
+		TThostFtdcMoneyType Balance;
+		/// å¯ç”¨èµ„é‡‘
+		TThostFtdcMoneyType Available;
+		/// å¯å–èµ„é‡‘
+		TThostFtdcMoneyType WithdrawQuota;
+		/// åŸºæœ¬å‡†å¤‡é‡‘
+		TThostFtdcMoneyType Reserve;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// ä¿¡ç”¨é¢åº¦
+		TThostFtdcMoneyType Credit;
+		/// è´¨æŠ¼é‡‘é¢
+		TThostFtdcMoneyType Mortgage;
+		/// äº¤æ˜“æ‰€ä¿è¯é‡‘
+		TThostFtdcMoneyType ExchangeMargin;
+		/// æŠ•èµ„è€…äº¤å‰²ä¿è¯é‡‘
+		TThostFtdcMoneyType DeliveryMargin;
+		/// äº¤æ˜“æ‰€äº¤å‰²ä¿è¯é‡‘
+		TThostFtdcMoneyType ExchangeDeliveryMargin;
+		/// ä¿åº•æœŸè´§ç»“ç®—å‡†å¤‡é‡‘
+		TThostFtdcMoneyType ReserveBalance;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// ä¸Šæ¬¡è´§å¸è´¨å…¥é‡‘é¢
+		TThostFtdcMoneyType PreFundMortgageIn;
+		/// ä¸Šæ¬¡è´§å¸è´¨å‡ºé‡‘é¢
+		TThostFtdcMoneyType PreFundMortgageOut;
+		/// è´§å¸è´¨å…¥é‡‘é¢
+		TThostFtdcMoneyType FundMortgageIn;
+		/// è´§å¸è´¨å‡ºé‡‘é¢
+		TThostFtdcMoneyType FundMortgageOut;
+		/// è´§å¸è´¨æŠ¼ä½™é¢
+		TThostFtdcMoneyType FundMortgageAvailable;
+		/// å¯è´¨æŠ¼è´§å¸é‡‘é¢
+		TThostFtdcMoneyType MortgageableFund;
+		/// ç‰¹æ®Šäº§å“å ç”¨ä¿è¯é‡‘
+		TThostFtdcMoneyType SpecProductMargin;
+		/// ç‰¹æ®Šäº§å“å†»ç»“ä¿è¯é‡‘
+		TThostFtdcMoneyType SpecProductFrozenMargin;
+		/// ç‰¹æ®Šäº§å“æ‰‹ç»­è´¹
+		TThostFtdcMoneyType SpecProductCommission;
+		/// ç‰¹æ®Šäº§å“å†»ç»“æ‰‹ç»­è´¹
+		TThostFtdcMoneyType SpecProductFrozenCommission;
+		/// ç‰¹æ®Šäº§å“æŒä»“ç›ˆäº
+		TThostFtdcMoneyType SpecProductPositionProfit;
+		/// ç‰¹æ®Šäº§å“å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType SpecProductCloseProfit;
+		/// æ ¹æ®æŒä»“ç›ˆäºç®—æ³•è®¡ç®—çš„ç‰¹æ®Šäº§å“æŒä»“ç›ˆäº
+		TThostFtdcMoneyType SpecProductPositionProfitByAlg;
+		/// ç‰¹æ®Šäº§å“äº¤æ˜“æ‰€ä¿è¯é‡‘
+		TThostFtdcMoneyType SpecProductExchangeMargin;
+		/// å»¶æ—¶æ¢æ±‡å†»ç»“é‡‘é¢
+		TThostFtdcMoneyType FrozenSwap;
+		/// å‰©ä½™æ¢æ±‡é¢åº¦
+		TThostFtdcMoneyType RemainSwap;
+	};
+
+	/// æ­£åœ¨åŒæ­¥ä¸­çš„æŠ•èµ„è€…æŒä»“
+	struct CThostFtdcSyncingInvestorPositionField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŒä»“å¤šç©ºæ–¹å‘
+		TThostFtdcPosiDirectionType PosiDirection;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æŒä»“æ—¥æœŸ
+		TThostFtdcPositionDateType PositionDate;
+		/// ä¸Šæ—¥æŒä»“
+		TThostFtdcVolumeType YdPosition;
+		/// ä»Šæ—¥æŒä»“
+		TThostFtdcVolumeType Position;
+		/// å¤šå¤´å†»ç»“
+		TThostFtdcVolumeType LongFrozen;
+		/// ç©ºå¤´å†»ç»“
+		TThostFtdcVolumeType ShortFrozen;
+		/// å¼€ä»“å†»ç»“é‡‘é¢
+		TThostFtdcMoneyType LongFrozenAmount;
+		/// å¼€ä»“å†»ç»“é‡‘é¢
+		TThostFtdcMoneyType ShortFrozenAmount;
+		/// å¼€ä»“é‡
+		TThostFtdcVolumeType OpenVolume;
+		/// å¹³ä»“é‡
+		TThostFtdcVolumeType CloseVolume;
+		/// å¼€ä»“é‡‘é¢
+		TThostFtdcMoneyType OpenAmount;
+		/// å¹³ä»“é‡‘é¢
+		TThostFtdcMoneyType CloseAmount;
+		/// æŒä»“æˆæœ¬
+		TThostFtdcMoneyType PositionCost;
+		/// ä¸Šæ¬¡å ç”¨çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType PreMargin;
+		/// å ç”¨çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType UseMargin;
+		/// å†»ç»“çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType FrozenMargin;
+		/// å†»ç»“çš„èµ„é‡‘
+		TThostFtdcMoneyType FrozenCash;
+		/// å†»ç»“çš„æ‰‹ç»­è´¹
+		TThostFtdcMoneyType FrozenCommission;
+		/// èµ„é‡‘å·®é¢
+		TThostFtdcMoneyType CashIn;
+		/// æ‰‹ç»­è´¹
+		TThostFtdcMoneyType Commission;
+		/// å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfit;
+		/// æŒä»“ç›ˆäº
+		TThostFtdcMoneyType PositionProfit;
+		/// ä¸Šæ¬¡ç»“ç®—ä»·
+		TThostFtdcPriceType PreSettlementPrice;
+		/// æœ¬æ¬¡ç»“ç®—ä»·
+		TThostFtdcPriceType SettlementPrice;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// å¼€ä»“æˆæœ¬
+		TThostFtdcMoneyType OpenCost;
+		/// äº¤æ˜“æ‰€ä¿è¯é‡‘
+		TThostFtdcMoneyType ExchangeMargin;
+		/// ç»„åˆæˆäº¤å½¢æˆçš„æŒä»“
+		TThostFtdcVolumeType CombPosition;
+		/// ç»„åˆå¤šå¤´å†»ç»“
+		TThostFtdcVolumeType CombLongFrozen;
+		/// ç»„åˆç©ºå¤´å†»ç»“
+		TThostFtdcVolumeType CombShortFrozen;
+		/// é€æ—¥ç›¯å¸‚å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfitByDate;
+		/// é€ç¬”å¯¹å†²å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfitByTrade;
+		/// ä»Šæ—¥æŒä»“
+		TThostFtdcVolumeType TodayPosition;
+		/// ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType MarginRateByMoney;
+		/// ä¿è¯é‡‘ç‡(æŒ‰æ‰‹æ•°)
+		TThostFtdcRatioType MarginRateByVolume;
+		/// æ‰§è¡Œå†»ç»“
+		TThostFtdcVolumeType StrikeFrozen;
+		/// æ‰§è¡Œå†»ç»“é‡‘é¢
+		TThostFtdcMoneyType StrikeFrozenAmount;
+		/// æ”¾å¼ƒæ‰§è¡Œå†»ç»“
+		TThostFtdcVolumeType AbandonFrozen;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå†»ç»“çš„æ˜¨ä»“
+		TThostFtdcVolumeType YdStrikeFrozen;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æ­£åœ¨åŒæ­¥ä¸­çš„åˆçº¦ä¿è¯é‡‘ç‡
+	struct CThostFtdcSyncingInstrumentMarginRateField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// å¤šå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType LongMarginRatioByMoney;
+		/// å¤šå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType LongMarginRatioByVolume;
+		/// ç©ºå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType ShortMarginRatioByMoney;
+		/// ç©ºå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType ShortMarginRatioByVolume;
+		/// æ˜¯å¦ç›¸å¯¹äº¤æ˜“æ‰€æ”¶å–
+		TThostFtdcBoolType IsRelative;
+	};
+
+	/// æ­£åœ¨åŒæ­¥ä¸­çš„åˆçº¦æ‰‹ç»­è´¹ç‡
+	struct CThostFtdcSyncingInstrumentCommissionRateField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å¼€ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType OpenRatioByMoney;
+		/// å¼€ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType OpenRatioByVolume;
+		/// å¹³ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseRatioByMoney;
+		/// å¹³ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseRatioByVolume;
+		/// å¹³ä»Šæ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseTodayRatioByMoney;
+		/// å¹³ä»Šæ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseTodayRatioByVolume;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æ­£åœ¨åŒæ­¥ä¸­çš„åˆçº¦äº¤æ˜“æƒé™
+	struct CThostFtdcSyncingInstrumentTradingRightField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æƒé™
+		TThostFtdcTradingRightType TradingRight;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŸ¥è¯¢æŠ¥å•
+	struct CThostFtdcQryOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType InsertTimeStart;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType InsertTimeEnd;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢æˆäº¤
+	struct CThostFtdcQryTradeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æˆäº¤ç¼–å·
+		TThostFtdcTradeIDType TradeID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType TradeTimeStart;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType TradeTimeEnd;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…æŒä»“
+	struct CThostFtdcQryInvestorPositionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢èµ„é‡‘è´¦æˆ·
+	struct CThostFtdcQryTradingAccountField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// ä¸šåŠ¡ç±»å‹
+		TThostFtdcBizTypeType BizType;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…
+	struct CThostFtdcQryInvestorField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“ç¼–ç 
+	struct CThostFtdcQryTradingCodeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“ç¼–ç ç±»å‹
+		TThostFtdcClientIDTypeType ClientIDType;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…ç»„
+	struct CThostFtdcQryInvestorGroupField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+	};
+
+	/// æŸ¥è¯¢åˆçº¦ä¿è¯é‡‘ç‡
+	struct CThostFtdcQryInstrumentMarginRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢æ‰‹ç»­è´¹ç‡
+	struct CThostFtdcQryInstrumentCommissionRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢åˆçº¦äº¤æ˜“æƒé™
+	struct CThostFtdcQryInstrumentTradingRightField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸
+	struct CThostFtdcQryBrokerField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“å‘˜
+	struct CThostFtdcQryTraderField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// æŸ¥è¯¢ç®¡ç†ç”¨æˆ·åŠŸèƒ½æƒé™
+	struct CThostFtdcQrySuperUserFunctionField
+	{
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+	};
+
+	/// æŸ¥è¯¢ç”¨æˆ·ä¼šè¯
+	struct CThostFtdcQryUserSessionField
+	{
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸ä¼šå‘˜ä»£ç 
+	struct CThostFtdcQryPartBrokerField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+	};
+
+	/// æŸ¥è¯¢å‰ç½®çŠ¶æ€
+	struct CThostFtdcQryFrontStatusField
+	{
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“æ‰€æŠ¥å•
+	struct CThostFtdcQryExchangeOrderField
+	{
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// æŸ¥è¯¢æŠ¥å•æ“ä½œ
+	struct CThostFtdcQryOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“æ‰€æŠ¥å•æ“ä½œ
+	struct CThostFtdcQryExchangeOrderActionField
+	{
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// æŸ¥è¯¢ç®¡ç†ç”¨æˆ·
+	struct CThostFtdcQrySuperUserField
+	{
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“æ‰€
+	struct CThostFtdcQryExchangeField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŸ¥è¯¢äº§å“
+	struct CThostFtdcQryProductField
+	{
+		/// äº§å“ä»£ç 
+		TThostFtdcInstrumentIDType ProductID;
+		/// äº§å“ç±»å‹
+		TThostFtdcProductClassType ProductClass;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŸ¥è¯¢åˆçº¦
+	struct CThostFtdcQryInstrumentField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº§å“ä»£ç 
+		TThostFtdcInstrumentIDType ProductID;
+	};
+
+	/// æŸ¥è¯¢è¡Œæƒ…
+	struct CThostFtdcQryDepthMarketDataField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸ç”¨æˆ·
+	struct CThostFtdcQryBrokerUserField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸ç”¨æˆ·æƒé™
+	struct CThostFtdcQryBrokerUserFunctionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+	};
+
+	/// äº¤æ˜“æ‰€æŠ¥ä»·æ’¤é”€å›æŠ¥
+	struct CThostFtdcExchangeQuoteActionErrorField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥ä»·ç¼–å·
+		TThostFtdcOrderSysIDType QuoteSysID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æ‰§è¡Œå®£å‘Šç¼–å·
+		TThostFtdcOrderLocalIDType QuoteLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// ä¹°æŠ¥å•æœ¬åœ°æŠ¥å•å·
+		TThostFtdcOrderLocalIDType BidOrderLocalID;
+		/// å–æŠ¥å•æœ¬åœ°æŠ¥å•å·
+		TThostFtdcOrderLocalIDType AskOrderLocalID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“å‘˜æŠ¥ç›˜æœº
+	struct CThostFtdcQryTraderOfferField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// æŸ¥è¯¢å‡ºå…¥é‡‘æµæ°´
+	struct CThostFtdcQrySyncDepositField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// å‡ºå…¥é‡‘æµæ°´å·
+		TThostFtdcDepositSeqNoType DepositSeqNo;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…ç»“ç®—ç»“æœ
+	struct CThostFtdcQrySettlementInfoField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“æ‰€ä¿è¯é‡‘ç‡
+	struct CThostFtdcQryExchangeMarginRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“æ‰€è°ƒæ•´ä¿è¯é‡‘ç‡
+	struct CThostFtdcQryExchangeMarginRateAdjustField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+	};
+
+	/// æŸ¥è¯¢æ±‡ç‡
+	struct CThostFtdcQryExchangeRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æºå¸ç§
+		TThostFtdcCurrencyIDType FromCurrencyID;
+		/// ç›®æ ‡å¸ç§
+		TThostFtdcCurrencyIDType ToCurrencyID;
+	};
+
+	/// æŸ¥è¯¢è´§å¸è´¨æŠ¼æµæ°´
+	struct CThostFtdcQrySyncFundMortgageField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// è´§å¸è´¨æŠ¼æµæ°´å·
+		TThostFtdcDepositSeqNoType MortgageSeqNo;
+	};
+
+	/// æŸ¥è¯¢æŠ¥å•
+	struct CThostFtdcQryHisOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType InsertTimeStart;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType InsertTimeEnd;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+	};
+
+	/// å½“å‰æœŸæƒåˆçº¦æœ€å°ä¿è¯é‡‘
+	struct CThostFtdcOptionInstrMiniMarginField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å•ä½ï¼ˆæ‰‹ï¼‰æœŸæƒåˆçº¦æœ€å°ä¿è¯é‡‘
+		TThostFtdcMoneyType MinMargin;
+		/// å–å€¼æ–¹å¼
+		TThostFtdcValueMethodType ValueMethod;
+		/// æ˜¯å¦è·Ÿéšäº¤æ˜“æ‰€æ”¶å–
+		TThostFtdcBoolType IsRelative;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// å½“å‰æœŸæƒåˆçº¦ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+	struct CThostFtdcOptionInstrMarginAdjustField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•æœºç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcRatioType SShortMarginRatioByMoney;
+		/// æŠ•æœºç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcMoneyType SShortMarginRatioByVolume;
+		/// ä¿å€¼ç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcRatioType HShortMarginRatioByMoney;
+		/// ä¿å€¼ç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcMoneyType HShortMarginRatioByVolume;
+		/// å¥—åˆ©ç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcRatioType AShortMarginRatioByMoney;
+		/// å¥—åˆ©ç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcMoneyType AShortMarginRatioByVolume;
+		/// æ˜¯å¦è·Ÿéšäº¤æ˜“æ‰€æ”¶å–
+		TThostFtdcBoolType IsRelative;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åšå¸‚å•†ç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcRatioType MShortMarginRatioByMoney;
+		/// åšå¸‚å•†ç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcMoneyType MShortMarginRatioByVolume;
+	};
+
+	/// å½“å‰æœŸæƒåˆçº¦æ‰‹ç»­è´¹çš„è¯¦ç»†å†…å®¹
+	struct CThostFtdcOptionInstrCommRateField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å¼€ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType OpenRatioByMoney;
+		/// å¼€ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType OpenRatioByVolume;
+		/// å¹³ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseRatioByMoney;
+		/// å¹³ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseRatioByVolume;
+		/// å¹³ä»Šæ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseTodayRatioByMoney;
+		/// å¹³ä»Šæ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseTodayRatioByVolume;
+		/// æ‰§è¡Œæ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType StrikeRatioByMoney;
+		/// æ‰§è¡Œæ‰‹ç»­è´¹
+		TThostFtdcRatioType StrikeRatioByVolume;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æœŸæƒäº¤æ˜“æˆæœ¬
+	struct CThostFtdcOptionInstrTradeCostField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æœŸæƒåˆçº¦ä¿è¯é‡‘ä¸å˜éƒ¨åˆ†
+		TThostFtdcMoneyType FixedMargin;
+		/// æœŸæƒåˆçº¦æœ€å°ä¿è¯é‡‘
+		TThostFtdcMoneyType MiniMargin;
+		/// æœŸæƒåˆçº¦æƒåˆ©é‡‘
+		TThostFtdcMoneyType Royalty;
+		/// äº¤æ˜“æ‰€æœŸæƒåˆçº¦ä¿è¯é‡‘ä¸å˜éƒ¨åˆ†
+		TThostFtdcMoneyType ExchFixedMargin;
+		/// äº¤æ˜“æ‰€æœŸæƒåˆçº¦æœ€å°ä¿è¯é‡‘
+		TThostFtdcMoneyType ExchMiniMargin;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æœŸæƒäº¤æ˜“æˆæœ¬æŸ¥è¯¢
+	struct CThostFtdcQryOptionInstrTradeCostField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æœŸæƒåˆçº¦æŠ¥ä»·
+		TThostFtdcPriceType InputPrice;
+		/// æ ‡çš„ä»·æ ¼,å¡«0åˆ™ç”¨æ˜¨ç»“ç®—ä»·
+		TThostFtdcPriceType UnderlyingPrice;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æœŸæƒæ‰‹ç»­è´¹ç‡æŸ¥è¯¢
+	struct CThostFtdcQryOptionInstrCommRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// è‚¡æŒ‡ç°è´§æŒ‡æ•°
+	struct CThostFtdcIndexPriceField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŒ‡æ•°ç°è´§æ”¶ç›˜ä»·
+		TThostFtdcPriceType ClosePrice;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// è¾“å…¥çš„æ‰§è¡Œå®£å‘Š
+	struct CThostFtdcInputExecOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æ‰§è¡Œå®£å‘Šå¼•ç”¨
+		TThostFtdcOrderRefType ExecOrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType OffsetFlag;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// ä¿ç•™å¤´å¯¸ç”³è¯·çš„æŒä»“æ–¹å‘
+		TThostFtdcPosiDirectionType PosiDirection;
+		/// æœŸæƒè¡Œæƒåæ˜¯å¦ä¿ç•™æœŸè´§å¤´å¯¸çš„æ ‡è®°,è¯¥å­—æ®µå·²åºŸå¼ƒ
+		TThostFtdcExecOrderPositionFlagType ReservePositionFlag;
+		/// æœŸæƒè¡Œæƒåç”Ÿæˆçš„å¤´å¯¸æ˜¯å¦è‡ªåŠ¨å¹³ä»“
+		TThostFtdcExecOrderCloseFlagType CloseFlag;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// äº¤æ˜“ç¼–ç 
+		TThostFtdcClientIDType ClientID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// è¾“å…¥æ‰§è¡Œå®£å‘Šæ“ä½œ
+	struct CThostFtdcInputExecOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æ‰§è¡Œå®£å‘Šæ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType ExecOrderActionRef;
+		/// æ‰§è¡Œå®£å‘Šå¼•ç”¨
+		TThostFtdcOrderRefType ExecOrderRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå®£å‘Šæ“ä½œç¼–å·
+		TThostFtdcExecOrderSysIDType ExecOrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æ‰§è¡Œå®£å‘Š
+	struct CThostFtdcExecOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æ‰§è¡Œå®£å‘Šå¼•ç”¨
+		TThostFtdcOrderRefType ExecOrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType OffsetFlag;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// ä¿ç•™å¤´å¯¸ç”³è¯·çš„æŒä»“æ–¹å‘
+		TThostFtdcPosiDirectionType PosiDirection;
+		/// æœŸæƒè¡Œæƒåæ˜¯å¦ä¿ç•™æœŸè´§å¤´å¯¸çš„æ ‡è®°,è¯¥å­—æ®µå·²åºŸå¼ƒ
+		TThostFtdcExecOrderPositionFlagType ReservePositionFlag;
+		/// æœŸæƒè¡Œæƒåç”Ÿæˆçš„å¤´å¯¸æ˜¯å¦è‡ªåŠ¨å¹³ä»“
+		TThostFtdcExecOrderCloseFlagType CloseFlag;
+		/// æœ¬åœ°æ‰§è¡Œå®£å‘Šç¼–å·
+		TThostFtdcOrderLocalIDType ExecOrderLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æ‰§è¡Œå®£å‘Šæäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æ‰§è¡Œå®£å‘Šç¼–å·
+		TThostFtdcExecOrderSysIDType ExecOrderSysID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// æ‰§è¡Œç»“æœ
+		TThostFtdcExecResultType ExecResult;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// æ“ä½œç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType ActiveUserID;
+		/// ç»çºªå…¬å¸æŠ¥å•ç¼–å·
+		TThostFtdcSequenceNoType BrokerExecOrderSeq;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æ‰§è¡Œå®£å‘Šæ“ä½œ
+	struct CThostFtdcExecOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æ‰§è¡Œå®£å‘Šæ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType ExecOrderActionRef;
+		/// æ‰§è¡Œå®£å‘Šå¼•ç”¨
+		TThostFtdcOrderRefType ExecOrderRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå®£å‘Šæ“ä½œç¼–å·
+		TThostFtdcExecOrderSysIDType ExecOrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æ‰§è¡Œå®£å‘Šç¼–å·
+		TThostFtdcOrderLocalIDType ExecOrderLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æ‰§è¡Œå®£å‘ŠæŸ¥è¯¢
+	struct CThostFtdcQryExecOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå®£å‘Šç¼–å·
+		TThostFtdcExecOrderSysIDType ExecOrderSysID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType InsertTimeStart;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType InsertTimeEnd;
+	};
+
+	/// äº¤æ˜“æ‰€æ‰§è¡Œå®£å‘Šä¿¡æ¯
+	struct CThostFtdcExchangeExecOrderField
+	{
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType OffsetFlag;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// ä¿ç•™å¤´å¯¸ç”³è¯·çš„æŒä»“æ–¹å‘
+		TThostFtdcPosiDirectionType PosiDirection;
+		/// æœŸæƒè¡Œæƒåæ˜¯å¦ä¿ç•™æœŸè´§å¤´å¯¸çš„æ ‡è®°,è¯¥å­—æ®µå·²åºŸå¼ƒ
+		TThostFtdcExecOrderPositionFlagType ReservePositionFlag;
+		/// æœŸæƒè¡Œæƒåç”Ÿæˆçš„å¤´å¯¸æ˜¯å¦è‡ªåŠ¨å¹³ä»“
+		TThostFtdcExecOrderCloseFlagType CloseFlag;
+		/// æœ¬åœ°æ‰§è¡Œå®£å‘Šç¼–å·
+		TThostFtdcOrderLocalIDType ExecOrderLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æ‰§è¡Œå®£å‘Šæäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æ‰§è¡Œå®£å‘Šç¼–å·
+		TThostFtdcExecOrderSysIDType ExecOrderSysID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// æ‰§è¡Œç»“æœ
+		TThostFtdcExecResultType ExecResult;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// äº¤æ˜“æ‰€æ‰§è¡Œå®£å‘ŠæŸ¥è¯¢
+	struct CThostFtdcQryExchangeExecOrderField
+	{
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// æ‰§è¡Œå®£å‘Šæ“ä½œæŸ¥è¯¢
+	struct CThostFtdcQryExecOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// äº¤æ˜“æ‰€æ‰§è¡Œå®£å‘Šæ“ä½œ
+	struct CThostFtdcExchangeExecOrderActionField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå®£å‘Šæ“ä½œç¼–å·
+		TThostFtdcExecOrderSysIDType ExecOrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æ‰§è¡Œå®£å‘Šç¼–å·
+		TThostFtdcOrderLocalIDType ExecOrderLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// äº¤æ˜“æ‰€æ‰§è¡Œå®£å‘Šæ“ä½œæŸ¥è¯¢
+	struct CThostFtdcQryExchangeExecOrderActionField
+	{
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// é”™è¯¯æ‰§è¡Œå®£å‘Š
+	struct CThostFtdcErrExecOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æ‰§è¡Œå®£å‘Šå¼•ç”¨
+		TThostFtdcOrderRefType ExecOrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType OffsetFlag;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// ä¿ç•™å¤´å¯¸ç”³è¯·çš„æŒä»“æ–¹å‘
+		TThostFtdcPosiDirectionType PosiDirection;
+		/// æœŸæƒè¡Œæƒåæ˜¯å¦ä¿ç•™æœŸè´§å¤´å¯¸çš„æ ‡è®°,è¯¥å­—æ®µå·²åºŸå¼ƒ
+		TThostFtdcExecOrderPositionFlagType ReservePositionFlag;
+		/// æœŸæƒè¡Œæƒåç”Ÿæˆçš„å¤´å¯¸æ˜¯å¦è‡ªåŠ¨å¹³ä»“
+		TThostFtdcExecOrderCloseFlagType CloseFlag;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// äº¤æ˜“ç¼–ç 
+		TThostFtdcClientIDType ClientID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// æŸ¥è¯¢é”™è¯¯æ‰§è¡Œå®£å‘Š
+	struct CThostFtdcQryErrExecOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+	};
+
+	/// é”™è¯¯æ‰§è¡Œå®£å‘Šæ“ä½œ
+	struct CThostFtdcErrExecOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æ‰§è¡Œå®£å‘Šæ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType ExecOrderActionRef;
+		/// æ‰§è¡Œå®£å‘Šå¼•ç”¨
+		TThostFtdcOrderRefType ExecOrderRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå®£å‘Šæ“ä½œç¼–å·
+		TThostFtdcExecOrderSysIDType ExecOrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// æŸ¥è¯¢é”™è¯¯æ‰§è¡Œå®£å‘Šæ“ä½œ
+	struct CThostFtdcQryErrExecOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+	};
+
+	/// æŠ•èµ„è€…æœŸæƒåˆçº¦äº¤æ˜“æƒé™
+	struct CThostFtdcOptionInstrTradingRightField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// äº¤æ˜“æƒé™
+		TThostFtdcTradingRightType TradingRight;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+	};
+
+	/// æŸ¥è¯¢æœŸæƒåˆçº¦äº¤æ˜“æƒé™
+	struct CThostFtdcQryOptionInstrTradingRightField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// è¾“å…¥çš„è¯¢ä»·
+	struct CThostFtdcInputForQuoteField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// è¯¢ä»·å¼•ç”¨
+		TThostFtdcOrderRefType ForQuoteRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// è¯¢ä»·
+	struct CThostFtdcForQuoteField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// è¯¢ä»·å¼•ç”¨
+		TThostFtdcOrderRefType ForQuoteRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æœ¬åœ°è¯¢ä»·ç¼–å·
+		TThostFtdcOrderLocalIDType ForQuoteLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// è¯¢ä»·çŠ¶æ€
+		TThostFtdcForQuoteStatusType ForQuoteStatus;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// æ“ä½œç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType ActiveUserID;
+		/// ç»çºªå…¬å¸è¯¢ä»·ç¼–å·
+		TThostFtdcSequenceNoType BrokerForQutoSeq;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+	};
+
+	/// è¯¢ä»·æŸ¥è¯¢
+	struct CThostFtdcQryForQuoteField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType InsertTimeStart;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType InsertTimeEnd;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// äº¤æ˜“æ‰€è¯¢ä»·ä¿¡æ¯
+	struct CThostFtdcExchangeForQuoteField
+	{
+		/// æœ¬åœ°è¯¢ä»·ç¼–å·
+		TThostFtdcOrderLocalIDType ForQuoteLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// è¯¢ä»·çŠ¶æ€
+		TThostFtdcForQuoteStatusType ForQuoteStatus;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+	};
+
+	/// äº¤æ˜“æ‰€è¯¢ä»·æŸ¥è¯¢
+	struct CThostFtdcQryExchangeForQuoteField
+	{
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// è¾“å…¥çš„æŠ¥ä»·
+	struct CThostFtdcInputQuoteField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ¥ä»·å¼•ç”¨
+		TThostFtdcOrderRefType QuoteRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// å–ä»·æ ¼
+		TThostFtdcPriceType AskPrice;
+		/// ä¹°ä»·æ ¼
+		TThostFtdcPriceType BidPrice;
+		/// å–æ•°é‡
+		TThostFtdcVolumeType AskVolume;
+		/// ä¹°æ•°é‡
+		TThostFtdcVolumeType BidVolume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// å–å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType AskOffsetFlag;
+		/// ä¹°å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType BidOffsetFlag;
+		/// å–æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType AskHedgeFlag;
+		/// ä¹°æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType BidHedgeFlag;
+		/// è¡ç”Ÿå–æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType AskOrderRef;
+		/// è¡ç”Ÿä¹°æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType BidOrderRef;
+		/// åº”ä»·ç¼–å·
+		TThostFtdcOrderSysIDType ForQuoteSysID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// äº¤æ˜“ç¼–ç 
+		TThostFtdcClientIDType ClientID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// è¾“å…¥æŠ¥ä»·æ“ä½œ
+	struct CThostFtdcInputQuoteActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ¥ä»·æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType QuoteActionRef;
+		/// æŠ¥ä»·å¼•ç”¨
+		TThostFtdcOrderRefType QuoteRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥ä»·æ“ä½œç¼–å·
+		TThostFtdcOrderSysIDType QuoteSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// äº¤æ˜“ç¼–ç 
+		TThostFtdcClientIDType ClientID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// å–æ•°é‡
+		TThostFtdcVolumeType AskVolume;
+		/// ä¹°æ•°é‡
+		TThostFtdcVolumeType BidVolume;
+	};
+
+	/// æŠ¥ä»·
+	struct CThostFtdcQuoteField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ¥ä»·å¼•ç”¨
+		TThostFtdcOrderRefType QuoteRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// å–ä»·æ ¼
+		TThostFtdcPriceType AskPrice;
+		/// ä¹°ä»·æ ¼
+		TThostFtdcPriceType BidPrice;
+		/// å–æ•°é‡
+		TThostFtdcVolumeType AskVolume;
+		/// ä¹°æ•°é‡
+		TThostFtdcVolumeType BidVolume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// å–å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType AskOffsetFlag;
+		/// ä¹°å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType BidOffsetFlag;
+		/// å–æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType AskHedgeFlag;
+		/// ä¹°æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType BidHedgeFlag;
+		/// æœ¬åœ°æŠ¥ä»·ç¼–å·
+		TThostFtdcOrderLocalIDType QuoteLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æŠ¥ä»·æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// æŠ¥ä»·æäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æŠ¥ä»·ç¼–å·
+		TThostFtdcOrderSysIDType QuoteSysID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// æŠ¥ä»·çŠ¶æ€
+		TThostFtdcOrderStatusType QuoteStatus;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å–æ–¹æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType AskOrderSysID;
+		/// ä¹°æ–¹æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType BidOrderSysID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// æ“ä½œç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType ActiveUserID;
+		/// ç»çºªå…¬å¸æŠ¥ä»·ç¼–å·
+		TThostFtdcSequenceNoType BrokerQuoteSeq;
+		/// è¡ç”Ÿå–æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType AskOrderRef;
+		/// è¡ç”Ÿä¹°æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType BidOrderRef;
+		/// åº”ä»·ç¼–å·
+		TThostFtdcOrderSysIDType ForQuoteSysID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æŠ¥ä»·æ“ä½œ
+	struct CThostFtdcQuoteActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ¥ä»·æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType QuoteActionRef;
+		/// æŠ¥ä»·å¼•ç”¨
+		TThostFtdcOrderRefType QuoteRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥ä»·æ“ä½œç¼–å·
+		TThostFtdcOrderSysIDType QuoteSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æŠ¥ä»·ç¼–å·
+		TThostFtdcOrderLocalIDType QuoteLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// å–æ•°é‡
+		TThostFtdcVolumeType AskVolume;
+		/// ä¹°æ•°é‡
+		TThostFtdcVolumeType BidVolume;
+	};
+
+	/// æŠ¥ä»·æŸ¥è¯¢
+	struct CThostFtdcQryQuoteField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥ä»·ç¼–å·
+		TThostFtdcOrderSysIDType QuoteSysID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType InsertTimeStart;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType InsertTimeEnd;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// äº¤æ˜“æ‰€æŠ¥ä»·ä¿¡æ¯
+	struct CThostFtdcExchangeQuoteField
+	{
+		/// å–ä»·æ ¼
+		TThostFtdcPriceType AskPrice;
+		/// ä¹°ä»·æ ¼
+		TThostFtdcPriceType BidPrice;
+		/// å–æ•°é‡
+		TThostFtdcVolumeType AskVolume;
+		/// ä¹°æ•°é‡
+		TThostFtdcVolumeType BidVolume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// å–å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType AskOffsetFlag;
+		/// ä¹°å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType BidOffsetFlag;
+		/// å–æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType AskHedgeFlag;
+		/// ä¹°æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType BidHedgeFlag;
+		/// æœ¬åœ°æŠ¥ä»·ç¼–å·
+		TThostFtdcOrderLocalIDType QuoteLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æŠ¥ä»·æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// æŠ¥ä»·æäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æŠ¥ä»·ç¼–å·
+		TThostFtdcOrderSysIDType QuoteSysID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// æŠ¥ä»·çŠ¶æ€
+		TThostFtdcOrderStatusType QuoteStatus;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å–æ–¹æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType AskOrderSysID;
+		/// ä¹°æ–¹æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType BidOrderSysID;
+		/// åº”ä»·ç¼–å·
+		TThostFtdcOrderSysIDType ForQuoteSysID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// äº¤æ˜“æ‰€æŠ¥ä»·æŸ¥è¯¢
+	struct CThostFtdcQryExchangeQuoteField
+	{
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// æŠ¥ä»·æ“ä½œæŸ¥è¯¢
+	struct CThostFtdcQryQuoteActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// äº¤æ˜“æ‰€æŠ¥ä»·æ“ä½œ
+	struct CThostFtdcExchangeQuoteActionField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥ä»·æ“ä½œç¼–å·
+		TThostFtdcOrderSysIDType QuoteSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æŠ¥ä»·ç¼–å·
+		TThostFtdcOrderLocalIDType QuoteLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// å–æ•°é‡
+		TThostFtdcVolumeType AskVolume;
+		/// ä¹°æ•°é‡
+		TThostFtdcVolumeType BidVolume;
+	};
+
+	/// äº¤æ˜“æ‰€æŠ¥ä»·æ“ä½œæŸ¥è¯¢
+	struct CThostFtdcQryExchangeQuoteActionField
+	{
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// æœŸæƒåˆçº¦deltaå€¼
+	struct CThostFtdcOptionInstrDeltaField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// Deltaå€¼
+		TThostFtdcRatioType Delta;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// å‘ç»™åšå¸‚å•†çš„è¯¢ä»·è¯·æ±‚
+	struct CThostFtdcForQuoteRspField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// è¯¢ä»·ç¼–å·
+		TThostFtdcOrderSysIDType ForQuoteSysID;
+		/// è¯¢ä»·æ—¶é—´
+		TThostFtdcTimeType ForQuoteTime;
+		/// ä¸šåŠ¡æ—¥æœŸ
+		TThostFtdcDateType ActionDay;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// å½“å‰æœŸæƒåˆçº¦æ‰§è¡Œåç§»å€¼çš„è¯¦ç»†å†…å®¹
+	struct CThostFtdcStrikeOffsetField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æ‰§è¡Œåç§»å€¼
+		TThostFtdcMoneyType Offset;
+		/// è¡Œæƒåç§»ç±»å‹
+		TThostFtdcStrikeOffsetTypeType OffsetType;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æœŸæƒæ‰§è¡Œåç§»å€¼æŸ¥è¯¢
+	struct CThostFtdcQryStrikeOffsetField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+	};
+
+	/// å½•å…¥é”å®š
+	struct CThostFtdcInputLockField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// é”å®šå¼•ç”¨
+		TThostFtdcOrderRefType LockRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// é”å®šç±»å‹
+		TThostFtdcLockTypeType LockType;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// é”å®š
+	struct CThostFtdcLockField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// é”å®šå¼•ç”¨
+		TThostFtdcOrderRefType LockRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// é”å®šç±»å‹
+		TThostFtdcLockTypeType LockType;
+		/// æœ¬åœ°é”å®šç¼–å·
+		TThostFtdcOrderLocalIDType LockLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æ‰§è¡Œå®£å‘Šæäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// é”å®šç¼–å·
+		TThostFtdcOrderSysIDType LockSysID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// é”å®šçŠ¶æ€
+		TThostFtdcOrderActionStatusType LockStatus;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// æ“ä½œç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType ActiveUserID;
+		/// ç»çºªå…¬å¸æŠ¥å•ç¼–å·
+		TThostFtdcSequenceNoType BrokerLockSeq;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æŸ¥è¯¢é”å®š
+	struct CThostFtdcQryLockField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// é”å®šç¼–å·
+		TThostFtdcOrderSysIDType LockSysID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType InsertTimeStart;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType InsertTimeEnd;
+	};
+
+	/// é”å®šè¯åˆ¸ä»“ä½
+	struct CThostFtdcLockPositionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// å†»ç»“æ•°é‡
+		TThostFtdcVolumeType FrozenVolume;
+		/// ä»Šæ—¥é”å®šæ•°é‡
+		TThostFtdcVolumeType TodayVolume;
+	};
+
+	/// æŸ¥è¯¢é”å®šè¯åˆ¸ä»“ä½
+	struct CThostFtdcQryLockPositionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// å½“å‰ETFæœŸæƒåˆçº¦æ‰‹ç»­è´¹çš„è¯¦ç»†å†…å®¹
+	struct CThostFtdcETFOptionInstrCommRateField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å¼€ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType OpenRatioByMoney;
+		/// å¼€ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType OpenRatioByVolume;
+		/// å¹³ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseRatioByMoney;
+		/// å¹³ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseRatioByVolume;
+		/// å¹³ä»Šæ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseTodayRatioByMoney;
+		/// å¹³ä»Šæ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseTodayRatioByVolume;
+		/// æ‰§è¡Œæ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType StrikeRatioByMoney;
+		/// æ‰§è¡Œæ‰‹ç»­è´¹
+		TThostFtdcRatioType StrikeRatioByVolume;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æŒä»“æ–¹å‘
+		TThostFtdcPosiDirectionType PosiDirection;
+	};
+
+	/// ETFæœŸæƒæ‰‹ç»­è´¹ç‡æŸ¥è¯¢
+	struct CThostFtdcQryETFOptionInstrCommRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// è¾“å…¥çš„æŒä»“å†»ç»“
+	struct CThostFtdcPosiFreezeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// å†»ç»“åŸå› 
+		TThostFtdcFreezeReasonTypeType FreezeReasonType;
+		/// å†»ç»“ç±»å‹
+		TThostFtdcFreezeTypeType FreezeType;
+	};
+
+	/// æŸ¥è¯¢é”å®š
+	struct CThostFtdcQryExchangeLockField
+	{
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// äº¤æ˜“æ‰€é”å®š
+	struct CThostFtdcExchangeLockField
+	{
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// é”å®šç±»å‹
+		TThostFtdcLockTypeType LockType;
+		/// æœ¬åœ°é”å®šç¼–å·
+		TThostFtdcOrderLocalIDType LockLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æ‰§è¡Œå®£å‘Šæäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// é”å®šç¼–å·
+		TThostFtdcOrderSysIDType LockSysID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// é”å®šçŠ¶æ€
+		TThostFtdcOrderActionStatusType LockStatus;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// äº¤æ˜“æ‰€æ“ä½œé”™è¯¯
+	struct CThostFtdcExchangeExecOrderActionErrorField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå®£å‘Šç¼–å·
+		TThostFtdcExecOrderSysIDType ExecOrderSysID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æ‰§è¡Œå®£å‘Šç¼–å·
+		TThostFtdcOrderLocalIDType ExecOrderLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+	};
+
+	/// è¾“å…¥æ‰¹é‡æŠ¥å•æ“ä½œ
+	struct CThostFtdcInputBatchOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ¥å•æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType OrderActionRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æ‰¹é‡æŠ¥å•æ“ä½œ
+	struct CThostFtdcBatchOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ¥å•æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType OrderActionRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// äº¤æ˜“æ‰€æ‰¹é‡æŠ¥å•æ“ä½œ
+	struct CThostFtdcExchangeBatchOrderActionField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æŸ¥è¯¢æ‰¹é‡æŠ¥å•æ“ä½œ
+	struct CThostFtdcQryBatchOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŠ•èµ„è€…æŒä»“é™åˆ¶
+	struct CThostFtdcLimitPosiField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ€»æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType TotalVolume;
+		/// å¤šå¤´æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType LongVolume;
+		/// å½“æ—¥å¤šå¤´å¼€ä»“æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType OpenVolume;
+		/// å¤šå¤´æŒä»“é‡‘é¢é™åˆ¶,ä¸å†ä½¿ç”¨
+		TThostFtdcMoneyType LongAmount;
+		/// æ€»æ•°é‡å†»ç»“
+		TThostFtdcVolumeType TotalVolumeFrozen;
+		/// å¤šå¤´æ•°é‡å†»ç»“
+		TThostFtdcVolumeType LongVolumeFrozen;
+		/// å½“æ—¥å¼€ä»“æ•°é‡å†»ç»“
+		TThostFtdcVolumeType OpenVolumeFrozen;
+		/// å¤šå¤´æŒä»“é‡‘é¢å†»ç»“,ä¸å†ä½¿ç”¨
+		TThostFtdcMoneyType LongAmountFrozen;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…æŒä»“é™åˆ¶
+	struct CThostFtdcQryLimitPosiField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// ç»çºªå…¬å¸æŒä»“é™åˆ¶
+	struct CThostFtdcBrokerLimitPosiField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ€»æ•°é‡é™åˆ¶
+		TThostFtdcLargeVolumeType TotalVolume;
+		/// å¤šå¤´æ•°é‡é™åˆ¶
+		TThostFtdcLargeVolumeType LongVolume;
+		/// æ€»æ•°é‡å†»ç»“
+		TThostFtdcLargeVolumeType TotalVolumeFrozen;
+		/// å¤šå¤´æ•°é‡å†»ç»“
+		TThostFtdcLargeVolumeType LongVolumeFrozen;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸æŒä»“é™åˆ¶
+	struct CThostFtdcQryBrokerLimitPosiField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŠ•èµ„è€…è¯åˆ¸æŒä»“é™åˆ¶
+	struct CThostFtdcLimitPosiSField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ€»æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType TotalVolume;
+		/// å½“æ—¥å¼€ä»“æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType OpenVolume;
+		/// æ€»æ•°é‡å†»ç»“
+		TThostFtdcVolumeType TotalVolumeFrozen;
+		/// å½“æ—¥å¼€ä»“æ•°é‡å†»ç»“
+		TThostFtdcVolumeType OpenVolumeFrozen;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…è¯åˆ¸æŒä»“é™åˆ¶
+	struct CThostFtdcQryLimitPosiSField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŠ•èµ„è€…æŒä»“é™åˆ¶å‚æ•°
+	struct CThostFtdcLimitPosiParamField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ€»æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType TotalVolume;
+		/// å¤šå¤´æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType LongVolume;
+		/// å½“æ—¥å¼€ä»“æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType OpenVolume;
+		/// å¤šå¤´æŒä»“é‡‘é¢é™åˆ¶,ä¸å†ä½¿ç”¨
+		TThostFtdcMoneyType LongAmount;
+	};
+
+	/// ç»çºªå…¬å¸æŒä»“é™åˆ¶å‚æ•°
+	struct CThostFtdcBrokerLimitPosiParamField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ€»æ•°é‡é™åˆ¶
+		TThostFtdcLargeVolumeType TotalVolume;
+		/// å¤šå¤´æ•°é‡é™åˆ¶
+		TThostFtdcLargeVolumeType LongVolume;
+	};
+
+	/// æŠ•èµ„è€…è¯åˆ¸æŒä»“é™åˆ¶å‚æ•°
+	struct CThostFtdcLimitPosiParamSField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ€»æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType TotalVolume;
+		/// å½“æ—¥å¼€ä»“æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType OpenVolume;
+	};
+
+	/// è¾“å…¥è¯åˆ¸å¤„ç½®æ“ä½œ
+	struct CThostFtdcInputStockDisposalActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// è¯åˆ¸å¤„ç½®æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType StockDisposalActionRef;
+		/// è¯åˆ¸å¤„ç½®å¼•ç”¨
+		TThostFtdcOrderRefType StockDisposalRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// è¯åˆ¸å¤„ç½®æ“ä½œç¼–å·
+		TThostFtdcStockDisposalSysIDType StockDisposalSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+	};
+
+	/// è¯åˆ¸å¤„ç½®æ“ä½œ
+	struct CThostFtdcStockDisposalActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// è¯åˆ¸å¤„ç½®æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType StockDisposalActionRef;
+		/// è¯åˆ¸å¤„ç½®å¼•ç”¨
+		TThostFtdcOrderRefType StockDisposalRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// è¯åˆ¸å¤„ç½®æ“ä½œç¼–å·
+		TThostFtdcStockDisposalSysIDType StockDisposalSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°è¯åˆ¸å¤„ç½®ç¼–å·
+		TThostFtdcOrderLocalIDType StockDisposalLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+	};
+
+	/// è¯åˆ¸å¤„ç½®æ“ä½œæŸ¥è¯¢
+	struct CThostFtdcQryStockDisposalActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// äº¤æ˜“æ‰€è¯åˆ¸å¤„ç½®æ“ä½œ
+	struct CThostFtdcExchangeStockDisposalActionField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// è¯åˆ¸å¤„ç½®æ“ä½œç¼–å·
+		TThostFtdcStockDisposalSysIDType StockDisposalSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°è¯åˆ¸å¤„ç½®ç¼–å·
+		TThostFtdcOrderLocalIDType StockDisposalLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+	};
+
+	/// é”™è¯¯è¯åˆ¸å¤„ç½®æ“ä½œ
+	struct CThostFtdcQryExchangeStockDisposalActionField
+	{
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// æŸ¥è¯¢é”™è¯¯è¯åˆ¸å¤„ç½®æ“ä½œ
+	struct CThostFtdcQryErrStockDisposalActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+	};
+
+	/// äº¤æ˜“æ‰€è¯åˆ¸å¤„ç½®æ“ä½œé”™è¯¯
+	struct CThostFtdcExchangeStockDisposalActionErrorField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// è¯åˆ¸å¤„ç½®ç¼–å·
+		TThostFtdcStockDisposalSysIDType StockDisposalSysID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°è¯åˆ¸å¤„ç½®ç¼–å·
+		TThostFtdcOrderLocalIDType StockDisposalLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+	};
+
+	/// é”™è¯¯è¯åˆ¸å¤„ç½®æ“ä½œ
+	struct CThostFtdcErrStockDisposalActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// è¯åˆ¸å¤„ç½®æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType StockDisposalActionRef;
+		/// è¯åˆ¸å¤„ç½®å¼•ç”¨
+		TThostFtdcOrderRefType StockDisposalRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// è¯åˆ¸å¤„ç½®æ“ä½œç¼–å·
+		TThostFtdcStockDisposalSysIDType StockDisposalSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// æŠ•èµ„è€…åˆ†çº§
+	struct CThostFtdcInvestorLevelField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„è€…åˆ†çº§ç±»å‹
+		TThostFtdcLevelTypeType LevelType;
+	};
+
+	/// ç»„åˆåˆçº¦å®‰å…¨ç³»æ•°
+	struct CThostFtdcCombInstrumentGuardField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		///
+		TThostFtdcRatioType GuarantRatio;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// ç»„åˆåˆçº¦å®‰å…¨ç³»æ•°æŸ¥è¯¢
+	struct CThostFtdcQryCombInstrumentGuardField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// è¾“å…¥çš„ç”³è¯·ç»„åˆ
+	struct CThostFtdcInputCombActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// ç»„åˆå¼•ç”¨
+		TThostFtdcOrderRefType CombActionRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// ç»„åˆæŒ‡ä»¤æ–¹å‘
+		TThostFtdcCombDirectionType CombDirection;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// æ‹†åˆ†ç»„åˆç¼–å·
+		TThostFtdcTradeIDType ComTradeID;
+	};
+
+	/// ç”³è¯·ç»„åˆ
+	struct CThostFtdcCombActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// ç»„åˆå¼•ç”¨
+		TThostFtdcOrderRefType CombActionRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// ç»„åˆæŒ‡ä»¤æ–¹å‘
+		TThostFtdcCombDirectionType CombDirection;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æœ¬åœ°ç”³è¯·ç»„åˆç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç»„åˆçŠ¶æ€
+		TThostFtdcOrderActionStatusType ActionStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// ç»„åˆç¼–å·
+		TThostFtdcTradeIDType ComTradeID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// ç”³è¯·ç»„åˆæŸ¥è¯¢
+	struct CThostFtdcQryCombActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// äº¤æ˜“æ‰€ç”³è¯·ç»„åˆä¿¡æ¯
+	struct CThostFtdcExchangeCombActionField
+	{
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// ç»„åˆæŒ‡ä»¤æ–¹å‘
+		TThostFtdcCombDirectionType CombDirection;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æœ¬åœ°ç”³è¯·ç»„åˆç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç»„åˆçŠ¶æ€
+		TThostFtdcOrderActionStatusType ActionStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// ç»„åˆç¼–å·
+		TThostFtdcTradeIDType ComTradeID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+	};
+
+	/// äº¤æ˜“æ‰€ç”³è¯·ç»„åˆæŸ¥è¯¢
+	struct CThostFtdcQryExchangeCombActionField
+	{
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// äº§å“æŠ¥ä»·æ±‡ç‡
+	struct CThostFtdcProductExchRateField
+	{
+		/// äº§å“ä»£ç 
+		TThostFtdcInstrumentIDType ProductID;
+		/// æŠ¥ä»·å¸ç§ç±»å‹
+		TThostFtdcCurrencyIDType QuoteCurrencyID;
+		/// æ±‡ç‡
+		TThostFtdcExchangeRateType ExchangeRate;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// äº§å“æŠ¥ä»·æ±‡ç‡æŸ¥è¯¢
+	struct CThostFtdcQryProductExchRateField
+	{
+		/// äº§å“ä»£ç 
+		TThostFtdcInstrumentIDType ProductID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// è¾“å…¥çš„æŒ‡å®š
+	struct CThostFtdcInputDesignateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŒ‡å®šç™»è®°å¼•ç”¨
+		TThostFtdcOrderRefType DesignateRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æŒ‡å®šæ–¹å‘
+		TThostFtdcDesignateTypeType DesignateType;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å•å…ƒ
+		TThostFtdcTraderIDType PBU;
+	};
+
+	/// æŒ‡å®š
+	struct CThostFtdcDesignateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŒ‡å®šç™»è®°å¼•ç”¨
+		TThostFtdcOrderRefType DesignateRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æŒ‡å®šæ–¹å‘
+		TThostFtdcDesignateTypeType DesignateType;
+		/// æœ¬åœ°æŒ‡å®šç¼–å·
+		TThostFtdcOrderLocalIDType DesignateLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æŒ‡å®šçŠ¶æ€
+		TThostFtdcOrderActionStatusType DesignateStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å•å…ƒ
+		TThostFtdcTraderIDType PBU;
+	};
+
+	/// ç”³è¯·æŒ‡å®š
+	struct CThostFtdcQryDesignateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// äº¤æ˜“æ‰€æŒ‡å®šä¿¡æ¯
+	struct CThostFtdcExchangeDesignateField
+	{
+		/// æŒ‡å®šæ–¹å‘
+		TThostFtdcDesignateTypeType DesignateType;
+		/// æœ¬åœ°æŒ‡å®šç¼–å·
+		TThostFtdcOrderLocalIDType DesignateLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æŒ‡å®šçŠ¶æ€
+		TThostFtdcOrderActionStatusType DesignateStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+	};
+
+	/// è¾“å…¥çš„è¯åˆ¸å¤„ç½®
+	struct CThostFtdcInputStockDisposalField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// è¯åˆ¸å¤„ç½®ç™»è®°å¼•ç”¨
+		TThostFtdcOrderRefType StockDisposalRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯åˆ¸å¤„ç½®æ–¹å‘
+		TThostFtdcStockDisposalTypeType StockDisposalType;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// è¯åˆ¸å¤„ç½®
+	struct CThostFtdcStockDisposalField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// è¯åˆ¸å¤„ç½®ç™»è®°å¼•ç”¨
+		TThostFtdcOrderRefType StockDisposalRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯åˆ¸å¤„ç½®æ–¹å‘
+		TThostFtdcStockDisposalTypeType StockDisposalType;
+		/// æœ¬åœ°è¯åˆ¸å¤„ç½®ç¼–å·
+		TThostFtdcOrderLocalIDType StockDisposalLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// è¯åˆ¸å¤„ç½®çŠ¶æ€
+		TThostFtdcStockDisposalStatusType StockDisposalStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// è¯åˆ¸å¤„ç½®æ“ä½œç¼–å·
+		TThostFtdcStockDisposalSysIDType StockDisposalSysID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+	};
+
+	/// ç”³è¯·è¯åˆ¸å¤„ç½®
+	struct CThostFtdcQryStockDisposalField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// äº¤æ˜“æ‰€è¯åˆ¸å¤„ç½®ä¿¡æ¯
+	struct CThostFtdcExchangeStockDisposalField
+	{
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯åˆ¸å¤„ç½®æ–¹å‘
+		TThostFtdcStockDisposalTypeType StockDisposalType;
+		/// æœ¬åœ°è¯åˆ¸å¤„ç½®ç¼–å·
+		TThostFtdcOrderLocalIDType StockDisposalLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// è¯åˆ¸å¤„ç½®çŠ¶æ€
+		TThostFtdcStockDisposalStatusType StockDisposalStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// è¯åˆ¸å¤„ç½®æ“ä½œç¼–å·
+		TThostFtdcStockDisposalSysIDType StockDisposalSysID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…åˆ†çº§
+	struct CThostFtdcQryInvestorLevelField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŸ¥è¯¢è¯¢ä»·ä»·å·®å‚æ•°
+	struct CThostFtdcQryForQuoteParamField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// è¯¢ä»·ä»·å·®å‚æ•°
+	struct CThostFtdcForQuoteParamField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æœ€æ–°ä»·
+		TThostFtdcPriceType LastPrice;
+		/// ä»·å·®
+		TThostFtdcPriceType PriceInterval;
+	};
+
+	/// æŸ¥è¯¢è¡Œæƒå†»ç»“
+	struct CThostFtdcQryExecFreezeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// è¡Œæƒå†»ç»“
+	struct CThostFtdcExecFreezeField
+	{
+		/// æ ‡çš„åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŒä»“å¤šç©ºæ–¹å‘
+		TThostFtdcPosiDirectionType PosiDirection;
+		/// æœŸæƒç±»å‹
+		TThostFtdcOptionsTypeType OptionsType;
+		/// å†»ç»“çš„æ•°é‡_å•ä½è‚¡
+		TThostFtdcVolumeType Volume;
+		/// å†»ç»“é‡‘é¢
+		TThostFtdcMoneyType FrozenAmount;
+	};
+
+	/// å½“å‰åšå¸‚å•†æœŸæƒåˆçº¦æ‰‹ç»­è´¹çš„è¯¦ç»†å†…å®¹
+	struct CThostFtdcMMOptionInstrCommRateField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å¼€ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType OpenRatioByMoney;
+		/// å¼€ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType OpenRatioByVolume;
+		/// å¹³ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseRatioByMoney;
+		/// å¹³ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseRatioByVolume;
+		/// å¹³ä»Šæ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseTodayRatioByMoney;
+		/// å¹³ä»Šæ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseTodayRatioByVolume;
+		/// æ‰§è¡Œæ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType StrikeRatioByMoney;
+		/// æ‰§è¡Œæ‰‹ç»­è´¹
+		TThostFtdcRatioType StrikeRatioByVolume;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// åšå¸‚å•†æœŸæƒæ‰‹ç»­è´¹ç‡æŸ¥è¯¢
+	struct CThostFtdcQryMMOptionInstrCommRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// åšå¸‚å•†åˆçº¦æ‰‹ç»­è´¹ç‡
+	struct CThostFtdcMMInstrumentCommissionRateField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å¼€ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType OpenRatioByMoney;
+		/// å¼€ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType OpenRatioByVolume;
+		/// å¹³ä»“æ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseRatioByMoney;
+		/// å¹³ä»“æ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseRatioByVolume;
+		/// å¹³ä»Šæ‰‹ç»­è´¹ç‡
+		TThostFtdcRatioType CloseTodayRatioByMoney;
+		/// å¹³ä»Šæ‰‹ç»­è´¹
+		TThostFtdcRatioType CloseTodayRatioByVolume;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŸ¥è¯¢åšå¸‚å•†åˆçº¦æ‰‹ç»­è´¹ç‡
+	struct CThostFtdcQryMMInstrumentCommissionRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// å½“å‰æŠ¥å•æ‰‹ç»­è´¹çš„è¯¦ç»†å†…å®¹
+	struct CThostFtdcInstrumentOrderCommRateField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æŠ¥å•æ‰‹ç»­è´¹
+		TThostFtdcRatioType OrderCommByVolume;
+		/// æ’¤å•æ‰‹ç»­è´¹
+		TThostFtdcRatioType OrderActionCommByVolume;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŠ¥å•æ‰‹ç»­è´¹ç‡æŸ¥è¯¢
+	struct CThostFtdcQryInstrumentOrderCommRateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŠ•èµ„è€…é‡‘é¢é™åˆ¶
+	struct CThostFtdcLimitAmountField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// å¤šå¤´æŒä»“é‡‘é¢é™åˆ¶
+		TThostFtdcMoneyType LongAmount;
+		/// å¤šå¤´æŒä»“é‡‘é¢å†»ç»“
+		TThostFtdcMoneyType LongAmountFrozen;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…é‡‘é¢é™åˆ¶
+	struct CThostFtdcQryLimitAmountField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŠ•èµ„è€…é‡‘é¢é™åˆ¶å‚æ•°
+	struct CThostFtdcLimitAmountParamField
+	{
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// å¤šå¤´æŒä»“é‡‘é¢é™åˆ¶
+		TThostFtdcMoneyType LongAmount;
+	};
+
+	/// å½“å‰æœŸæƒåˆçº¦ä¿è¯é‡‘ä¿éšœç³»æ•°
+	struct CThostFtdcOptionInstrMarginGuardField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•æœºç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcRatioType SShortMarginRatioByMoney;
+		/// æŠ•æœºç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcMoneyType SShortMarginRatioByVolume;
+		/// ä¿å€¼ç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcRatioType HShortMarginRatioByMoney;
+		/// ä¿å€¼ç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcMoneyType HShortMarginRatioByVolume;
+		/// å¥—åˆ©ç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcRatioType AShortMarginRatioByMoney;
+		/// å¥—åˆ©ç©ºå¤´ä¿è¯é‡‘è°ƒæ•´ç³»æ•°
+		TThostFtdcMoneyType AShortMarginRatioByVolume;
+		/// æ˜¯å¦è·Ÿéšäº¤æ˜“æ‰€æ”¶å–
+		TThostFtdcBoolType IsRelative;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// äº¤æ˜“å‚æ•°
+	struct CThostFtdcTradeParamField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// å‚æ•°ä»£ç 
+		TThostFtdcTradeParamIDType TradeParamID;
+		/// å‚æ•°ä»£ç å€¼
+		TThostFtdcSettlementParamValueType TradeParamValue;
+		/// å¤‡æ³¨
+		TThostFtdcMemoType Memo;
+	};
+
+	/// è®¤è¯ç 
+	struct CThostFtdcAuthenticationCodeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// è®¤è¯ç 
+		TThostFtdcAuthCodeType AuthCode;
+		/// æ—§è®¤è¯ç 
+		TThostFtdcAuthCodeType PreAuthCode;
+	};
+
+	/// ç”ŸæˆçŸ­ä¿¡éªŒè¯ç è¯·æ±‚
+	struct CThostFtdcReqSmsCodeGenerateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// ç»ˆç«¯IPåœ°å€
+		TThostFtdcIPAddressType ClientIPAddress;
+	};
+
+	/// ç”ŸæˆçŸ­ä¿¡éªŒè¯ç åº”ç­”
+	struct CThostFtdcRspSmsCodeGenerateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+	};
+
+	/// ç”¨æˆ·éªŒè¯æ–¹å¼
+	struct CThostFtdcBrokerUserAuthMethodField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ˜¯å¦å¯ç”¨çŸ­ä¿¡éªŒè¯ç 
+		TThostFtdcBoolType IsSms;
+	};
+
+	/// ç»çºªå…¬å¸ç”¨æˆ·çŸ­ä¿¡éªŒè¯ç 
+	struct CThostFtdcBrokerUserSmsCodeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ‰‹æœº
+		TThostFtdcMobileType Mobile;
+		/// çŸ­ä¿¡éªŒè¯ç 
+		TThostFtdcSmsCodeType SmsCode;
+		/// åºåˆ—å·
+		TThostFtdcSeqNoType SeqNo;
+		/// å‘é€çŠ¶æ€
+		TThostFtdcSmsCodeStatusType Status;
+	};
+
+	/// åˆçº¦ä¿è¯é‡‘ç‡è°ƒæ•´
+	struct CThostFtdcInstrumentMarginRateULField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// å¤šå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType LongMarginRatioByMoney;
+		/// å¤šå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType LongMarginRatioByVolume;
+		/// ç©ºå¤´ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType ShortMarginRatioByMoney;
+		/// ç©ºå¤´ä¿è¯é‡‘è´¹
+		TThostFtdcMoneyType ShortMarginRatioByVolume;
+	};
+
+	/// æœŸè´§æŒä»“é™åˆ¶å‚æ•°
+	struct CThostFtdcFutureLimitPosiParamField
+	{
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº§å“ä»£ç 
+		TThostFtdcInstrumentIDType ProductID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// å½“æ—¥æŠ•æœºå¼€ä»“æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType SpecOpenVolume;
+		/// å½“æ—¥å¥—åˆ©å¼€ä»“æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType ArbiOpenVolume;
+		/// å½“æ—¥æŠ•æœº+å¥—åˆ©å¼€ä»“æ•°é‡é™åˆ¶
+		TThostFtdcVolumeType OpenVolume;
+	};
+
+	/// ç¦æ­¢ç™»å½•IP
+	struct CThostFtdcLoginForbiddenIPField
+	{
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+	};
+
+	/// IPåˆ—è¡¨
+	struct CThostFtdcIPListField
+	{
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// æ˜¯å¦ç™½åå•
+		TThostFtdcBoolType IsWhite;
+	};
+
+	/// è¾“å…¥çš„æœŸæƒè‡ªå¯¹å†²
+	struct CThostFtdcInputOptionSelfCloseField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æœŸæƒè‡ªå¯¹å†²å¼•ç”¨
+		TThostFtdcOrderRefType OptionSelfCloseRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æœŸæƒè¡Œæƒçš„å¤´å¯¸æ˜¯å¦è‡ªå¯¹å†²
+		TThostFtdcOptSelfCloseFlagType OptSelfCloseFlag;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// äº¤æ˜“ç¼–ç 
+		TThostFtdcClientIDType ClientID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// è¾“å…¥æœŸæƒè‡ªå¯¹å†²æ“ä½œ
+	struct CThostFtdcInputOptionSelfCloseActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æœŸæƒè‡ªå¯¹å†²æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType OptionSelfCloseActionRef;
+		/// æœŸæƒè‡ªå¯¹å†²å¼•ç”¨
+		TThostFtdcOrderRefType OptionSelfCloseRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æœŸæƒè‡ªå¯¹å†²æ“ä½œç¼–å·
+		TThostFtdcOrderSysIDType OptionSelfCloseSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æœŸæƒè‡ªå¯¹å†²
+	struct CThostFtdcOptionSelfCloseField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æœŸæƒè‡ªå¯¹å†²å¼•ç”¨
+		TThostFtdcOrderRefType OptionSelfCloseRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æœŸæƒè¡Œæƒçš„å¤´å¯¸æ˜¯å¦è‡ªå¯¹å†²
+		TThostFtdcOptSelfCloseFlagType OptSelfCloseFlag;
+		/// æœ¬åœ°æœŸæƒè‡ªå¯¹å†²ç¼–å·
+		TThostFtdcOrderLocalIDType OptionSelfCloseLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœŸæƒè‡ªå¯¹å†²æäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æœŸæƒè‡ªå¯¹å†²ç¼–å·
+		TThostFtdcOrderSysIDType OptionSelfCloseSysID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// è‡ªå¯¹å†²ç»“æœ
+		TThostFtdcOrderActionStatusType OptionSelfCloseStatus;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// æ“ä½œç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType ActiveUserID;
+		/// ç»çºªå…¬å¸æŠ¥å•ç¼–å·
+		TThostFtdcSequenceNoType BrokerOptionSelfCloseSeq;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æœŸæƒè‡ªå¯¹å†²æ“ä½œ
+	struct CThostFtdcOptionSelfCloseActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æœŸæƒè‡ªå¯¹å†²æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType OptionSelfCloseActionRef;
+		/// æœŸæƒè‡ªå¯¹å†²å¼•ç”¨
+		TThostFtdcOrderRefType OptionSelfCloseRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æœŸæƒè‡ªå¯¹å†²æ“ä½œç¼–å·
+		TThostFtdcOrderSysIDType OptionSelfCloseSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æœŸæƒè‡ªå¯¹å†²ç¼–å·
+		TThostFtdcOrderLocalIDType OptionSelfCloseLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æœŸæƒè‡ªå¯¹å†²æŸ¥è¯¢
+	struct CThostFtdcQryOptionSelfCloseField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æœŸæƒè‡ªå¯¹å†²ç¼–å·
+		TThostFtdcOrderSysIDType OptionSelfCloseSysID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType InsertTimeStart;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType InsertTimeEnd;
+	};
+
+	/// äº¤æ˜“æ‰€æœŸæƒè‡ªå¯¹å†²ä¿¡æ¯
+	struct CThostFtdcExchangeOptionSelfCloseField
+	{
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æœŸæƒè¡Œæƒçš„å¤´å¯¸æ˜¯å¦è‡ªå¯¹å†²
+		TThostFtdcOptSelfCloseFlagType OptSelfCloseFlag;
+		/// æœ¬åœ°æœŸæƒè‡ªå¯¹å†²ç¼–å·
+		TThostFtdcOrderLocalIDType OptionSelfCloseLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœŸæƒè‡ªå¯¹å†²æäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æœŸæƒè‡ªå¯¹å†²ç¼–å·
+		TThostFtdcOrderSysIDType OptionSelfCloseSysID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// è‡ªå¯¹å†²ç»“æœ
+		TThostFtdcOrderActionStatusType OptionSelfCloseStatus;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æœŸæƒè‡ªå¯¹å†²æ“ä½œæŸ¥è¯¢
+	struct CThostFtdcQryOptionSelfCloseActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// äº¤æ˜“æ‰€æœŸæƒè‡ªå¯¹å†²æ“ä½œ
+	struct CThostFtdcExchangeOptionSelfCloseActionField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æœŸæƒè‡ªå¯¹å†²æ“ä½œç¼–å·
+		TThostFtdcOrderSysIDType OptionSelfCloseSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æœŸæƒè‡ªå¯¹å†²ç¼–å·
+		TThostFtdcOrderLocalIDType OptionSelfCloseLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// å»¶æ—¶æ¢æ±‡åŒæ­¥
+	struct CThostFtdcSyncDelaySwapField
+	{
+		/// æ¢æ±‡æµæ°´å·
+		TThostFtdcDepositSeqNoType DelaySwapSeqNo;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æºå¸ç§
+		TThostFtdcCurrencyIDType FromCurrencyID;
+		/// æºé‡‘é¢
+		TThostFtdcMoneyType FromAmount;
+		/// æºæ¢æ±‡å†»ç»“é‡‘é¢
+		TThostFtdcMoneyType FromFrozenSwap;
+		/// ç›®æ ‡å¸ç§
+		TThostFtdcCurrencyIDType ToCurrencyID;
+		/// ç›®æ ‡é‡‘é¢
+		TThostFtdcMoneyType ToAmount;
+		/// ç›®æ ‡æ¢æ±‡å†»ç»“é‡‘é¢
+		TThostFtdcMoneyType ToFrozenSwap;
+	};
+
+	/// æŸ¥è¯¢å»¶æ—¶æ¢æ±‡åŒæ­¥
+	struct CThostFtdcQrySyncDelaySwapField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// å»¶æ—¶æ¢æ±‡æµæ°´å·
+		TThostFtdcDepositSeqNoType DelaySwapSeqNo;
+	};
+
+	/// æŠ•èµ„å•å…ƒ
+	struct CThostFtdcInvestUnitField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// æŠ•èµ„è€…å•å…ƒåç§°
+		TThostFtdcPartyNameType InvestorUnitName;
+		/// æŠ•èµ„è€…åˆ†ç»„ä»£ç 
+		TThostFtdcInvestorIDType InvestorGroupID;
+		/// æ‰‹ç»­è´¹ç‡æ¨¡æ¿ä»£ç 
+		TThostFtdcInvestorIDType CommModelID;
+		/// ä¿è¯é‡‘ç‡æ¨¡æ¿ä»£ç 
+		TThostFtdcInvestorIDType MarginModelID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„å•å…ƒ
+	struct CThostFtdcQryInvestUnitField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// å¸‚åœºè¡Œæƒ…
+	struct CThostFtdcMarketDataField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// æœ€æ–°ä»·
+		TThostFtdcPriceType LastPrice;
+		/// ä¸Šæ¬¡ç»“ç®—ä»·
+		TThostFtdcPriceType PreSettlementPrice;
+		/// æ˜¨æ”¶ç›˜
+		TThostFtdcPriceType PreClosePrice;
+		/// æ˜¨æŒä»“é‡
+		TThostFtdcLargeVolumeType PreOpenInterest;
+		/// ä»Šå¼€ç›˜
+		TThostFtdcPriceType OpenPrice;
+		/// æœ€é«˜ä»·
+		TThostFtdcPriceType HighestPrice;
+		/// æœ€ä½ä»·
+		TThostFtdcPriceType LowestPrice;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// æˆäº¤é‡‘é¢
+		TThostFtdcMoneyType Turnover;
+		/// æŒä»“é‡
+		TThostFtdcLargeVolumeType OpenInterest;
+		/// ä»Šæ”¶ç›˜
+		TThostFtdcPriceType ClosePrice;
+		/// æœ¬æ¬¡ç»“ç®—ä»·
+		TThostFtdcPriceType SettlementPrice;
+		/// æ¶¨åœæ¿ä»·
+		TThostFtdcPriceType UpperLimitPrice;
+		/// è·Œåœæ¿ä»·
+		TThostFtdcPriceType LowerLimitPrice;
+		/// æ˜¨è™šå®åº¦
+		TThostFtdcRatioType PreDelta;
+		/// ä»Šè™šå®åº¦
+		TThostFtdcRatioType CurrDelta;
+		/// æœ€åä¿®æ”¹æ—¶é—´
+		TThostFtdcTimeType UpdateTime;
+		/// æœ€åä¿®æ”¹æ¯«ç§’
+		TThostFtdcMillisecType UpdateMillisec;
+		/// ä¸šåŠ¡æ—¥æœŸ
+		TThostFtdcDateType ActionDay;
+	};
+
+	/// è¡Œæƒ…åŸºç¡€å±æ€§
+	struct CThostFtdcMarketDataBaseField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ä¸Šæ¬¡ç»“ç®—ä»·
+		TThostFtdcPriceType PreSettlementPrice;
+		/// æ˜¨æ”¶ç›˜
+		TThostFtdcPriceType PreClosePrice;
+		/// æ˜¨æŒä»“é‡
+		TThostFtdcLargeVolumeType PreOpenInterest;
+		/// æ˜¨è™šå®åº¦
+		TThostFtdcRatioType PreDelta;
+	};
+
+	/// è¡Œæƒ…é™æ€å±æ€§
+	struct CThostFtdcMarketDataStaticField
+	{
+		/// ä»Šå¼€ç›˜
+		TThostFtdcPriceType OpenPrice;
+		/// æœ€é«˜ä»·
+		TThostFtdcPriceType HighestPrice;
+		/// æœ€ä½ä»·
+		TThostFtdcPriceType LowestPrice;
+		/// ä»Šæ”¶ç›˜
+		TThostFtdcPriceType ClosePrice;
+		/// æ¶¨åœæ¿ä»·
+		TThostFtdcPriceType UpperLimitPrice;
+		/// è·Œåœæ¿ä»·
+		TThostFtdcPriceType LowerLimitPrice;
+		/// æœ¬æ¬¡ç»“ç®—ä»·
+		TThostFtdcPriceType SettlementPrice;
+		/// ä»Šè™šå®åº¦
+		TThostFtdcRatioType CurrDelta;
+	};
+
+	/// è¡Œæƒ…æœ€æ–°æˆäº¤å±æ€§
+	struct CThostFtdcMarketDataLastMatchField
+	{
+		/// æœ€æ–°ä»·
+		TThostFtdcPriceType LastPrice;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// æˆäº¤é‡‘é¢
+		TThostFtdcMoneyType Turnover;
+		/// æŒä»“é‡
+		TThostFtdcLargeVolumeType OpenInterest;
+	};
+
+	/// è¡Œæƒ…æœ€ä¼˜ä»·å±æ€§
+	struct CThostFtdcMarketDataBestPriceField
+	{
+		/// ç”³ä¹°ä»·ä¸€
+		TThostFtdcPriceType BidPrice1;
+		/// ç”³ä¹°é‡ä¸€
+		TThostFtdcVolumeType BidVolume1;
+		/// ç”³å–ä»·ä¸€
+		TThostFtdcPriceType AskPrice1;
+		/// ç”³å–é‡ä¸€
+		TThostFtdcVolumeType AskVolume1;
+	};
+
+	/// è¡Œæƒ…ç”³ä¹°äºŒã€ä¸‰å±æ€§
+	struct CThostFtdcMarketDataBid23Field
+	{
+		/// ç”³ä¹°ä»·äºŒ
+		TThostFtdcPriceType BidPrice2;
+		/// ç”³ä¹°é‡äºŒ
+		TThostFtdcVolumeType BidVolume2;
+		/// ç”³ä¹°ä»·ä¸‰
+		TThostFtdcPriceType BidPrice3;
+		/// ç”³ä¹°é‡ä¸‰
+		TThostFtdcVolumeType BidVolume3;
+	};
+
+	/// è¡Œæƒ…ç”³å–äºŒã€ä¸‰å±æ€§
+	struct CThostFtdcMarketDataAsk23Field
+	{
+		/// ç”³å–ä»·äºŒ
+		TThostFtdcPriceType AskPrice2;
+		/// ç”³å–é‡äºŒ
+		TThostFtdcVolumeType AskVolume2;
+		/// ç”³å–ä»·ä¸‰
+		TThostFtdcPriceType AskPrice3;
+		/// ç”³å–é‡ä¸‰
+		TThostFtdcVolumeType AskVolume3;
+	};
+
+	/// è¡Œæƒ…ç”³ä¹°å››ã€äº”å±æ€§
+	struct CThostFtdcMarketDataBid45Field
+	{
+		/// ç”³ä¹°ä»·å››
+		TThostFtdcPriceType BidPrice4;
+		/// ç”³ä¹°é‡å››
+		TThostFtdcVolumeType BidVolume4;
+		/// ç”³ä¹°ä»·äº”
+		TThostFtdcPriceType BidPrice5;
+		/// ç”³ä¹°é‡äº”
+		TThostFtdcVolumeType BidVolume5;
+	};
+
+	/// è¡Œæƒ…ç”³å–å››ã€äº”å±æ€§
+	struct CThostFtdcMarketDataAsk45Field
+	{
+		/// ç”³å–ä»·å››
+		TThostFtdcPriceType AskPrice4;
+		/// ç”³å–é‡å››
+		TThostFtdcVolumeType AskVolume4;
+		/// ç”³å–ä»·äº”
+		TThostFtdcPriceType AskPrice5;
+		/// ç”³å–é‡äº”
+		TThostFtdcVolumeType AskVolume5;
+	};
+
+	/// è¡Œæƒ…æ›´æ–°æ—¶é—´å±æ€§
+	struct CThostFtdcMarketDataUpdateTimeField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æœ€åä¿®æ”¹æ—¶é—´
+		TThostFtdcTimeType UpdateTime;
+		/// æœ€åä¿®æ”¹æ¯«ç§’
+		TThostFtdcMillisecType UpdateMillisec;
+		/// ä¸šåŠ¡æ—¥æœŸ
+		TThostFtdcDateType ActionDay;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// è¡Œæƒ…äº¤æ˜“æ‰€ä»£ç å±æ€§
+	struct CThostFtdcMarketDataExchangeField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŒ‡å®šçš„åˆçº¦
+	struct CThostFtdcSpecificInstrumentField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+	};
+
+	/// åˆçº¦çŠ¶æ€
+	struct CThostFtdcInstrumentStatusField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// ç»“ç®—ç»„ä»£ç 
+		TThostFtdcSettlementGroupIDType SettlementGroupID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// åˆçº¦äº¤æ˜“çŠ¶æ€
+		TThostFtdcInstrumentStatusType InstrumentStatus;
+		/// äº¤æ˜“é˜¶æ®µç¼–å·
+		TThostFtdcTradingSegmentSNType TradingSegmentSN;
+		/// è¿›å…¥æœ¬çŠ¶æ€æ—¶é—´
+		TThostFtdcTimeType EnterTime;
+		/// è¿›å…¥æœ¬çŠ¶æ€åŸå› 
+		TThostFtdcInstStatusEnterReasonType EnterReason;
+	};
+
+	/// æŸ¥è¯¢åˆçº¦çŠ¶æ€
+	struct CThostFtdcQryInstrumentStatusField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+	};
+
+	/// æŠ•èµ„è€…è´¦æˆ·
+	struct CThostFtdcInvestorAccountField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// ä¸šåŠ¡ç±»å‹
+		TThostFtdcBizTypeType BizType;
+	};
+
+	/// æµ®åŠ¨ç›ˆäºç®—æ³•
+	struct CThostFtdcPositionProfitAlgorithmField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// ç›ˆäºç®—æ³•
+		TThostFtdcAlgorithmType Algorithm;
+		/// å¤‡æ³¨
+		TThostFtdcMemoType Memo;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// ä¼šå‘˜èµ„é‡‘æŠ˜æ‰£
+	struct CThostFtdcDiscountField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// èµ„é‡‘æŠ˜æ‰£æ¯”ä¾‹
+		TThostFtdcRatioType Discount;
+	};
+
+	/// æŸ¥è¯¢è½¬å¸é“¶è¡Œ
+	struct CThostFtdcQryTransferBankField
+	{
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†ä¸­å¿ƒä»£ç 
+		TThostFtdcBankBrchIDType BankBrchID;
+	};
+
+	/// è½¬å¸é“¶è¡Œ
+	struct CThostFtdcTransferBankField
+	{
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†ä¸­å¿ƒä»£ç 
+		TThostFtdcBankBrchIDType BankBrchID;
+		/// é“¶è¡Œåç§°
+		TThostFtdcBankNameType BankName;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…æŒä»“æ˜ç»†
+	struct CThostFtdcQryInvestorPositionDetailField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŠ•èµ„è€…æŒä»“æ˜ç»†
+	struct CThostFtdcInvestorPositionDetailField
+	{
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// ä¹°å–
+		TThostFtdcDirectionType Direction;
+		/// å¼€ä»“æ—¥æœŸ
+		TThostFtdcDateType OpenDate;
+		/// æˆäº¤ç¼–å·
+		TThostFtdcTradeIDType TradeID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// å¼€ä»“ä»·
+		TThostFtdcPriceType OpenPrice;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æˆäº¤ç±»å‹
+		TThostFtdcTradeTypeType TradeType;
+		/// ç»„åˆåˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType CombInstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// é€æ—¥ç›¯å¸‚å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfitByDate;
+		/// é€ç¬”å¯¹å†²å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfitByTrade;
+		/// é€æ—¥ç›¯å¸‚æŒä»“ç›ˆäº
+		TThostFtdcMoneyType PositionProfitByDate;
+		/// é€ç¬”å¯¹å†²æŒä»“ç›ˆäº
+		TThostFtdcMoneyType PositionProfitByTrade;
+		/// æŠ•èµ„è€…ä¿è¯é‡‘
+		TThostFtdcMoneyType Margin;
+		/// äº¤æ˜“æ‰€ä¿è¯é‡‘
+		TThostFtdcMoneyType ExchMargin;
+		/// ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType MarginRateByMoney;
+		/// ä¿è¯é‡‘ç‡(æŒ‰æ‰‹æ•°)
+		TThostFtdcRatioType MarginRateByVolume;
+		/// æ˜¨ç»“ç®—ä»·
+		TThostFtdcPriceType LastSettlementPrice;
+		/// ç»“ç®—ä»·
+		TThostFtdcPriceType SettlementPrice;
+		/// å¹³ä»“é‡
+		TThostFtdcVolumeType CloseVolume;
+		/// å¹³ä»“é‡‘é¢
+		TThostFtdcMoneyType CloseAmount;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// èµ„é‡‘è´¦æˆ·å£ä»¤åŸŸ
+	struct CThostFtdcTradingAccountPasswordField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// äº¤æ˜“æ‰€è¡Œæƒ…æŠ¥ç›˜æœº
+	struct CThostFtdcMDTraderOfferField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜è¿æ¥çŠ¶æ€
+		TThostFtdcTraderConnectStatusType TraderConnectStatus;
+		/// å‘å‡ºè¿æ¥è¯·æ±‚çš„æ—¥æœŸ
+		TThostFtdcDateType ConnectRequestDate;
+		/// å‘å‡ºè¿æ¥è¯·æ±‚çš„æ—¶é—´
+		TThostFtdcTimeType ConnectRequestTime;
+		/// ä¸Šæ¬¡æŠ¥å‘Šæ—¥æœŸ
+		TThostFtdcDateType LastReportDate;
+		/// ä¸Šæ¬¡æŠ¥å‘Šæ—¶é—´
+		TThostFtdcTimeType LastReportTime;
+		/// å®Œæˆè¿æ¥æ—¥æœŸ
+		TThostFtdcDateType ConnectDate;
+		/// å®Œæˆè¿æ¥æ—¶é—´
+		TThostFtdcTimeType ConnectTime;
+		/// å¯åŠ¨æ—¥æœŸ
+		TThostFtdcDateType StartDate;
+		/// å¯åŠ¨æ—¶é—´
+		TThostFtdcTimeType StartTime;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœ¬å¸­ä½æœ€å¤§æˆäº¤ç¼–å·
+		TThostFtdcTradeIDType MaxTradeID;
+		/// æœ¬å¸­ä½æœ€å¤§æŠ¥å•å¤‡æ‹·
+		TThostFtdcReturnCodeType MaxOrderMessageReference;
+		/// ä¸šåŠ¡ç±»å‹
+		TThostFtdcBizTypeType BizType;
+	};
+
+	/// æŸ¥è¯¢è¡Œæƒ…æŠ¥ç›˜æœº
+	struct CThostFtdcQryMDTraderOfferField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+	};
+
+	/// æŸ¥è¯¢å®¢æˆ·é€šçŸ¥
+	struct CThostFtdcQryNoticeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+	};
+
+	/// å®¢æˆ·é€šçŸ¥
+	struct CThostFtdcNoticeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æ¶ˆæ¯æ­£æ–‡
+		TThostFtdcContentType Content;
+		/// ç»çºªå…¬å¸é€šçŸ¥å†…å®¹åºåˆ—å·
+		TThostFtdcSequenceLabelType SequenceLabel;
+	};
+
+	/// ç”¨æˆ·æƒé™
+	struct CThostFtdcUserRightField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// å®¢æˆ·æƒé™ç±»å‹
+		TThostFtdcUserRightTypeType UserRightType;
+		/// æ˜¯å¦ç¦æ­¢
+		TThostFtdcBoolType IsForbidden;
+	};
+
+	/// æŸ¥è¯¢ç»“ç®—ä¿¡æ¯ç¡®è®¤åŸŸ
+	struct CThostFtdcQrySettlementInfoConfirmField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// è£…è½½ç»“ç®—ä¿¡æ¯
+	struct CThostFtdcLoadSettlementInfoField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+	};
+
+	/// ç»çºªå…¬å¸å¯æèµ„é‡‘ç®—æ³•è¡¨
+	struct CThostFtdcBrokerWithdrawAlgorithmField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// å¯æèµ„é‡‘ç®—æ³•
+		TThostFtdcAlgorithmType WithdrawAlgorithm;
+		/// èµ„é‡‘ä½¿ç”¨ç‡
+		TThostFtdcRatioType UsingRatio;
+		/// å¯ææ˜¯å¦åŒ…å«å¹³ä»“ç›ˆåˆ©
+		TThostFtdcIncludeCloseProfitType IncludeCloseProfit;
+		/// æœ¬æ—¥æ— ä»“ä¸”æ— æˆäº¤å®¢æˆ·æ˜¯å¦å—å¯ææ¯”ä¾‹é™åˆ¶
+		TThostFtdcAllWithoutTradeType AllWithoutTrade;
+		/// å¯ç”¨æ˜¯å¦åŒ…å«å¹³ä»“ç›ˆåˆ©
+		TThostFtdcIncludeCloseProfitType AvailIncludeCloseProfit;
+		/// æ˜¯å¦å¯ç”¨ç”¨æˆ·äº‹ä»¶
+		TThostFtdcBoolType IsBrokerUserEvent;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// è´§å¸è´¨æŠ¼æ¯”ç‡
+		TThostFtdcRatioType FundMortgageRatio;
+		/// æƒç›Šç®—æ³•
+		TThostFtdcBalanceAlgorithmType BalanceAlgorithm;
+	};
+
+	/// èµ„é‡‘è´¦æˆ·å£ä»¤å˜æ›´åŸŸ
+	struct CThostFtdcTradingAccountPasswordUpdateV1Field
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åŸæ¥çš„å£ä»¤
+		TThostFtdcPasswordType OldPassword;
+		/// æ–°çš„å£ä»¤
+		TThostFtdcPasswordType NewPassword;
+	};
+
+	/// èµ„é‡‘è´¦æˆ·å£ä»¤å˜æ›´åŸŸ
+	struct CThostFtdcTradingAccountPasswordUpdateField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// åŸæ¥çš„å£ä»¤
+		TThostFtdcPasswordType OldPassword;
+		/// æ–°çš„å£ä»¤
+		TThostFtdcPasswordType NewPassword;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// æŸ¥è¯¢ç»„åˆåˆçº¦åˆ†è…¿
+	struct CThostFtdcQryCombinationLegField
+	{
+		/// ç»„åˆåˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType CombInstrumentID;
+		/// å•è…¿ç¼–å·
+		TThostFtdcLegIDType LegID;
+		/// å•è…¿åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType LegInstrumentID;
+	};
+
+	/// æŸ¥è¯¢ç»„åˆåˆçº¦åˆ†è…¿
+	struct CThostFtdcQrySyncStatusField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+	};
+
+	/// ç»„åˆäº¤æ˜“åˆçº¦çš„å•è…¿
+	struct CThostFtdcCombinationLegField
+	{
+		/// ç»„åˆåˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType CombInstrumentID;
+		/// å•è…¿ç¼–å·
+		TThostFtdcLegIDType LegID;
+		/// å•è…¿åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType LegInstrumentID;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// å•è…¿ä¹˜æ•°
+		TThostFtdcLegMultipleType LegMultiple;
+		/// æ´¾ç”Ÿå±‚æ•°
+		TThostFtdcImplyLevelType ImplyLevel;
+	};
+
+	/// æ•°æ®åŒæ­¥çŠ¶æ€
+	struct CThostFtdcSyncStatusField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// æ•°æ®åŒæ­¥çŠ¶æ€
+		TThostFtdcDataSyncStatusType DataSyncStatus;
+	};
+
+	/// æŸ¥è¯¢è”ç³»äºº
+	struct CThostFtdcQryLinkManField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+	};
+
+	/// è”ç³»äºº
+	struct CThostFtdcLinkManField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// è”ç³»äººç±»å‹
+		TThostFtdcPersonTypeType PersonType;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdentifiedCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// åç§°
+		TThostFtdcPartyNameType PersonName;
+		/// è”ç³»ç”µè¯
+		TThostFtdcTelephoneType Telephone;
+		/// é€šè®¯åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®æ”¿ç¼–ç 
+		TThostFtdcZipCodeType ZipCode;
+		/// ä¼˜å…ˆçº§
+		TThostFtdcPriorityType Priority;
+		/// å¼€æˆ·é‚®æ”¿ç¼–ç 
+		TThostFtdcUOAZipCodeType UOAZipCode;
+		/// å…¨ç§°
+		TThostFtdcInvestorFullNameType PersonFullName;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸ç”¨æˆ·äº‹ä»¶
+	struct CThostFtdcQryBrokerUserEventField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç”¨æˆ·äº‹ä»¶ç±»å‹
+		TThostFtdcUserEventTypeType UserEventType;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸ç”¨æˆ·äº‹ä»¶
+	struct CThostFtdcBrokerUserEventField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç”¨æˆ·äº‹ä»¶ç±»å‹
+		TThostFtdcUserEventTypeType UserEventType;
+		/// ç”¨æˆ·äº‹ä»¶åºå·
+		TThostFtdcSequenceNoType EventSequenceNo;
+		/// äº‹ä»¶å‘ç”Ÿæ—¥æœŸ
+		TThostFtdcDateType EventDate;
+		/// äº‹ä»¶å‘ç”Ÿæ—¶é—´
+		TThostFtdcTimeType EventTime;
+		/// ç”¨æˆ·äº‹ä»¶ä¿¡æ¯
+		TThostFtdcUserEventInfoType UserEventInfo;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŸ¥è¯¢ç­¾çº¦é“¶è¡Œè¯·æ±‚
+	struct CThostFtdcQryContractBankField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†ä¸­å¿ƒä»£ç 
+		TThostFtdcBankBrchIDType BankBrchID;
+	};
+
+	/// æŸ¥è¯¢ç­¾çº¦é“¶è¡Œå“åº”
+	struct CThostFtdcContractBankField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†ä¸­å¿ƒä»£ç 
+		TThostFtdcBankBrchIDType BankBrchID;
+		/// é“¶è¡Œåç§°
+		TThostFtdcBankNameType BankName;
+	};
+
+	/// æŠ•èµ„è€…ç»„åˆæŒä»“æ˜ç»†
+	struct CThostFtdcInvestorPositionCombineDetailField
+	{
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// å¼€ä»“æ—¥æœŸ
+		TThostFtdcDateType OpenDate;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// ç»„åˆç¼–å·
+		TThostFtdcTradeIDType ComTradeID;
+		/// æ’®åˆç¼–å·
+		TThostFtdcTradeIDType TradeID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// ä¹°å–
+		TThostFtdcDirectionType Direction;
+		/// æŒä»“é‡
+		TThostFtdcVolumeType TotalAmt;
+		/// æŠ•èµ„è€…ä¿è¯é‡‘
+		TThostFtdcMoneyType Margin;
+		/// äº¤æ˜“æ‰€ä¿è¯é‡‘
+		TThostFtdcMoneyType ExchMargin;
+		/// ä¿è¯é‡‘ç‡
+		TThostFtdcRatioType MarginRateByMoney;
+		/// ä¿è¯é‡‘ç‡(æŒ‰æ‰‹æ•°)
+		TThostFtdcRatioType MarginRateByVolume;
+		/// å•è…¿ç¼–å·
+		TThostFtdcLegIDType LegID;
+		/// å•è…¿ä¹˜æ•°
+		TThostFtdcLegMultipleType LegMultiple;
+		/// ç»„åˆæŒä»“åˆçº¦ç¼–ç 
+		TThostFtdcInstrumentIDType CombInstrumentID;
+		/// æˆäº¤ç»„å·
+		TThostFtdcTradeGroupIDType TradeGroupID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// é¢„åŸ‹å•
+	struct CThostFtdcParkedOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType OrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æŠ¥å•ä»·æ ¼æ¡ä»¶
+		TThostFtdcOrderPriceTypeType OrderPriceType;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// ç»„åˆå¼€å¹³æ ‡å¿—
+		TThostFtdcCombOffsetFlagType CombOffsetFlag;
+		/// ç»„åˆæŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcCombHedgeFlagType CombHedgeFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡
+		TThostFtdcVolumeType VolumeTotalOriginal;
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TThostFtdcTimeConditionType TimeCondition;
+		/// GTDæ—¥æœŸ
+		TThostFtdcDateType GTDDate;
+		/// æˆäº¤é‡ç±»å‹
+		TThostFtdcVolumeConditionType VolumeCondition;
+		/// æœ€å°æˆäº¤é‡
+		TThostFtdcVolumeType MinVolume;
+		/// è§¦å‘æ¡ä»¶
+		TThostFtdcContingentConditionType ContingentCondition;
+		/// æ­¢æŸä»·
+		TThostFtdcPriceType StopPrice;
+		/// å¼ºå¹³åŸå› 
+		TThostFtdcForceCloseReasonType ForceCloseReason;
+		/// è‡ªåŠ¨æŒ‚èµ·æ ‡å¿—
+		TThostFtdcBoolType IsAutoSuspend;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ç”¨æˆ·å¼ºè¯„æ ‡å¿—
+		TThostFtdcBoolType UserForceClose;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// é¢„åŸ‹æŠ¥å•ç¼–å·
+		TThostFtdcParkedOrderIDType ParkedOrderID;
+		/// ç”¨æˆ·ç±»å‹
+		TThostFtdcUserTypeType UserType;
+		/// é¢„åŸ‹å•çŠ¶æ€
+		TThostFtdcParkedOrderStatusType Status;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// äº’æ¢å•æ ‡å¿—
+		TThostFtdcBoolType IsSwapOrder;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// äº¤æ˜“ç¼–ç 
+		TThostFtdcClientIDType ClientID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// è¾“å…¥é¢„åŸ‹å•æ“ä½œ
+	struct CThostFtdcParkedOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ¥å•æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType OrderActionRef;
+		/// æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType OrderRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡å˜åŒ–
+		TThostFtdcVolumeType VolumeChange;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// é¢„åŸ‹æ’¤å•å•ç¼–å·
+		TThostFtdcParkedOrderActionIDType ParkedOrderActionID;
+		/// ç”¨æˆ·ç±»å‹
+		TThostFtdcUserTypeType UserType;
+		/// é¢„åŸ‹æ’¤å•çŠ¶æ€
+		TThostFtdcParkedOrderStatusType Status;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æŸ¥è¯¢é¢„åŸ‹å•
+	struct CThostFtdcQryParkedOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢é¢„åŸ‹æ’¤å•
+	struct CThostFtdcQryParkedOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// åˆ é™¤é¢„åŸ‹å•
+	struct CThostFtdcRemoveParkedOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// é¢„åŸ‹æŠ¥å•ç¼–å·
+		TThostFtdcParkedOrderIDType ParkedOrderID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// åˆ é™¤é¢„åŸ‹æ’¤å•
+	struct CThostFtdcRemoveParkedOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// é¢„åŸ‹æ’¤å•ç¼–å·
+		TThostFtdcParkedOrderActionIDType ParkedOrderActionID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// ç»çºªå…¬å¸å¯æèµ„é‡‘ç®—æ³•è¡¨
+	struct CThostFtdcInvestorWithdrawAlgorithmField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å¯æèµ„é‡‘æ¯”ä¾‹
+		TThostFtdcRatioType UsingRatio;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// è´§å¸è´¨æŠ¼æ¯”ç‡
+		TThostFtdcRatioType FundMortgageRatio;
+	};
+
+	/// æŸ¥è¯¢ç»„åˆæŒä»“æ˜ç»†
+	struct CThostFtdcQryInvestorPositionCombineDetailField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// ç»„åˆæŒä»“åˆçº¦ç¼–ç 
+		TThostFtdcInstrumentIDType CombInstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æˆäº¤å‡ä»·
+	struct CThostFtdcMarketDataAveragePriceField
+	{
+		/// å½“æ—¥å‡ä»·
+		TThostFtdcPriceType AveragePrice;
+	};
+
+	/// æ ¡éªŒæŠ•èµ„è€…å¯†ç 
+	struct CThostFtdcVerifyInvestorPasswordField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å¯†ç 
+		TThostFtdcPasswordType Password;
+	};
+
+	/// ç”¨æˆ·IP
+	struct CThostFtdcUserIPField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// IPåœ°å€æ©ç 
+		TThostFtdcIPAddressType IPMask;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// ç”¨æˆ·äº‹ä»¶é€šçŸ¥ä¿¡æ¯
+	struct CThostFtdcTradingNoticeInfoField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å‘é€æ—¶é—´
+		TThostFtdcTimeType SendTime;
+		/// æ¶ˆæ¯æ­£æ–‡
+		TThostFtdcContentType FieldContent;
+		/// åºåˆ—ç³»åˆ—å·
+		TThostFtdcSequenceSeriesType SequenceSeries;
+		/// åºåˆ—å·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// ç”¨æˆ·äº‹ä»¶é€šçŸ¥
+	struct CThostFtdcTradingNoticeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…èŒƒå›´
+		TThostFtdcInvestorRangeType InvestorRange;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åºåˆ—ç³»åˆ—å·
+		TThostFtdcSequenceSeriesType SequenceSeries;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// å‘é€æ—¶é—´
+		TThostFtdcTimeType SendTime;
+		/// åºåˆ—å·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// æ¶ˆæ¯æ­£æ–‡
+		TThostFtdcContentType FieldContent;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“äº‹ä»¶é€šçŸ¥
+	struct CThostFtdcQryTradingNoticeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢é”™è¯¯æŠ¥å•
+	struct CThostFtdcQryErrOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+	};
+
+	/// é”™è¯¯æŠ¥å•
+	struct CThostFtdcErrOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType OrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æŠ¥å•ä»·æ ¼æ¡ä»¶
+		TThostFtdcOrderPriceTypeType OrderPriceType;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// ç»„åˆå¼€å¹³æ ‡å¿—
+		TThostFtdcCombOffsetFlagType CombOffsetFlag;
+		/// ç»„åˆæŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcCombHedgeFlagType CombHedgeFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡
+		TThostFtdcVolumeType VolumeTotalOriginal;
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TThostFtdcTimeConditionType TimeCondition;
+		/// GTDæ—¥æœŸ
+		TThostFtdcDateType GTDDate;
+		/// æˆäº¤é‡ç±»å‹
+		TThostFtdcVolumeConditionType VolumeCondition;
+		/// æœ€å°æˆäº¤é‡
+		TThostFtdcVolumeType MinVolume;
+		/// è§¦å‘æ¡ä»¶
+		TThostFtdcContingentConditionType ContingentCondition;
+		/// æ­¢æŸä»·
+		TThostFtdcPriceType StopPrice;
+		/// å¼ºå¹³åŸå› 
+		TThostFtdcForceCloseReasonType ForceCloseReason;
+		/// è‡ªåŠ¨æŒ‚èµ·æ ‡å¿—
+		TThostFtdcBoolType IsAutoSuspend;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ç”¨æˆ·å¼ºè¯„æ ‡å¿—
+		TThostFtdcBoolType UserForceClose;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// äº’æ¢å•æ ‡å¿—
+		TThostFtdcBoolType IsSwapOrder;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// äº¤æ˜“ç¼–ç 
+		TThostFtdcClientIDType ClientID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æŸ¥è¯¢é”™è¯¯æŠ¥å•æ“ä½œ
+	struct CThostFtdcErrorConditionalOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType OrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æŠ¥å•ä»·æ ¼æ¡ä»¶
+		TThostFtdcOrderPriceTypeType OrderPriceType;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// ç»„åˆå¼€å¹³æ ‡å¿—
+		TThostFtdcCombOffsetFlagType CombOffsetFlag;
+		/// ç»„åˆæŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcCombHedgeFlagType CombHedgeFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡
+		TThostFtdcVolumeType VolumeTotalOriginal;
+		/// æœ‰æ•ˆæœŸç±»å‹
+		TThostFtdcTimeConditionType TimeCondition;
+		/// GTDæ—¥æœŸ
+		TThostFtdcDateType GTDDate;
+		/// æˆäº¤é‡ç±»å‹
+		TThostFtdcVolumeConditionType VolumeCondition;
+		/// æœ€å°æˆäº¤é‡
+		TThostFtdcVolumeType MinVolume;
+		/// è§¦å‘æ¡ä»¶
+		TThostFtdcContingentConditionType ContingentCondition;
+		/// æ­¢æŸä»·
+		TThostFtdcPriceType StopPrice;
+		/// å¼ºå¹³åŸå› 
+		TThostFtdcForceCloseReasonType ForceCloseReason;
+		/// è‡ªåŠ¨æŒ‚èµ·æ ‡å¿—
+		TThostFtdcBoolType IsAutoSuspend;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æŠ¥å•æäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// æŠ¥å•æ¥æº
+		TThostFtdcOrderSourceType OrderSource;
+		/// æŠ¥å•çŠ¶æ€
+		TThostFtdcOrderStatusType OrderStatus;
+		/// æŠ¥å•ç±»å‹
+		TThostFtdcOrderTypeType OrderType;
+		/// ä»Šæˆäº¤æ•°é‡
+		TThostFtdcVolumeType VolumeTraded;
+		/// å‰©ä½™æ•°é‡
+		TThostFtdcVolumeType VolumeTotal;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// å§”æ‰˜æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ¿€æ´»æ—¶é—´
+		TThostFtdcTimeType ActiveTime;
+		/// æŒ‚èµ·æ—¶é—´
+		TThostFtdcTimeType SuspendTime;
+		/// æœ€åä¿®æ”¹æ—¶é—´
+		TThostFtdcTimeType UpdateTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// æœ€åä¿®æ”¹äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType ActiveTraderID;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// ç”¨æˆ·å¼ºè¯„æ ‡å¿—
+		TThostFtdcBoolType UserForceClose;
+		/// æ“ä½œç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType ActiveUserID;
+		/// ç»çºªå…¬å¸æŠ¥å•ç¼–å·
+		TThostFtdcSequenceNoType BrokerOrderSeq;
+		/// ç›¸å…³æŠ¥å•
+		TThostFtdcOrderSysIDType RelativeOrderSysID;
+		/// éƒ‘å•†æ‰€æˆäº¤æ•°é‡
+		TThostFtdcVolumeType ZCETotalTradedVolume;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// äº’æ¢å•æ ‡å¿—
+		TThostFtdcBoolType IsSwapOrder;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// æŸ¥è¯¢é”™è¯¯æŠ¥å•æ“ä½œ
+	struct CThostFtdcQryErrOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+	};
+
+	/// é”™è¯¯æŠ¥å•æ“ä½œ
+	struct CThostFtdcErrOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ¥å•æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType OrderActionRef;
+		/// æŠ¥å•å¼•ç”¨
+		TThostFtdcOrderRefType OrderRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ¥å•ç¼–å·
+		TThostFtdcOrderSysIDType OrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ä»·æ ¼
+		TThostFtdcPriceType LimitPrice;
+		/// æ•°é‡å˜åŒ–
+		TThostFtdcVolumeType VolumeChange;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æŠ¥å•ç¼–å·
+		TThostFtdcOrderLocalIDType OrderLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“æ‰€çŠ¶æ€
+	struct CThostFtdcQryExchangeSequenceField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// äº¤æ˜“æ‰€çŠ¶æ€
+	struct CThostFtdcExchangeSequenceField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// åˆçº¦äº¤æ˜“çŠ¶æ€
+		TThostFtdcInstrumentStatusType MarketStatus;
+	};
+
+	/// æ ¹æ®ä»·æ ¼æŸ¥è¯¢æœ€å¤§æŠ¥å•æ•°é‡
+	struct CThostFtdcQueryMaxOrderVolumeWithPriceField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// å¼€å¹³æ ‡å¿—
+		TThostFtdcOffsetFlagType OffsetFlag;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æœ€å¤§å…è®¸æŠ¥å•æ•°é‡
+		TThostFtdcVolumeType MaxVolume;
+		/// æŠ¥å•ä»·æ ¼
+		TThostFtdcPriceType Price;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸äº¤æ˜“å‚æ•°
+	struct CThostFtdcQryBrokerTradingParamsField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+	};
+
+	/// ç»çºªå…¬å¸äº¤æ˜“å‚æ•°
+	struct CThostFtdcBrokerTradingParamsField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// ä¿è¯é‡‘ä»·æ ¼ç±»å‹
+		TThostFtdcMarginPriceTypeType MarginPriceType;
+		/// ç›ˆäºç®—æ³•
+		TThostFtdcAlgorithmType Algorithm;
+		/// å¯ç”¨æ˜¯å¦åŒ…å«å¹³ä»“ç›ˆåˆ©
+		TThostFtdcIncludeCloseProfitType AvailIncludeCloseProfit;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æœŸæƒæƒåˆ©é‡‘ä»·æ ¼ç±»å‹
+		TThostFtdcOptionRoyaltyPriceTypeType OptionRoyaltyPriceType;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸äº¤æ˜“ç®—æ³•
+	struct CThostFtdcQryBrokerTradingAlgosField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+	};
+
+	/// ç»çºªå…¬å¸äº¤æ˜“ç®—æ³•
+	struct CThostFtdcBrokerTradingAlgosField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŒä»“å¤„ç†ç®—æ³•ç¼–å·
+		TThostFtdcHandlePositionAlgoIDType HandlePositionAlgoID;
+		/// å¯»æ‰¾ä¿è¯é‡‘ç‡ç®—æ³•ç¼–å·
+		TThostFtdcFindMarginRateAlgoIDType FindMarginRateAlgoID;
+		/// èµ„é‡‘å¤„ç†ç®—æ³•ç¼–å·
+		TThostFtdcHandleTradingAccountAlgoIDType HandleTradingAccountAlgoID;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸èµ„é‡‘
+	struct CThostFtdcQueryBrokerDepositField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// ç»çºªå…¬å¸èµ„é‡‘
+	struct CThostFtdcBrokerDepositField
+	{
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¸Šæ¬¡ç»“ç®—å‡†å¤‡é‡‘
+		TThostFtdcMoneyType PreBalance;
+		/// å½“å‰ä¿è¯é‡‘æ€»é¢
+		TThostFtdcMoneyType CurrMargin;
+		/// å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfit;
+		/// æœŸè´§ç»“ç®—å‡†å¤‡é‡‘
+		TThostFtdcMoneyType Balance;
+		/// å…¥é‡‘é‡‘é¢
+		TThostFtdcMoneyType Deposit;
+		/// å‡ºé‡‘é‡‘é¢
+		TThostFtdcMoneyType Withdraw;
+		/// å¯æèµ„é‡‘
+		TThostFtdcMoneyType Available;
+		/// åŸºæœ¬å‡†å¤‡é‡‘
+		TThostFtdcMoneyType Reserve;
+		/// å†»ç»“çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType FrozenMargin;
+	};
+
+	/// æŸ¥è¯¢ä¿è¯é‡‘ç›‘ç®¡ç³»ç»Ÿç»çºªå…¬å¸å¯†é’¥
+	struct CThostFtdcQryCFMMCBrokerKeyField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+	};
+
+	/// ä¿è¯é‡‘ç›‘ç®¡ç³»ç»Ÿç»çºªå…¬å¸å¯†é’¥
+	struct CThostFtdcCFMMCBrokerKeyField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç»çºªå…¬å¸ç»Ÿä¸€ç¼–ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å¯†é’¥ç”Ÿæˆæ—¥æœŸ
+		TThostFtdcDateType CreateDate;
+		/// å¯†é’¥ç”Ÿæˆæ—¶é—´
+		TThostFtdcTimeType CreateTime;
+		/// å¯†é’¥ç¼–å·
+		TThostFtdcSequenceNoType KeyID;
+		/// åŠ¨æ€å¯†é’¥
+		TThostFtdcCFMMCKeyType CurrentKey;
+		/// åŠ¨æ€å¯†é’¥ç±»å‹
+		TThostFtdcCFMMCKeyKindType KeyKind;
+	};
+
+	/// ä¿è¯é‡‘ç›‘ç®¡ç³»ç»Ÿç»çºªå…¬å¸èµ„é‡‘è´¦æˆ·å¯†é’¥
+	struct CThostFtdcCFMMCTradingAccountKeyField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç»çºªå…¬å¸ç»Ÿä¸€ç¼–ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¯†é’¥ç¼–å·
+		TThostFtdcSequenceNoType KeyID;
+		/// åŠ¨æ€å¯†é’¥
+		TThostFtdcCFMMCKeyType CurrentKey;
+	};
+
+	/// è¯·æ±‚æŸ¥è¯¢ä¿è¯é‡‘ç›‘ç®¡ç³»ç»Ÿç»çºªå…¬å¸èµ„é‡‘è´¦æˆ·å¯†é’¥
+	struct CThostFtdcQryCFMMCTradingAccountKeyField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+	};
+
+	/// ç”¨æˆ·åŠ¨æ€ä»¤ç‰Œå‚æ•°
+	struct CThostFtdcBrokerUserOTPParamField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åŠ¨æ€ä»¤ç‰Œæä¾›å•†
+		TThostFtdcOTPVendorsIDType OTPVendorsID;
+		/// åŠ¨æ€ä»¤ç‰Œåºåˆ—å·
+		TThostFtdcSerialNumberType SerialNumber;
+		/// ä»¤ç‰Œå¯†é’¥
+		TThostFtdcAuthKeyType AuthKey;
+		/// æ¼‚ç§»å€¼
+		TThostFtdcLastDriftType LastDrift;
+		/// æˆåŠŸå€¼
+		TThostFtdcLastSuccessType LastSuccess;
+		/// åŠ¨æ€ä»¤ç‰Œç±»å‹
+		TThostFtdcOTPTypeType OTPType;
+	};
+
+	/// æ‰‹å·¥åŒæ­¥ç”¨æˆ·åŠ¨æ€ä»¤ç‰Œ
+	struct CThostFtdcManualSyncBrokerUserOTPField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// åŠ¨æ€ä»¤ç‰Œç±»å‹
+		TThostFtdcOTPTypeType OTPType;
+		/// ç¬¬ä¸€ä¸ªåŠ¨æ€å¯†ç 
+		TThostFtdcPasswordType FirstOTP;
+		/// ç¬¬äºŒä¸ªåŠ¨æ€å¯†ç 
+		TThostFtdcPasswordType SecondOTP;
+	};
+
+	/// æŠ•èµ„è€…æ‰‹ç»­è´¹ç‡æ¨¡æ¿
+	struct CThostFtdcCommRateModelField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æ‰‹ç»­è´¹ç‡æ¨¡æ¿ä»£ç 
+		TThostFtdcInvestorIDType CommModelID;
+		/// æ¨¡æ¿åç§°
+		TThostFtdcCommModelNameType CommModelName;
+	};
+
+	/// è¯·æ±‚æŸ¥è¯¢æŠ•èµ„è€…æ‰‹ç»­è´¹ç‡æ¨¡æ¿
+	struct CThostFtdcQryCommRateModelField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æ‰‹ç»­è´¹ç‡æ¨¡æ¿ä»£ç 
+		TThostFtdcInvestorIDType CommModelID;
+	};
+
+	/// æŠ•èµ„è€…ä¿è¯é‡‘ç‡æ¨¡æ¿
+	struct CThostFtdcMarginModelField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ä¿è¯é‡‘ç‡æ¨¡æ¿ä»£ç 
+		TThostFtdcInvestorIDType MarginModelID;
+		/// æ¨¡æ¿åç§°
+		TThostFtdcCommModelNameType MarginModelName;
+	};
+
+	/// è¯·æ±‚æŸ¥è¯¢æŠ•èµ„è€…ä¿è¯é‡‘ç‡æ¨¡æ¿
+	struct CThostFtdcQryMarginModelField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ä¿è¯é‡‘ç‡æ¨¡æ¿ä»£ç 
+		TThostFtdcInvestorIDType MarginModelID;
+	};
+
+	/// ä»“å•æŠ˜æŠµä¿¡æ¯
+	struct CThostFtdcEWarrantOffsetField
+	{
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// ä¹°å–æ–¹å‘
+		TThostFtdcDirectionType Direction;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢ä»“å•æŠ˜æŠµä¿¡æ¯
+	struct CThostFtdcQryEWarrantOffsetField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢æŠ•èµ„è€…å“ç§/è·¨å“ç§ä¿è¯é‡‘
+	struct CThostFtdcQryInvestorProductGroupMarginField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å“ç§/è·¨å“ç§æ ‡ç¤º
+		TThostFtdcInstrumentIDType ProductGroupID;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŠ•èµ„è€…å“ç§/è·¨å“ç§ä¿è¯é‡‘
+	struct CThostFtdcInvestorProductGroupMarginField
+	{
+		/// å“ç§/è·¨å“ç§æ ‡ç¤º
+		TThostFtdcInstrumentIDType ProductGroupID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// å†»ç»“çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType FrozenMargin;
+		/// å¤šå¤´å†»ç»“çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType LongFrozenMargin;
+		/// ç©ºå¤´å†»ç»“çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType ShortFrozenMargin;
+		/// å ç”¨çš„ä¿è¯é‡‘
+		TThostFtdcMoneyType UseMargin;
+		/// å¤šå¤´ä¿è¯é‡‘
+		TThostFtdcMoneyType LongUseMargin;
+		/// ç©ºå¤´ä¿è¯é‡‘
+		TThostFtdcMoneyType ShortUseMargin;
+		/// äº¤æ˜“æ‰€ä¿è¯é‡‘
+		TThostFtdcMoneyType ExchMargin;
+		/// äº¤æ˜“æ‰€å¤šå¤´ä¿è¯é‡‘
+		TThostFtdcMoneyType LongExchMargin;
+		/// äº¤æ˜“æ‰€ç©ºå¤´ä¿è¯é‡‘
+		TThostFtdcMoneyType ShortExchMargin;
+		/// å¹³ä»“ç›ˆäº
+		TThostFtdcMoneyType CloseProfit;
+		/// å†»ç»“çš„æ‰‹ç»­è´¹
+		TThostFtdcMoneyType FrozenCommission;
+		/// æ‰‹ç»­è´¹
+		TThostFtdcMoneyType Commission;
+		/// å†»ç»“çš„èµ„é‡‘
+		TThostFtdcMoneyType FrozenCash;
+		/// èµ„é‡‘å·®é¢
+		TThostFtdcMoneyType CashIn;
+		/// æŒä»“ç›ˆäº
+		TThostFtdcMoneyType PositionProfit;
+		/// æŠ˜æŠµæ€»é‡‘é¢
+		TThostFtdcMoneyType OffsetAmount;
+		/// å¤šå¤´æŠ˜æŠµæ€»é‡‘é¢
+		TThostFtdcMoneyType LongOffsetAmount;
+		/// ç©ºå¤´æŠ˜æŠµæ€»é‡‘é¢
+		TThostFtdcMoneyType ShortOffsetAmount;
+		/// äº¤æ˜“æ‰€æŠ˜æŠµæ€»é‡‘é¢
+		TThostFtdcMoneyType ExchOffsetAmount;
+		/// äº¤æ˜“æ‰€å¤šå¤´æŠ˜æŠµæ€»é‡‘é¢
+		TThostFtdcMoneyType LongExchOffsetAmount;
+		/// äº¤æ˜“æ‰€ç©ºå¤´æŠ˜æŠµæ€»é‡‘é¢
+		TThostFtdcMoneyType ShortExchOffsetAmount;
+		/// æŠ•æœºå¥—ä¿æ ‡å¿—
+		TThostFtdcHedgeFlagType HedgeFlag;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// æŸ¥è¯¢ç›‘æ§ä¸­å¿ƒç”¨æˆ·ä»¤ç‰Œ
+	struct CThostFtdcQueryCFMMCTradingAccountTokenField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+	};
+
+	/// ç›‘æ§ä¸­å¿ƒç”¨æˆ·ä»¤ç‰Œ
+	struct CThostFtdcCFMMCTradingAccountTokenField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç»çºªå…¬å¸ç»Ÿä¸€ç¼–ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¯†é’¥ç¼–å·
+		TThostFtdcSequenceNoType KeyID;
+		/// åŠ¨æ€ä»¤ç‰Œ
+		TThostFtdcCFMMCTokenType Token;
+	};
+
+	/// æŠ•èµ„è€…æŒ‡ä»¤æƒé™
+	struct CThostFtdcInstructionRightField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŒ‡ä»¤æƒé™ç±»å‹
+		TThostFtdcInstructionRightTypeType InstructionRight;
+		/// æ˜¯å¦ç¦æ­¢
+		TThostFtdcBoolType IsForbidden;
+	};
+
+	/// æŸ¥è¯¢äº§å“ç»„
+	struct CThostFtdcQryProductGroupField
+	{
+		/// äº§å“ä»£ç 
+		TThostFtdcInstrumentIDType ProductID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+	};
+
+	/// æŠ•èµ„è€…å“ç§/è·¨å“ç§ä¿è¯é‡‘äº§å“ç»„
+	struct CThostFtdcProductGroupField
+	{
+		/// äº§å“ä»£ç 
+		TThostFtdcInstrumentIDType ProductID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº§å“ç»„ä»£ç 
+		TThostFtdcInstrumentIDType ProductGroupID;
+	};
+
+	/// äº¤æ˜“æ‰€å…¬å‘Š
+	struct CThostFtdcBulletinField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// å…¬å‘Šç¼–å·
+		TThostFtdcBulletinIDType BulletinID;
+		/// åºåˆ—å·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å…¬å‘Šç±»å‹
+		TThostFtdcNewsTypeType NewsType;
+		/// ç´§æ€¥ç¨‹åº¦
+		TThostFtdcNewsUrgencyType NewsUrgency;
+		/// å‘é€æ—¶é—´
+		TThostFtdcTimeType SendTime;
+		/// æ¶ˆæ¯æ‘˜è¦
+		TThostFtdcAbstractType Abstract;
+		/// æ¶ˆæ¯æ¥æº
+		TThostFtdcComeFromType ComeFrom;
+		/// æ¶ˆæ¯æ­£æ–‡
+		TThostFtdcContentType Content;
+		/// WEBåœ°å€
+		TThostFtdcURLLinkType URLLink;
+		/// å¸‚åœºä»£ç 
+		TThostFtdcMarketIDType MarketID;
+	};
+
+	/// æŸ¥è¯¢äº¤æ˜“æ‰€å…¬å‘Š
+	struct CThostFtdcQryBulletinField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// å…¬å‘Šç¼–å·
+		TThostFtdcBulletinIDType BulletinID;
+		/// åºåˆ—å·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å…¬å‘Šç±»å‹
+		TThostFtdcNewsTypeType NewsType;
+		/// ç´§æ€¥ç¨‹åº¦
+		TThostFtdcNewsUrgencyType NewsUrgency;
+	};
+
+	/// è½¬å¸å¼€æˆ·è¯·æ±‚
+	struct CThostFtdcReqOpenAccountField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ±‡é’æ ‡å¿—
+		TThostFtdcCashExchangeCodeType CashExchangeCode;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// è¯åˆ¸èµ„é‡‘æ—¥åˆä½™é¢
+		TThostFtdcTradeAmountType SecDaBeBl;
+		/// é“¶è¡Œè½¬è´¦é€šé“
+		TThostFtdcBankChannelType BankChal;
+	};
+
+	/// è½¬å¸é”€æˆ·è¯·æ±‚
+	struct CThostFtdcReqCancelAccountField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ±‡é’æ ‡å¿—
+		TThostFtdcCashExchangeCodeType CashExchangeCode;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// è¯åˆ¸èµ„é‡‘æ—¥åˆä½™é¢
+		TThostFtdcTradeAmountType SecDaBeBl;
+		/// é“¶è¡Œè½¬è´¦é€šé“
+		TThostFtdcBankChannelType BankChal;
+	};
+
+	/// å˜æ›´é“¶è¡Œè´¦æˆ·è¯·æ±‚
+	struct CThostFtdcReqChangeAccountField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æ–°é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType NewBankAccount;
+		/// æ–°é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType NewBankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+	};
+
+	/// è½¬è´¦è¯·æ±‚
+	struct CThostFtdcReqTransferField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœŸè´§å…¬å¸æµæ°´å·
+		TThostFtdcFutureSerialType FutureSerial;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// è½¬å¸é‡‘é¢
+		TThostFtdcTradeAmountType TradeAmount;
+		/// æœŸè´§å¯å–é‡‘é¢
+		TThostFtdcTradeAmountType FutureFetchAmount;
+		/// è´¹ç”¨æ”¯ä»˜æ ‡å¿—
+		TThostFtdcFeePayFlagType FeePayFlag;
+		/// åº”æ”¶å®¢æˆ·è´¹ç”¨
+		TThostFtdcCustFeeType CustFee;
+		/// åº”æ”¶æœŸè´§å…¬å¸è´¹ç”¨
+		TThostFtdcFutureFeeType BrokerFee;
+		/// å‘é€æ–¹ç»™æ¥æ”¶æ–¹çš„æ¶ˆæ¯
+		TThostFtdcAddInfoType Message;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// è½¬è´¦äº¤æ˜“çŠ¶æ€
+		TThostFtdcTransferStatusType TransferStatus;
+	};
+
+	/// é“¶è¡Œå‘èµ·é“¶è¡Œèµ„é‡‘è½¬æœŸè´§å“åº”
+	struct CThostFtdcRspTransferField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœŸè´§å…¬å¸æµæ°´å·
+		TThostFtdcFutureSerialType FutureSerial;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// è½¬å¸é‡‘é¢
+		TThostFtdcTradeAmountType TradeAmount;
+		/// æœŸè´§å¯å–é‡‘é¢
+		TThostFtdcTradeAmountType FutureFetchAmount;
+		/// è´¹ç”¨æ”¯ä»˜æ ‡å¿—
+		TThostFtdcFeePayFlagType FeePayFlag;
+		/// åº”æ”¶å®¢æˆ·è´¹ç”¨
+		TThostFtdcCustFeeType CustFee;
+		/// åº”æ”¶æœŸè´§å…¬å¸è´¹ç”¨
+		TThostFtdcFutureFeeType BrokerFee;
+		/// å‘é€æ–¹ç»™æ¥æ”¶æ–¹çš„æ¶ˆæ¯
+		TThostFtdcAddInfoType Message;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// è½¬è´¦äº¤æ˜“çŠ¶æ€
+		TThostFtdcTransferStatusType TransferStatus;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// å†²æ­£è¯·æ±‚
+	struct CThostFtdcReqRepealField
+	{
+		/// å†²æ­£æ—¶é—´é—´éš”
+		TThostFtdcRepealTimeIntervalType RepealTimeInterval;
+		/// å·²ç»å†²æ­£æ¬¡æ•°
+		TThostFtdcRepealedTimesType RepealedTimes;
+		/// é“¶è¡Œå†²æ­£æ ‡å¿—
+		TThostFtdcBankRepealFlagType BankRepealFlag;
+		/// æœŸå•†å†²æ­£æ ‡å¿—
+		TThostFtdcBrokerRepealFlagType BrokerRepealFlag;
+		/// è¢«å†²æ­£å¹³å°æµæ°´å·
+		TThostFtdcPlateSerialType PlateRepealSerial;
+		/// è¢«å†²æ­£é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankRepealSerial;
+		/// è¢«å†²æ­£æœŸè´§æµæ°´å·
+		TThostFtdcFutureSerialType FutureRepealSerial;
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœŸè´§å…¬å¸æµæ°´å·
+		TThostFtdcFutureSerialType FutureSerial;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// è½¬å¸é‡‘é¢
+		TThostFtdcTradeAmountType TradeAmount;
+		/// æœŸè´§å¯å–é‡‘é¢
+		TThostFtdcTradeAmountType FutureFetchAmount;
+		/// è´¹ç”¨æ”¯ä»˜æ ‡å¿—
+		TThostFtdcFeePayFlagType FeePayFlag;
+		/// åº”æ”¶å®¢æˆ·è´¹ç”¨
+		TThostFtdcCustFeeType CustFee;
+		/// åº”æ”¶æœŸè´§å…¬å¸è´¹ç”¨
+		TThostFtdcFutureFeeType BrokerFee;
+		/// å‘é€æ–¹ç»™æ¥æ”¶æ–¹çš„æ¶ˆæ¯
+		TThostFtdcAddInfoType Message;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// è½¬è´¦äº¤æ˜“çŠ¶æ€
+		TThostFtdcTransferStatusType TransferStatus;
+	};
+
+	/// å†²æ­£å“åº”
+	struct CThostFtdcRspRepealField
+	{
+		/// å†²æ­£æ—¶é—´é—´éš”
+		TThostFtdcRepealTimeIntervalType RepealTimeInterval;
+		/// å·²ç»å†²æ­£æ¬¡æ•°
+		TThostFtdcRepealedTimesType RepealedTimes;
+		/// é“¶è¡Œå†²æ­£æ ‡å¿—
+		TThostFtdcBankRepealFlagType BankRepealFlag;
+		/// æœŸå•†å†²æ­£æ ‡å¿—
+		TThostFtdcBrokerRepealFlagType BrokerRepealFlag;
+		/// è¢«å†²æ­£å¹³å°æµæ°´å·
+		TThostFtdcPlateSerialType PlateRepealSerial;
+		/// è¢«å†²æ­£é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankRepealSerial;
+		/// è¢«å†²æ­£æœŸè´§æµæ°´å·
+		TThostFtdcFutureSerialType FutureRepealSerial;
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœŸè´§å…¬å¸æµæ°´å·
+		TThostFtdcFutureSerialType FutureSerial;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// è½¬å¸é‡‘é¢
+		TThostFtdcTradeAmountType TradeAmount;
+		/// æœŸè´§å¯å–é‡‘é¢
+		TThostFtdcTradeAmountType FutureFetchAmount;
+		/// è´¹ç”¨æ”¯ä»˜æ ‡å¿—
+		TThostFtdcFeePayFlagType FeePayFlag;
+		/// åº”æ”¶å®¢æˆ·è´¹ç”¨
+		TThostFtdcCustFeeType CustFee;
+		/// åº”æ”¶æœŸè´§å…¬å¸è´¹ç”¨
+		TThostFtdcFutureFeeType BrokerFee;
+		/// å‘é€æ–¹ç»™æ¥æ”¶æ–¹çš„æ¶ˆæ¯
+		TThostFtdcAddInfoType Message;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// è½¬è´¦äº¤æ˜“çŠ¶æ€
+		TThostFtdcTransferStatusType TransferStatus;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// æŸ¥è¯¢è´¦æˆ·ä¿¡æ¯è¯·æ±‚
+	struct CThostFtdcReqQueryAccountField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// æœŸè´§å…¬å¸æµæ°´å·
+		TThostFtdcFutureSerialType FutureSerial;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+	};
+
+	/// æŸ¥è¯¢è´¦æˆ·ä¿¡æ¯å“åº”
+	struct CThostFtdcRspQueryAccountField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// æœŸè´§å…¬å¸æµæ°´å·
+		TThostFtdcFutureSerialType FutureSerial;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// é“¶è¡Œå¯ç”¨é‡‘é¢
+		TThostFtdcTradeAmountType BankUseAmount;
+		/// é“¶è¡Œå¯å–é‡‘é¢
+		TThostFtdcTradeAmountType BankFetchAmount;
+	};
+
+	/// æœŸå•†ç­¾åˆ°ç­¾é€€
+	struct CThostFtdcFutureSignIOField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+	};
+
+	/// æœŸå•†ç­¾åˆ°å“åº”
+	struct CThostFtdcRspFutureSignInField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// PINå¯†é’¥
+		TThostFtdcPasswordKeyType PinKey;
+		/// MACå¯†é’¥
+		TThostFtdcPasswordKeyType MacKey;
+	};
+
+	/// æœŸå•†ç­¾é€€è¯·æ±‚
+	struct CThostFtdcReqFutureSignOutField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+	};
+
+	/// æœŸå•†ç­¾é€€å“åº”
+	struct CThostFtdcRspFutureSignOutField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// æŸ¥è¯¢æŒ‡å®šæµæ°´å·çš„äº¤æ˜“ç»“æœè¯·æ±‚
+	struct CThostFtdcReqQueryTradeResultBySerialField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// æµæ°´å·
+		TThostFtdcSerialType Reference;
+		/// æœ¬æµæ°´å·å‘å¸ƒè€…çš„æœºæ„ç±»å‹
+		TThostFtdcInstitutionTypeType RefrenceIssureType;
+		/// æœ¬æµæ°´å·å‘å¸ƒè€…æœºæ„ç¼–ç 
+		TThostFtdcOrganCodeType RefrenceIssure;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// è½¬å¸é‡‘é¢
+		TThostFtdcTradeAmountType TradeAmount;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+	};
+
+	/// æŸ¥è¯¢æŒ‡å®šæµæ°´å·çš„äº¤æ˜“ç»“æœå“åº”
+	struct CThostFtdcRspQueryTradeResultBySerialField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// æµæ°´å·
+		TThostFtdcSerialType Reference;
+		/// æœ¬æµæ°´å·å‘å¸ƒè€…çš„æœºæ„ç±»å‹
+		TThostFtdcInstitutionTypeType RefrenceIssureType;
+		/// æœ¬æµæ°´å·å‘å¸ƒè€…æœºæ„ç¼–ç 
+		TThostFtdcOrganCodeType RefrenceIssure;
+		/// åŸå§‹è¿”å›ä»£ç 
+		TThostFtdcReturnCodeType OriginReturnCode;
+		/// åŸå§‹è¿”å›ç æè¿°
+		TThostFtdcDescrInfoForReturnCodeType OriginDescrInfoForReturnCode;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// è½¬å¸é‡‘é¢
+		TThostFtdcTradeAmountType TradeAmount;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+	};
+
+	/// æ—¥ç»ˆæ–‡ä»¶å°±ç»ªè¯·æ±‚
+	struct CThostFtdcReqDayEndFileReadyField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// æ–‡ä»¶ä¸šåŠ¡åŠŸèƒ½
+		TThostFtdcFileBusinessCodeType FileBusinessCode;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+	};
+
+	/// æ—¥ç»ˆæ–‡ä»¶å°±ç»ªå“åº”
+	struct CThostFtdcRspDayEndFileReadyField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// æ–‡ä»¶ä¸šåŠ¡åŠŸèƒ½
+		TThostFtdcFileBusinessCodeType FileBusinessCode;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// æ—¥ç»ˆæ–‡ä»¶å°±ç»ªå“åº”
+	struct CThostFtdcDayEndFileReadyField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// æ–‡ä»¶ä¸šåŠ¡åŠŸèƒ½
+		TThostFtdcFileBusinessCodeType FileBusinessCode;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// è¿”å›ç»“æœ
+	struct CThostFtdcReturnResultField
+	{
+		/// è¿”å›ä»£ç 
+		TThostFtdcReturnCodeType ReturnCode;
+		/// è¿”å›ç æè¿°
+		TThostFtdcDescrInfoForReturnCodeType DescrInfoForReturnCode;
+	};
+
+	/// éªŒè¯æœŸè´§èµ„é‡‘å¯†ç 
+	struct CThostFtdcVerifyFuturePasswordField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// éªŒè¯å®¢æˆ·ä¿¡æ¯
+	struct CThostFtdcVerifyCustInfoField
+	{
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+	};
+
+	/// éªŒè¯æœŸè´§èµ„é‡‘å¯†ç å’Œå®¢æˆ·ä¿¡æ¯
+	struct CThostFtdcVerifyFuturePasswordAndCustInfoField
+	{
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// éªŒè¯æœŸè´§èµ„é‡‘å¯†ç å’Œå®¢æˆ·ä¿¡æ¯
+	struct CThostFtdcDepositResultInformField
+	{
+		/// å‡ºå…¥é‡‘æµæ°´å·ï¼Œè¯¥æµæ°´å·ä¸ºé“¶æœŸæŠ¥ç›˜è¿”å›çš„æµæ°´å·
+		TThostFtdcDepositSeqNoType DepositSeqNo;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// å…¥é‡‘é‡‘é¢
+		TThostFtdcMoneyType Deposit;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// è¿”å›ä»£ç 
+		TThostFtdcReturnCodeType ReturnCode;
+		/// è¿”å›ç æè¿°
+		TThostFtdcDescrInfoForReturnCodeType DescrInfoForReturnCode;
+	};
+
+	/// äº¤æ˜“æ ¸å¿ƒå‘é“¶æœŸæŠ¥ç›˜å‘å‡ºå¯†é’¥åŒæ­¥è¯·æ±‚
+	struct CThostFtdcReqSyncKeyField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// äº¤æ˜“æ ¸å¿ƒç»™é“¶æœŸæŠ¥ç›˜çš„æ¶ˆæ¯
+		TThostFtdcAddInfoType Message;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+	};
+
+	/// äº¤æ˜“æ ¸å¿ƒå‘é“¶æœŸæŠ¥ç›˜å‘å‡ºå¯†é’¥åŒæ­¥å“åº”
+	struct CThostFtdcRspSyncKeyField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// äº¤æ˜“æ ¸å¿ƒç»™é“¶æœŸæŠ¥ç›˜çš„æ¶ˆæ¯
+		TThostFtdcAddInfoType Message;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// æŸ¥è¯¢è´¦æˆ·ä¿¡æ¯é€šçŸ¥
+	struct CThostFtdcNotifyQueryAccountField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// æœŸè´§å…¬å¸æµæ°´å·
+		TThostFtdcFutureSerialType FutureSerial;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// é“¶è¡Œå¯ç”¨é‡‘é¢
+		TThostFtdcTradeAmountType BankUseAmount;
+		/// é“¶è¡Œå¯å–é‡‘é¢
+		TThostFtdcTradeAmountType BankFetchAmount;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// é“¶æœŸè½¬è´¦äº¤æ˜“æµæ°´è¡¨
+	struct CThostFtdcTransferSerialField
+	{
+		/// å¹³å°æµæ°´å·
+		TThostFtdcPlateSerialType PlateSerial;
+		/// äº¤æ˜“å‘èµ·æ–¹æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcDateType TradingDay;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// äº¤æ˜“ä»£ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// é“¶è¡Œç¼–ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ç¼–ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// æœŸè´§å…¬å¸ç¼–ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// æœŸè´§å…¬å¸å¸å·ç±»å‹
+		TThostFtdcFutureAccTypeType FutureAccType;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æœŸè´§å…¬å¸æµæ°´å·
+		TThostFtdcFutureSerialType FutureSerial;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// äº¤æ˜“é‡‘é¢
+		TThostFtdcTradeAmountType TradeAmount;
+		/// åº”æ”¶å®¢æˆ·è´¹ç”¨
+		TThostFtdcCustFeeType CustFee;
+		/// åº”æ”¶æœŸè´§å…¬å¸è´¹ç”¨
+		TThostFtdcFutureFeeType BrokerFee;
+		/// æœ‰æ•ˆæ ‡å¿—
+		TThostFtdcAvailabilityFlagType AvailabilityFlag;
+		/// æ“ä½œå‘˜
+		TThostFtdcOperatorCodeType OperatorCode;
+		/// æ–°é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankNewAccount;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// è¯·æ±‚æŸ¥è¯¢è½¬å¸æµæ°´
+	struct CThostFtdcQryTransferSerialField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// é“¶è¡Œç¼–ç 
+		TThostFtdcBankIDType BankID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// æœŸå•†ç­¾åˆ°é€šçŸ¥
+	struct CThostFtdcNotifyFutureSignInField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// PINå¯†é’¥
+		TThostFtdcPasswordKeyType PinKey;
+		/// MACå¯†é’¥
+		TThostFtdcPasswordKeyType MacKey;
+	};
+
+	/// æœŸå•†ç­¾é€€é€šçŸ¥
+	struct CThostFtdcNotifyFutureSignOutField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// äº¤æ˜“æ ¸å¿ƒå‘é“¶æœŸæŠ¥ç›˜å‘å‡ºå¯†é’¥åŒæ­¥å¤„ç†ç»“æœçš„é€šçŸ¥
+	struct CThostFtdcNotifySyncKeyField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// äº¤æ˜“æ ¸å¿ƒç»™é“¶æœŸæŠ¥ç›˜çš„æ¶ˆæ¯
+		TThostFtdcAddInfoType Message;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// è¯·æ±‚æŸ¥è¯¢é“¶æœŸç­¾çº¦å…³ç³»
+	struct CThostFtdcQryAccountregisterField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// é“¶è¡Œç¼–ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ç¼–ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// å®¢æˆ·å¼€é”€æˆ·ä¿¡æ¯è¡¨
+	struct CThostFtdcAccountregisterField
+	{
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDay;
+		/// é“¶è¡Œç¼–ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ç¼–ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// æœŸè´§å…¬å¸ç¼–ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸè´§å…¬å¸åˆ†æ”¯æœºæ„ç¼–ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// å¼€é”€æˆ·ç±»åˆ«
+		TThostFtdcOpenOrDestroyType OpenOrDestroy;
+		/// ç­¾çº¦æ—¥æœŸ
+		TThostFtdcTradeDateType RegDate;
+		/// è§£çº¦æ—¥æœŸ
+		TThostFtdcTradeDateType OutDate;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+	};
+
+	/// é“¶æœŸå¼€æˆ·ä¿¡æ¯
+	struct CThostFtdcOpenAccountField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ±‡é’æ ‡å¿—
+		TThostFtdcCashExchangeCodeType CashExchangeCode;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+		/// è¯åˆ¸èµ„é‡‘æ—¥åˆä½™é¢
+		TThostFtdcTradeAmountType SecDaBeBl;
+		/// é“¶è¡Œè½¬è´¦é€šé“
+		TThostFtdcBankChannelType BankChal;
+	};
+
+	/// é“¶æœŸé”€æˆ·ä¿¡æ¯
+	struct CThostFtdcCancelAccountField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ±‡é’æ ‡å¿—
+		TThostFtdcCashExchangeCodeType CashExchangeCode;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// è¯åˆ¸èµ„é‡‘æ—¥åˆä½™é¢
+		TThostFtdcTradeAmountType SecDaBeBl;
+		/// é“¶è¡Œè½¬è´¦é€šé“
+		TThostFtdcBankChannelType BankChal;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// é“¶æœŸå˜æ›´é“¶è¡Œè´¦å·ä¿¡æ¯
+	struct CThostFtdcChangeAccountField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æ–°é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType NewBankAccount;
+		/// æ–°é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType NewBankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// äºŒçº§ä»£ç†æ“ä½œå‘˜é“¶æœŸæƒé™
+	struct CThostFtdcSecAgentACIDMapField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// èµ„é‡‘è´¦æˆ·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// å¢ƒå¤–ä¸­ä»‹æœºæ„èµ„é‡‘å¸å·
+		TThostFtdcAccountIDType BrokerSecAgentID;
+	};
+
+	/// äºŒçº§ä»£ç†æ“ä½œå‘˜é“¶æœŸæƒé™æŸ¥è¯¢
+	struct CThostFtdcQrySecAgentACIDMapField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// èµ„é‡‘è´¦æˆ·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// ç¾å¤‡ä¸­å¿ƒäº¤æ˜“æƒé™
+	struct CThostFtdcUserRightsAssignField
+	{
+		/// åº”ç”¨å•å…ƒä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// äº¤æ˜“ä¸­å¿ƒä»£ç 
+		TThostFtdcDRIdentityIDType DRIdentityID;
+	};
+
+	/// ç»æµå…¬å¸æ˜¯å¦æœ‰åœ¨æœ¬æ ‡ç¤ºçš„äº¤æ˜“æƒé™
+	struct CThostFtdcBrokerUserRightAssignField
+	{
+		/// åº”ç”¨å•å…ƒä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“ä¸­å¿ƒä»£ç 
+		TThostFtdcDRIdentityIDType DRIdentityID;
+		/// èƒ½å¦äº¤æ˜“
+		TThostFtdcBoolType Tradeable;
+	};
+
+	/// ç¾å¤‡äº¤æ˜“è½¬æ¢æŠ¥æ–‡
+	struct CThostFtdcDRTransferField
+	{
+		/// åŸäº¤æ˜“ä¸­å¿ƒä»£ç 
+		TThostFtdcDRIdentityIDType OrigDRIdentityID;
+		/// ç›®æ ‡äº¤æ˜“ä¸­å¿ƒä»£ç 
+		TThostFtdcDRIdentityIDType DestDRIdentityID;
+		/// åŸåº”ç”¨å•å…ƒä»£ç 
+		TThostFtdcBrokerIDType OrigBrokerID;
+		/// ç›®æ ‡æ˜“ç”¨å•å…ƒä»£ç 
+		TThostFtdcBrokerIDType DestBrokerID;
+	};
+
+	/// Fensç”¨æˆ·ä¿¡æ¯
+	struct CThostFtdcFensUserInfoField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç™»å½•æ¨¡å¼
+		TThostFtdcLoginModeType LoginMode;
+	};
+
+	/// å½“å‰é“¶æœŸæ‰€å±äº¤æ˜“ä¸­å¿ƒ
+	struct CThostFtdcCurrTransferIdentityField
+	{
+		/// äº¤æ˜“ä¸­å¿ƒä»£ç 
+		TThostFtdcDRIdentityIDType IdentityID;
+	};
+
+	/// ç¦æ­¢ç™»å½•ç”¨æˆ·
+	struct CThostFtdcLoginForbiddenUserField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+	};
+
+	/// æŸ¥è¯¢ç¦æ­¢ç™»å½•ç”¨æˆ·
+	struct CThostFtdcQryLoginForbiddenUserField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+	};
+
+	/// UDPç»„æ’­ç»„ä¿¡æ¯
+	struct CThostFtdcMulticastGroupInfoField
+	{
+		/// ç»„æ’­ç»„IPåœ°å€
+		TThostFtdcIPAddressType GroupIP;
+		/// ç»„æ’­ç»„IPç«¯å£
+		TThostFtdcIPPortType GroupPort;
+		/// æºåœ°å€
+		TThostFtdcIPAddressType SourceIP;
+	};
+
+	/// èµ„é‡‘è´¦æˆ·åŸºæœ¬å‡†å¤‡é‡‘
+	struct CThostFtdcTradingAccountReserveField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// åŸºæœ¬å‡†å¤‡é‡‘
+		TThostFtdcMoneyType Reserve;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// æŸ¥è¯¢ç¦æ­¢ç™»å½•IP
+	struct CThostFtdcQryLoginForbiddenIPField
+	{
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+	};
+
+	/// æŸ¥è¯¢IPåˆ—è¡¨
+	struct CThostFtdcQryIPListField
+	{
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+	};
+
+	/// æŸ¥è¯¢ç”¨æˆ·ä¸‹å•æƒé™åˆ†é…è¡¨
+	struct CThostFtdcQryUserRightsAssignField
+	{
+		/// åº”ç”¨å•å…ƒä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+	};
+
+	/// DBFè®°å½•
+	struct CThostFtdcDBFRecordField
+	{
+		/// DBFå‘½ä»¤ç±»å‹
+		TThostFtdcDBFComdTypeType DBFComdType;
+		/// DBFæ—¶é—´ç±»å‹
+		TThostFtdcDBFComTimeType DBFComTime;
+		/// DBFåŸå§‹æµæ°´å·ç±»å‹
+		TThostFtdcDBFComNoType DBFOComNo;
+		/// DBFæµæ°´å·ç±»å‹
+		TThostFtdcDBFComNoType DBFComNo;
+		/// DBFå­—æ®µç±»å‹
+		TThostFtdcDBFFdNameType DBFFdName1;
+		/// DBFå­—æ®µå†…å®¹ç±»å‹
+		TThostFtdcDBFFdContentType DBFFdContent1;
+		/// DBFå­—æ®µç±»å‹
+		TThostFtdcDBFFdNameType DBFFdName2;
+		/// DBFå­—æ®µå†…å®¹ç±»å‹
+		TThostFtdcDBFFdContentType DBFFdContent2;
+		/// DBFå­—æ®µç±»å‹
+		TThostFtdcDBFFdNameType DBFFdName3;
+		/// DBFå­—æ®µå†…å®¹ç±»å‹
+		TThostFtdcDBFFdContentType DBFFdContent3;
+		/// DBFå­—æ®µç±»å‹
+		TThostFtdcDBFFdNameType DBFFdName4;
+		/// DBFå­—æ®µå†…å®¹ç±»å‹
+		TThostFtdcDBFFdContentType DBFFdContent4;
+	};
+
+	/// é“¶è¡Œè´¦æˆ·å±æ€§
+	struct CThostFtdcAccountPropertyField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// é“¶è¡Œç»Ÿä¸€æ ‡è¯†ç±»å‹
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œè´¦æˆ·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œè´¦æˆ·çš„å¼€æˆ·äººåç§°
+		TThostFtdcInvestorFullNameType OpenName;
+		/// é“¶è¡Œè´¦æˆ·çš„å¼€æˆ·è¡Œ
+		TThostFtdcOpenBankType OpenBank;
+		/// æ˜¯å¦æ´»è·ƒ
+		TThostFtdcBoolType IsActive;
+		/// è´¦æˆ·æ¥æº
+		TThostFtdcAccountSourceTypeType AccountSourceType;
+		/// å¼€æˆ·æ—¥æœŸ
+		TThostFtdcDateType OpenDate;
+		/// æ³¨é”€æ—¥æœŸ
+		TThostFtdcDateType CancelDate;
+		/// å½•å…¥å‘˜ä»£ç 
+		TThostFtdcOperatorIDType OperatorID;
+		/// å½•å…¥æ—¥æœŸ
+		TThostFtdcDateType OperateDate;
+		/// å½•å…¥æ—¶é—´
+		TThostFtdcTimeType OperateTime;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+	};
+
+	/// æŸ¥è¯¢å½“å‰äº¤æ˜“ä¸­å¿ƒ
+	struct CThostFtdcQryCurrDRIdentityField
+	{
+		/// äº¤æ˜“ä¸­å¿ƒä»£ç 
+		TThostFtdcDRIdentityIDType DRIdentityID;
+	};
+
+	/// å½“å‰äº¤æ˜“ä¸­å¿ƒ
+	struct CThostFtdcCurrDRIdentityField
+	{
+		/// äº¤æ˜“ä¸­å¿ƒä»£ç 
+		TThostFtdcDRIdentityIDType DRIdentityID;
+	};
+
+	/// ç¬¬ä¸‰æ–¹å­˜ç®¡ä¸šåŠ¡å¼€æˆ·é¢„æŒ‡å®šè¯·æ±‚
+	struct CThostFtdcReqReserveOpenAccountTpdField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ±‡é’æ ‡å¿—
+		TThostFtdcCashExchangeCodeType CashExchangeCode;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// è¯åˆ¸èµ„é‡‘æ—¥åˆä½™é¢
+		TThostFtdcTradeAmountType SecDaBeBl;
+		/// é“¶è¡Œè½¬è´¦é€šé“
+		TThostFtdcBankChannelType BankChal;
+	};
+
+	/// ç¬¬ä¸‰æ–¹å­˜ç®¡ä¸šåŠ¡å¼€æˆ·é¢„æŒ‡å®š
+	struct CThostFtdcReserveOpenAccountTpdField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ±‡é’æ ‡å¿—
+		TThostFtdcCashExchangeCodeType CashExchangeCode;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// è¯åˆ¸èµ„é‡‘æ—¥åˆä½™é¢
+		TThostFtdcTradeAmountType SecDaBeBl;
+		/// é“¶è¡Œè½¬è´¦é€šé“
+		TThostFtdcBankChannelType BankChal;
+		/// é¢„çº¦å¼€æˆ·çŠ¶æ€
+		TThostFtdcReserveOpenAccStasType ReserveOpenAccStas;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// ç¬¬ä¸‰æ–¹å­˜ç®¡ä¸šåŠ¡å¼€æˆ·ç¡®è®¤è¯·æ±‚
+	struct CThostFtdcReqResOpenAccConfirmTpdField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ±‡é’æ ‡å¿—
+		TThostFtdcCashExchangeCodeType CashExchangeCode;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+	};
+
+	/// ç¬¬ä¸‰æ–¹å­˜ç®¡ä¸šåŠ¡å¼€æˆ·ç¡®è®¤
+	struct CThostFtdcResOpenAccConfirmTpdField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ±‡é’æ ‡å¿—
+		TThostFtdcCashExchangeCodeType CashExchangeCode;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// ç¬¬ä¸‰æ–¹å­˜ç®¡è¯åˆ¸èµ„é‡‘ç»“æ¯è¯·æ±‚
+	struct CThostFtdcReqSecuritiesDepositInterestField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœŸè´§å…¬å¸æµæ°´å·
+		TThostFtdcFutureSerialType FutureSerial;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ±‡é’æ ‡å¿—
+		TThostFtdcCashExchangeCodeType CashExchangeCode;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// ç»“æ¯å‡€é¢
+		TThostFtdcTradeAmountType DepositInterest;
+	};
+
+	/// ç¬¬ä¸‰æ–¹å­˜ç®¡è¯åˆ¸èµ„é‡‘ç»“æ¯
+	struct CThostFtdcSecuritiesDepositInterestField
+	{
+		/// ä¸šåŠ¡åŠŸèƒ½ç 
+		TThostFtdcTradeCodeType TradeCode;
+		/// é“¶è¡Œä»£ç 
+		TThostFtdcBankIDType BankID;
+		/// é“¶è¡Œåˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcBankBrchIDType BankBranchID;
+		/// æœŸå•†ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æœŸå•†åˆ†æ”¯æœºæ„ä»£ç 
+		TThostFtdcFutureBranchIDType BrokerBranchID;
+		/// äº¤æ˜“æ—¥æœŸ
+		TThostFtdcTradeDateType TradeDate;
+		/// äº¤æ˜“æ—¶é—´
+		TThostFtdcTradeTimeType TradeTime;
+		/// é“¶è¡Œæµæ°´å·
+		TThostFtdcBankSerialType BankSerial;
+		/// äº¤æ˜“ç³»ç»Ÿæ—¥æœŸ
+		TThostFtdcTradeDateType TradingDay;
+		/// é“¶æœŸå¹³å°æ¶ˆæ¯æµæ°´å·
+		TThostFtdcSerialType PlateSerial;
+		/// æœ€ååˆ†ç‰‡æ ‡å¿—
+		TThostFtdcLastFragmentType LastFragment;
+		/// ä¼šè¯å·
+		TThostFtdcSessionIDType SessionID;
+		/// å®¢æˆ·å§“å
+		TThostFtdcIndividualNameType CustomerName;
+		/// è¯ä»¶ç±»å‹
+		TThostFtdcIdCardTypeType IdCardType;
+		/// è¯ä»¶å·ç 
+		TThostFtdcIdentifiedCardNoType IdentifiedCardNo;
+		/// æ€§åˆ«
+		TThostFtdcGenderType Gender;
+		/// å›½å®¶ä»£ç 
+		TThostFtdcCountryCodeType CountryCode;
+		/// å®¢æˆ·ç±»å‹
+		TThostFtdcCustTypeType CustType;
+		/// åœ°å€
+		TThostFtdcAddressType Address;
+		/// é‚®ç¼–
+		TThostFtdcZipCodeType ZipCode;
+		/// ç”µè¯å·ç 
+		TThostFtdcTelephoneType Telephone;
+		/// æ‰‹æœº
+		TThostFtdcMobilePhoneType MobilePhone;
+		/// ä¼ çœŸ
+		TThostFtdcFaxType Fax;
+		/// ç”µå­é‚®ä»¶
+		TThostFtdcEMailType EMail;
+		/// èµ„é‡‘è´¦æˆ·çŠ¶æ€
+		TThostFtdcMoneyAccountStatusType MoneyAccountStatus;
+		/// é“¶è¡Œå¸å·
+		TThostFtdcBankAccountType BankAccount;
+		/// é“¶è¡Œå¯†ç 
+		TThostFtdcPasswordType BankPassWord;
+		/// æŠ•èµ„è€…å¸å·
+		TThostFtdcAccountIDType AccountID;
+		/// æœŸè´§å¯†ç 
+		TThostFtdcPasswordType Password;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœŸè´§å…¬å¸æµæ°´å·
+		TThostFtdcFutureSerialType FutureSerial;
+		/// éªŒè¯å®¢æˆ·è¯ä»¶å·ç æ ‡å¿—
+		TThostFtdcYesNoIndicatorType VerifyCertNoFlag;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// æ±‡é’æ ‡å¿—
+		TThostFtdcCashExchangeCodeType CashExchangeCode;
+		/// æ‘˜è¦
+		TThostFtdcDigestType Digest;
+		/// é“¶è¡Œå¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankAccType;
+		/// æ¸ é“æ ‡å¿—
+		TThostFtdcDeviceIDType DeviceID;
+		/// æœŸè´§å•ä½å¸å·ç±»å‹
+		TThostFtdcBankAccTypeType BankSecuAccType;
+		/// æœŸè´§å…¬å¸é“¶è¡Œç¼–ç 
+		TThostFtdcBankCodingForFutureType BrokerIDByBank;
+		/// æœŸè´§å•ä½å¸å·
+		TThostFtdcBankAccountType BankSecuAcc;
+		/// é“¶è¡Œå¯†ç æ ‡å¿—
+		TThostFtdcPwdFlagType BankPwdFlag;
+		/// æœŸè´§èµ„é‡‘å¯†ç æ ¸å¯¹æ ‡å¿—
+		TThostFtdcPwdFlagType SecuPwdFlag;
+		/// äº¤æ˜“æŸœå‘˜
+		TThostFtdcOperNoType OperNo;
+		/// äº¤æ˜“ID
+		TThostFtdcTIDType TID;
+		/// ç”¨æˆ·æ ‡è¯†
+		TThostFtdcUserIDType UserID;
+		/// ç»“æ¯å‡€é¢
+		TThostFtdcTradeAmountType DepositInterest;
+		/// ç»“æ¯ç±»å‹
+		TThostFtdcSFInterestTypeType InterestType;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
+
+	/// ç»çºªå…¬å¸éäº¤æ˜“æ—¶é—´æ®µ
+	struct CThostFtdcBrokerBreakSectionField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType TimeStart;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType TimeEnd;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+	};
+
+	/// ç»çºªå…¬å¸é”å®šå®¢æˆ·ç°åˆ¸
+	struct CThostFtdcBrokerLockInvestorStockField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æ ‡çš„åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+	};
+
+	/// æŸ¥è¯¢ç»çºªå…¬å¸é”å®šå®¢æˆ·ç°åˆ¸
+	struct CThostFtdcQryBrokerLockInvestorStockField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType InstrumentID;
+	};
+
+	/// è¡Œæƒæ—¶æ˜¯å¦æ£€æŸ¥æ ‡çš„ç°åˆ¸
+	struct CThostFtdcExecIsCheckUnderlyingField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åŸºç¡€å•†å“ä»£ç 
+		TThostFtdcInstrumentIDType UnderlyingInstrID;
+		/// æ˜¯å¦æ£€æŸ¥
+		TThostFtdcBoolType IsCheck;
+	};
+
+	/// æŸ¥è¯¢è¡Œæƒæ—¶æ˜¯å¦æ£€æŸ¥æ ‡çš„ç°åˆ¸
+	struct CThostFtdcQryExecIsCheckUnderlyingField
+	{
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// åŸºç¡€å•†å“ä»£ç 
+		TThostFtdcInstrumentIDType UnderlyingInstrID;
+	};
+
+	/// æŠ•èµ„è€…ä¸PBUæŒ‡å®šå…³ç³»
+	struct CThostFtdcPBUInvestorMapField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æŒ‡å®šäº¤æ˜“å•å…ƒå·
+		TThostFtdcTraderIDType PBU;
+		/// è¯åˆ¸è´¦æˆ·
+		TThostFtdcClientIDType ClientID;
+		/// æ—¥æœŸ
+		TThostFtdcDateType OperationDate;
+		/// æ—¶é—´
+		TThostFtdcTimeType OperationTime;
+	};
+
+	/// è¾“å…¥çš„è¡ŒæƒæŒ‡ä»¤åˆå¹¶
+	struct CThostFtdcInputExecCombineOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// çœ‹æ¶¨åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType CallInstrumentID;
+		/// çœ‹è·Œåˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType PutInstrumentID;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶å¼•ç”¨
+		TThostFtdcOrderRefType ExecCombineOrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// äº¤æ˜“ç¼–ç 
+		TThostFtdcClientIDType ClientID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// è¾“å…¥è¡ŒæƒæŒ‡ä»¤åˆå¹¶æ“ä½œ
+	struct CThostFtdcInputExecCombineOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType ExecCombineOrderActionRef;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶å¼•ç”¨
+		TThostFtdcOrderRefType ExecCombineOrderRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶æ“ä½œç¼–å·
+		TThostFtdcExecOrderSysIDType ExecCombineOrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// è¡ŒæƒæŒ‡ä»¤åˆå¹¶
+	struct CThostFtdcExecCombineOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// çœ‹æ¶¨åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType CallInstrumentID;
+		/// çœ‹è·Œåˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType PutInstrumentID;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶å¼•ç”¨
+		TThostFtdcOrderRefType ExecCombineOrderRef;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ•°é‡
+		TThostFtdcVolumeType Volume;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// æœ¬åœ°æ‰§è¡Œå®£å‘Šåˆå¹¶ç¼–å·
+		TThostFtdcOrderLocalIDType ExecCombineOrderLocalID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// æ ‡çš„åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType UnderlyingInstrID;
+		/// çœ‹æ¶¨åˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangeCallInstID;
+		/// çœ‹è·Œåˆçº¦åœ¨äº¤æ˜“æ‰€çš„ä»£ç 
+		TThostFtdcExchangeInstIDType ExchangePutInstID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶æäº¤çŠ¶æ€
+		TThostFtdcOrderSubmitStatusType OrderSubmitStatus;
+		/// æŠ¥å•æç¤ºåºå·
+		TThostFtdcSequenceNoType NotifySequence;
+		/// äº¤æ˜“æ—¥
+		TThostFtdcDateType TradingDay;
+		/// ç»“ç®—ç¼–å·
+		TThostFtdcSettlementIDType SettlementID;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶ç¼–å·
+		TThostFtdcExecOrderSysIDType ExecCombineOrderSysID;
+		/// æŠ¥å•æ—¥æœŸ
+		TThostFtdcDateType InsertDate;
+		/// æ’å…¥æ—¶é—´
+		TThostFtdcTimeType InsertTime;
+		/// æ’¤é”€æ—¶é—´
+		TThostFtdcTimeType CancelTime;
+		/// æ‰§è¡Œç»“æœ
+		TThostFtdcExecResultType ExecResult;
+		/// ç»“ç®—ä¼šå‘˜ç¼–å·
+		TThostFtdcParticipantIDType ClearingPartID;
+		/// åºå·
+		TThostFtdcSequenceNoType SequenceNo;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TThostFtdcProductInfoType UserProductInfo;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// æ“ä½œç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType ActiveUserID;
+		/// ç»çºªå…¬å¸æŠ¥å•ç¼–å·
+		TThostFtdcSequenceNoType BrokerExecCombineOrderSeq;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// èµ„é‡‘è´¦å·
+		TThostFtdcAccountIDType AccountID;
+		/// å¸ç§ä»£ç 
+		TThostFtdcCurrencyIDType CurrencyID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// è¡ŒæƒæŒ‡ä»¤åˆå¹¶æ“ä½œ
+	struct CThostFtdcExecCombineOrderActionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶æ“ä½œå¼•ç”¨
+		TThostFtdcOrderActionRefType ExecCombineOrderActionRef;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶å¼•ç”¨
+		TThostFtdcOrderRefType ExecCombineOrderRef;
+		/// è¯·æ±‚ç¼–å·
+		TThostFtdcRequestIDType RequestID;
+		/// å‰ç½®ç¼–å·
+		TThostFtdcFrontIDType FrontID;
+		/// ä¼šè¯ç¼–å·
+		TThostFtdcSessionIDType SessionID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶æ“ä½œç¼–å·
+		TThostFtdcExecOrderSysIDType ExecCombineOrderSysID;
+		/// æ“ä½œæ ‡å¿—
+		TThostFtdcActionFlagType ActionFlag;
+		/// æ“ä½œæ—¥æœŸ
+		TThostFtdcDateType ActionDate;
+		/// æ“ä½œæ—¶é—´
+		TThostFtdcTimeType ActionTime;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æ‰§è¡Œå®£å‘Šåˆå¹¶ç¼–å·
+		TThostFtdcOrderLocalIDType ExecCombineOrderLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// ä¼šå‘˜ä»£ç 
+		TThostFtdcParticipantIDType ParticipantID;
+		/// å®¢æˆ·ä»£ç 
+		TThostFtdcClientIDType ClientID;
+		/// ä¸šåŠ¡å•å…ƒ
+		TThostFtdcBusinessUnitType BusinessUnit;
+		/// æŠ¥å•æ“ä½œçŠ¶æ€
+		TThostFtdcOrderActionStatusType OrderActionStatus;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// æ‰§è¡Œç±»å‹
+		TThostFtdcActionTypeType ActionType;
+		/// çŠ¶æ€ä¿¡æ¯
+		TThostFtdcErrorMsgType StatusMsg;
+		/// çœ‹æ¶¨åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType CallInstrumentID;
+		/// çœ‹è·Œåˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType PutInstrumentID;
+		/// è¥ä¸šéƒ¨ç¼–å·
+		TThostFtdcBranchIDType BranchID;
+		/// æŠ•èµ„å•å…ƒä»£ç 
+		TThostFtdcInvestUnitIDType InvestUnitID;
+		/// IPåœ°å€
+		TThostFtdcIPAddressType IPAddress;
+		/// Macåœ°å€
+		TThostFtdcMacAddressType MacAddress;
+	};
+
+	/// è¡ŒæƒæŒ‡ä»¤åˆå¹¶æŸ¥è¯¢
+	struct CThostFtdcQryExecCombineOrderField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// æŠ•èµ„è€…ä»£ç 
+		TThostFtdcInvestorIDType InvestorID;
+		/// çœ‹æ¶¨åˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType CallInstrumentID;
+		/// çœ‹è·Œåˆçº¦ä»£ç 
+		TThostFtdcInstrumentIDType PutInstrumentID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶ç¼–å·
+		TThostFtdcExecOrderSysIDType ExecCombineOrderSysID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType InsertTimeStart;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType InsertTimeEnd;
+	};
+
+	/// ç”¨æˆ·ç³»ç»Ÿä¿¡æ¯
+	struct CThostFtdcUserSystemInfoField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// ç”¨æˆ·ä»£ç 
+		TThostFtdcUserIDType UserID;
+		/// ç”¨æˆ·ç«¯ç³»ç»Ÿå†…éƒ¨ä¿¡æ¯é•¿åº¦
+		TThostFtdcSystemInfoLenType ClientSystemInfoLen;
+		/// ç”¨æˆ·ç«¯ç³»ç»Ÿå†…éƒ¨ä¿¡æ¯
+		TThostFtdcClientSystemInfoType ClientSystemInfo;
+		/// ç”¨æˆ·å…¬ç½‘IP
+		TThostFtdcIPAddressType ClientPublicIP;
+		/// ç»ˆç«¯IPç«¯å£
+		TThostFtdcIPPortType ClientIPPort;
+		/// ç™»å½•æˆåŠŸæ—¶é—´
+		TThostFtdcTimeType ClientLoginTime;
+		/// Appä»£ç 
+		TThostFtdcAppIDType ClientAppID;
+	};
+
+	/// apiæ¡æ‰‹è¯·æ±‚
+	struct CThostFtdcReqApiHandshakeField
+	{
+		/// apiä¸fronté€šä¿¡å¯†é’¥ç‰ˆæœ¬å·
+		TThostFtdcCryptoKeyVersionType CryptoKeyVersion;
+	};
+
+	/// frontå‘ç»™apiçš„æ¡æ‰‹å›å¤
+	struct CThostFtdcRspApiHandshakeField
+	{
+		/// æ¡æ‰‹å›å¤æ•°æ®é•¿åº¦
+		TThostFtdcHandshakeDataLenType FrontHandshakeDataLen;
+		/// æ¡æ‰‹å›å¤æ•°æ®
+		TThostFtdcHandshakeDataType FrontHandshakeData;
+		/// APIè®¤è¯æ˜¯å¦å¼€å¯
+		TThostFtdcBoolType IsApiAuthEnabled;
+	};
+
+	/// apiç»™frontçš„éªŒè¯keyçš„è¯·æ±‚
+	struct CThostFtdcReqVerifyApiKeyField
+	{
+		/// æ¡æ‰‹å›å¤æ•°æ®é•¿åº¦
+		TThostFtdcHandshakeDataLenType ApiHandshakeDataLen;
+		/// æ¡æ‰‹å›å¤æ•°æ®
+		TThostFtdcHandshakeDataType ApiHandshakeData;
+	};
+
+	/// Appå®¢æˆ·ç«¯æƒé™åˆ†é…
+	struct CThostFtdcAppIDAuthAssignField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// Appä»£ç 
+		TThostFtdcAppIDType AppID;
+		/// äº¤æ˜“ä¸­å¿ƒä»£ç 
+		TThostFtdcDRIdentityIDType DRIdentityID;
+	};
+
+	/// Appè®¤è¯ç 
+	struct CThostFtdcAppAuthenticationCodeField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// Appä»£ç 
+		TThostFtdcAppIDType AppID;
+		/// è®¤è¯ç 
+		TThostFtdcAuthCodeType AuthCode;
+		/// æ—§è®¤è¯ç 
+		TThostFtdcAuthCodeType PreAuthCode;
+		/// Appç±»å‹
+		TThostFtdcAppTypeType AppType;
+	};
+
+	/// æŸ¥è¯¢é¢‘ç‡ï¼Œæ¯ç§’æŸ¥è¯¢æ¯”æ•°
+	struct CThostFtdcQueryFreqField
+	{
+		/// æŸ¥è¯¢é¢‘ç‡
+		TThostFtdcQueryFreqType QueryFreq;
+	};
+
+	/// åˆå¹¶è¡Œæƒæ—¶é—´æ®µ
+	struct CThostFtdcExecCombineTimeSectionField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// å¼€å§‹æ—¶é—´
+		TThostFtdcTimeType StartTime;
+		/// ç»“æŸæ—¶é—´
+		TThostFtdcTimeType EndTime;
+		/// æŒ‚å•å…è®¸è¡Œæƒèµ·å§‹æ—¶é—´
+		TThostFtdcTimeType CloseFrozExecTime;
+	};
+
+	/// äº¤æ˜“æ‰€æ“ä½œé”™è¯¯
+	struct CThostFtdcExchangeExecCombineOrderActionErrorField
+	{
+		/// ç»çºªå…¬å¸ä»£ç 
+		TThostFtdcBrokerIDType BrokerID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TThostFtdcExchangeIDType ExchangeID;
+		/// æ‰§è¡Œå®£å‘Šåˆå¹¶ç¼–å·
+		TThostFtdcExecOrderSysIDType ExecCombineOrderSysID;
+		/// äº¤æ˜“æ‰€äº¤æ˜“å‘˜ä»£ç 
+		TThostFtdcTraderIDType TraderID;
+		/// å®‰è£…ç¼–å·
+		TThostFtdcInstallIDType InstallID;
+		/// æœ¬åœ°æ‰§è¡Œå®£å‘Šåˆå¹¶ç¼–å·
+		TThostFtdcOrderLocalIDType ExecCombineOrderLocalID;
+		/// æ“ä½œæœ¬åœ°ç¼–å·
+		TThostFtdcOrderLocalIDType ActionLocalID;
+		/// é”™è¯¯ä»£ç 
+		TThostFtdcErrorIDType ErrorID;
+		/// é”™è¯¯ä¿¡æ¯
+		TThostFtdcErrorMsgType ErrorMsg;
+	};
 
 }
 

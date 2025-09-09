@@ -12,42 +12,42 @@ class IBaseDataMgr;
 class IIndexContext
 {
 public:
-	IIndexContext(){}
+	IIndexContext() {}
 	virtual ~IIndexContext() {}
 
 public:
-	virtual IHotMgr*		get_hot_mgr() = 0;
-	virtual IBaseDataMgr*	get_bd_mgr() = 0;
+	virtual IHotMgr *get_hot_mgr() = 0;
+	virtual IBaseDataMgr *get_bd_mgr() = 0;
 
-	virtual WTSTickData*	sub_ticks(const char* fullCode) = 0;
+	virtual WTSTickData *sub_ticks(const char *fullCode) = 0;
 
-	virtual WTSTickData*	get_tick(const char* code, const char* exchg) = 0;
+	virtual WTSTickData *get_tick(const char *code, const char *exchg) = 0;
 
-	virtual void			push_tick(WTSTickData* newTick) = 0;
+	virtual void push_tick(WTSTickData *newTick) = 0;
 
-	virtual void			output_log(WTSLogLevel ll, const char* message) = 0;
+	virtual void output_log(WTSLogLevel ll, const char *message) = 0;
 };
 
 class IIndexWorker
 {
 public:
-	IIndexWorker(const char* id):_factory(nullptr), _hot_mgr(nullptr), _bd_mgr(nullptr), _id(id){}
-	virtual ~IIndexWorker(){}
+	IIndexWorker(const char *id) : _factory(nullptr), _hot_mgr(nullptr), _bd_mgr(nullptr), _id(id) {}
+	virtual ~IIndexWorker() {}
 
 public:
 	/*
-	 *	»ñÈ¡¹¤³§Ãû
+	 *	è·å–å·¥å‚å
 	 */
-	virtual const char* get_fact_name() = 0;
+	virtual const char *get_fact_name() = 0;
 
-	virtual bool	init(WTSVariant* config) = 0;
+	virtual bool init(WTSVariant *config) = 0;
 
-	virtual void	handle_quote(WTSTickData* newTick) = 0;
+	virtual void handle_quote(WTSTickData *newTick) = 0;
 
-	void	set_factory(IIndexContext* factory)
+	void set_factory(IIndexContext *factory)
 	{
 		_factory = factory;
-		if(_factory)
+		if (_factory)
 		{
 			_hot_mgr = _factory->get_hot_mgr();
 			_bd_mgr = _factory->get_bd_mgr();
@@ -55,15 +55,15 @@ public:
 	}
 
 protected:
-	IIndexContext*	_factory;
-	IHotMgr*		_hot_mgr;
-	IBaseDataMgr*	_bd_mgr;
-	std::string		_id;
+	IIndexContext *_factory;
+	IHotMgr *_hot_mgr;
+	IBaseDataMgr *_bd_mgr;
+	std::string _id;
 };
 
 //////////////////////////////////////////////////////////////////////////
-//²ßÂÔ¹¤³§½Ó¿Ú
-typedef void(*FuncEnumIndexWorkerCallback)(const char* factName, const char* straName, bool isLast);
+// ç­–ç•¥å·¥å‚æ¥å£
+typedef void (*FuncEnumIndexWorkerCallback)(const char *factName, const char *straName, bool isLast);
 
 class IIndexWorkerFact
 {
@@ -73,26 +73,24 @@ public:
 
 public:
 	/*
-	 *	»ñÈ¡¹¤³§Ãû
+	 *	è·å–å·¥å‚å
 	 */
-	virtual const char* get_name() = 0;
+	virtual const char *get_name() = 0;
 
 	/*
-	 *	¸ù¾İÃû³ÆÖ¸±êÉú³ÉÆ÷
+	 *	æ ¹æ®åç§°æŒ‡æ ‡ç”Ÿæˆå™¨
 	 */
-	virtual IIndexWorker* create_worker(const char* name, const char* id) = 0;
-
+	virtual IIndexWorker *create_worker(const char *name, const char *id) = 0;
 
 	/*
-	 *	É¾³ıÖ¸±êÉú³ÉÆ÷
+	 *	åˆ é™¤æŒ‡æ ‡ç”Ÿæˆå™¨
 	 */
-	virtual bool delete_worker(IIndexWorker* stra) = 0;
+	virtual bool delete_worker(IIndexWorker *stra) = 0;
 };
-
 
 NS_WTP_END
 
-//´´½¨¹¤³§
-typedef wtp::IIndexWorkerFact* (*FuncCreateIndexFact)();
-//É¾³ı¹¤³§
-typedef void(*FuncDeleteIndexFact)(wtp::IIndexWorkerFact* &fact);
+// åˆ›å»ºå·¥å‚
+typedef wtp::IIndexWorkerFact *(*FuncCreateIndexFact)();
+// åˆ é™¤å·¥å‚
+typedef void (*FuncDeleteIndexFact)(wtp::IIndexWorkerFact *&fact);

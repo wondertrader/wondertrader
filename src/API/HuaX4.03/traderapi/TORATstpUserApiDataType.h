@@ -1,19 +1,18 @@
 /////////////////////////////////////////////////////////////////////////
-///@company ÉÏº£Ì©çüĞÅÏ¢¿Æ¼¼ÓĞÏŞ¹«Ë¾
+///@company ä¸Šæµ·æ³°ç°ä¿¡æ¯ç§‘æŠ€æœ‰é™å…¬å¸
 ///@file TORATstpUserApiDataType.h
-///@brief ¶¨ÒåÁË¿Í»§¶Ë½Ó¿ÚÊ¹ÓÃµÄÒµÎñÊı¾İÀàĞÍ
-///@history 
+///@brief å®šä¹‰äº†å®¢æˆ·ç«¯æ¥å£ä½¿ç”¨çš„ä¸šåŠ¡æ•°æ®ç±»å‹
+///@history
 /////////////////////////////////////////////////////////////////////////
 #ifndef TORATSTPUSERAPIDATATYPE_H__
 #define TORATSTPUSERAPIDATATYPE_H__
-
 
 #include <limits.h>
 #include <float.h>
 
 namespace TORASTOCKAPI
 {
-	///¶¨Òå¿ÕÖµ
+	/// å®šä¹‰ç©ºå€¼
 	const int INT_NULL_VAL = INT_MAX;
 	const double FLOAT_NULL_VAL = DBL_MAX;
 	const char CHAR_NULL_VAL = 0;
@@ -23,8 +22,8 @@ namespace TORASTOCKAPI
 #else
 	const long long LONG_NULL_VAL = LLONG_MAX;
 #endif
-	
-	///ÕûĞÍÊı¾İÖÃ¿ÕºÍÅĞ¿Õ
+
+	/// æ•´å‹æ•°æ®ç½®ç©ºå’Œåˆ¤ç©º
 	inline void set_null(int &v)
 	{
 		v = INT_NULL_VAL;
@@ -33,8 +32,8 @@ namespace TORASTOCKAPI
 	{
 		return v == INT_NULL_VAL;
 	}
-	
-	///¸¡µãĞÍÊı¾İÖÃ¿ÕºÍÅĞ¿Õ
+
+	/// æµ®ç‚¹å‹æ•°æ®ç½®ç©ºå’Œåˆ¤ç©º
 	inline void set_null(double &v)
 	{
 		v = FLOAT_NULL_VAL;
@@ -43,8 +42,8 @@ namespace TORASTOCKAPI
 	{
 		return v == FLOAT_NULL_VAL;
 	}
-	
-	///×Ö·ûĞÍÊı¾İÖÃ¿ÕºÍÅĞ¿Õ
+
+	/// å­—ç¬¦å‹æ•°æ®ç½®ç©ºå’Œåˆ¤ç©º
 	inline void set_null(char &v)
 	{
 		v = CHAR_NULL_VAL;
@@ -53,8 +52,8 @@ namespace TORASTOCKAPI
 	{
 		return v == CHAR_NULL_VAL;
 	}
-	
-	///¶ÌÕûĞÍÊı¾İÖÃ¿ÕºÍÅĞ¿Õ
+
+	/// çŸ­æ•´å‹æ•°æ®ç½®ç©ºå’Œåˆ¤ç©º
 	inline void set_null(short &v)
 	{
 		v = WORD_NULL_VAL;
@@ -63,36 +62,36 @@ namespace TORASTOCKAPI
 	{
 		return v == WORD_NULL_VAL;
 	}
-	
-	///³¤ÕûĞÍÊı¾İÖÃ¿ÕºÍÅĞ¿Õ
-	#ifdef WINDOWS
+
+/// é•¿æ•´å‹æ•°æ®ç½®ç©ºå’Œåˆ¤ç©º
+#ifdef WINDOWS
 	inline void set_null(__int64 &v)
-	#else
+#else
 	inline void set_null(long long &v)
-	#endif
+#endif
 	{
 		v = LONG_NULL_VAL;
 	}
-	#ifdef WINDOWS
+#ifdef WINDOWS
 	inline bool is_null(const __int64 &v)
-	#else
+#else
 	inline bool is_null(const long long &v)
-	#endif
+#endif
 	{
 		return v == LONG_NULL_VAL;
 	}
-	
-	///×Ö·û´®ĞÍÊı¾İÖÃ¿ÕºÍÅĞ¿Õ
+
+	/// å­—ç¬¦ä¸²å‹æ•°æ®ç½®ç©ºå’Œåˆ¤ç©º
 	inline void set_null(char *v)
 	{
 		v[0] = '\0';
 	}
 	inline bool is_null(const char *v)
 	{
-		const char *p=v;
+		const char *p = v;
 		while (*p)
 		{
-			if (*p!=' ')
+			if (*p != ' ')
 			{
 				return false;
 			}
@@ -100,1596 +99,1596 @@ namespace TORASTOCKAPI
 		}
 		return true;
 	}
-	
+
 	enum TORA_TE_RESUME_TYPE
 	{
 		TORA_TERT_RESTART = 0,
 		TORA_TERT_RESUME,
 		TORA_TERT_QUICK
 	};
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpLogInAccountTypeÊÇÒ»¸öµÇÂ¼ÕË»§ÀàĞÍ
+	/// TTORATstpLogInAccountTypeæ˜¯ä¸€ä¸ªç™»å½•è´¦æˆ·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpLogInAccountType[21];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpLogInAccountTypeTypeÊÇÒ»¸öµÇÂ¼ÕË»§ÀàĞÍÀàĞÍ
+	/// TTORATstpLogInAccountTypeTypeæ˜¯ä¸€ä¸ªç™»å½•è´¦æˆ·ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÓÃ»§´úÂë
+	/// ç”¨æˆ·ä»£ç 
 	const char TORA_TSTP_LACT_UserID = '0';
-	///×Ê½ğÕËºÅ
+	/// èµ„é‡‘è´¦å·
 	const char TORA_TSTP_LACT_AccountID = '1';
-	///ÉÏº£A¹É
+	/// ä¸Šæµ·Aè‚¡
 	const char TORA_TSTP_LACT_SHAStock = '2';
-	///ÉîÛÚA¹É
+	/// æ·±åœ³Aè‚¡
 	const char TORA_TSTP_LACT_SZAStock = '3';
-	///ÉÏº£B¹É
+	/// ä¸Šæµ·Bè‚¡
 	const char TORA_TSTP_LACT_SHBStock = '4';
-	///ÉîÛÚB¹É
+	/// æ·±åœ³Bè‚¡
 	const char TORA_TSTP_LACT_SZBStock = '5';
-	///Èı°åA
+	/// ä¸‰æ¿A
 	const char TORA_TSTP_LACT_ThreeNewBoardA = '6';
-	///Èı°åB
+	/// ä¸‰æ¿B
 	const char TORA_TSTP_LACT_ThreeNewBoardB = '7';
-	///¸Û¹É
+	/// æ¸¯è‚¡
 	const char TORA_TSTP_LACT_HKStock = '8';
-	///Í³Ò»ÓÃ»§´úÂë
+	/// ç»Ÿä¸€ç”¨æˆ·ä»£ç 
 	const char TORA_TSTP_LACT_UnifiedUserID = '9';
-	///±±¾©A¹É
+	/// åŒ—äº¬Aè‚¡
 	const char TORA_TSTP_LACT_BJAStock = 'a';
 	typedef char TTORATstpLogInAccountTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpDepartmentIDTypeÊÇÒ»¸ö²¿ÃÅ´úÂëÀàĞÍ
+	/// TTORATstpDepartmentIDTypeæ˜¯ä¸€ä¸ªéƒ¨é—¨ä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpDepartmentIDType[11];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpAuthModeTypeÊÇÒ»¸öÈÏÖ¤·½Ê½ÀàĞÍ
+	/// TTORATstpAuthModeTypeæ˜¯ä¸€ä¸ªè®¤è¯æ–¹å¼ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÃÜÂë
+	/// å¯†ç 
 	const char TORA_TSTP_AM_Password = '0';
-	///Ö¸ÎÆ
+	/// æŒ‡çº¹
 	const char TORA_TSTP_AM_FingerPrint = '1';
-	///Ô¿³×´®
+	/// é’¥åŒ™ä¸²
 	const char TORA_TSTP_AM_CertInfo = '2';
 	typedef char TTORATstpAuthModeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpPasswordTypeÊÇÒ»¸öÃÜÂëÀàĞÍ
+	/// TTORATstpPasswordTypeæ˜¯ä¸€ä¸ªå¯†ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpPasswordType[41];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpUserProductInfoTypeÊÇÒ»¸öÓÃ»§¶Ë²úÆ·ĞÅÏ¢ÀàĞÍ
+	/// TTORATstpUserProductInfoTypeæ˜¯ä¸€ä¸ªç”¨æˆ·ç«¯äº§å“ä¿¡æ¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpUserProductInfoType[11];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpInterfaceProductInfoTypeÊÇÒ»¸ö½Ó¿Ú¶Ë²úÆ·ĞÅÏ¢ÀàĞÍ
+	/// TTORATstpInterfaceProductInfoTypeæ˜¯ä¸€ä¸ªæ¥å£ç«¯äº§å“ä¿¡æ¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpInterfaceProductInfoType[33];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTerminalInfoTypeÊÇÒ»¸öÖÕ¶ËĞÅÏ¢ÀàĞÍ
+	/// TTORATstpTerminalInfoTypeæ˜¯ä¸€ä¸ªç»ˆç«¯ä¿¡æ¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpTerminalInfoType[256];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpIPAddressTypeÊÇÒ»¸öIPµØÖ·ÀàĞÍ
+	/// TTORATstpIPAddressTypeæ˜¯ä¸€ä¸ªIPåœ°å€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpIPAddressType[16];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpMacAddressTypeÊÇÒ»¸öMacµØÖ·ÀàĞÍ
+	/// TTORATstpMacAddressTypeæ˜¯ä¸€ä¸ªMacåœ°å€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpMacAddressType[21];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpLangTypeÊÇÒ»¸öÓïÑÔÀàĞÍ
+	/// TTORATstpLangTypeæ˜¯ä¸€ä¸ªè¯­è¨€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///¼òÌåÖĞÎÄ
+	/// ç®€ä½“ä¸­æ–‡
 	const char TORA_TSTP_LGT_ZHCN = '0';
-	///ÖĞÎÄÏã¸Û
+	/// ä¸­æ–‡é¦™æ¸¯
 	const char TORA_TSTP_LGT_ZHHK = '1';
-	///Ó¢ÎÄÃÀ¹ú
+	/// è‹±æ–‡ç¾å›½
 	const char TORA_TSTP_LGT_ENUS = '2';
 	typedef char TTORATstpLangType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpDeviceIDTypeÊÇÒ»¸öÉè±¸±êÊ¶ÀàĞÍ
+	/// TTORATstpDeviceIDTypeæ˜¯ä¸€ä¸ªè®¾å¤‡æ ‡è¯†ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpDeviceIDType[129];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCertSerialTypeÊÇÒ»¸öÈÏÖ¤ĞòÁĞÀàĞÍ
+	/// TTORATstpCertSerialTypeæ˜¯ä¸€ä¸ªè®¤è¯åºåˆ—ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpCertSerialType[129];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpDeviceTypeTypeÊÇÒ»¸öÉè±¸Àà±ğÀàĞÍ
+	/// TTORATstpDeviceTypeTypeæ˜¯ä¸€ä¸ªè®¾å¤‡ç±»åˆ«ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///PC¶Ë
+	/// PCç«¯
 	const char TORA_TSTP_DVT_PC = '0';
-	///ÒÆ¶¯¶Ë
+	/// ç§»åŠ¨ç«¯
 	const char TORA_TSTP_DVT_Mobile = '1';
 	typedef char TTORATstpDeviceTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpFrontIDTypeÊÇÒ»¸öÇ°ÖÃ±àºÅÀàĞÍ
+	/// TTORATstpFrontIDTypeæ˜¯ä¸€ä¸ªå‰ç½®ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpFrontIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpSessionIDTypeÊÇÒ»¸ö»á»°±àºÅÀàĞÍ
+	/// TTORATstpSessionIDTypeæ˜¯ä¸€ä¸ªä¼šè¯ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpSessionIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOrderRefTypeÊÇÒ»¸ö±¨µ¥ÒıÓÃÀàĞÍ
+	/// TTORATstpOrderRefTypeæ˜¯ä¸€ä¸ªæŠ¥å•å¼•ç”¨ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpOrderRefType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpVolumeTypeÊÇÒ»¸öÊıÁ¿ÀàĞÍ
+	/// TTORATstpVolumeTypeæ˜¯ä¸€ä¸ªæ•°é‡ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpVolumeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTimeTypeÊÇÒ»¸öÊ±¼äÀàĞÍ
+	/// TTORATstpTimeTypeæ˜¯ä¸€ä¸ªæ—¶é—´ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpTimeType[9];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpSystemNameTypeÊÇÒ»¸öÏµÍ³Ãû³ÆÀàĞÍ
+	/// TTORATstpSystemNameTypeæ˜¯ä¸€ä¸ªç³»ç»Ÿåç§°ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpSystemNameType[41];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpDateTypeÊÇÒ»¸öÈÕÆÚÀàĞÍ
+	/// TTORATstpDateTypeæ˜¯ä¸€ä¸ªæ—¥æœŸç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpDateType[9];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpUserIDTypeÊÇÒ»¸ö½»Ò×ÓÃ»§´úÂëÀàĞÍ
+	/// TTORATstpUserIDTypeæ˜¯ä¸€ä¸ªäº¤æ˜“ç”¨æˆ·ä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpUserIDType[16];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpUserNameTypeÊÇÒ»¸öÓÃ»§Ãû³ÆÀàĞÍ
+	/// TTORATstpUserNameTypeæ˜¯ä¸€ä¸ªç”¨æˆ·åç§°ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpUserNameType[81];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpUserTypeTypeÊÇÒ»¸öÓÃ»§ÀàĞÍÀàĞÍ
+	/// TTORATstpUserTypeTypeæ˜¯ä¸€ä¸ªç”¨æˆ·ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///¾­¼Í¹«Ë¾ÓÃ»§
+	/// ç»çºªå…¬å¸ç”¨æˆ·
 	const char TORA_TSTP_UTYPE_BrokerUser = '0';
-	///³¬¼¶ÓÃ»§
+	/// è¶…çº§ç”¨æˆ·
 	const char TORA_TSTP_UTYPE_SuperUser = '1';
-	///Í¶×ÊÕßÓÃ»§
+	/// æŠ•èµ„è€…ç”¨æˆ·
 	const char TORA_TSTP_UTYPE_Investor = '2';
 	typedef char TTORATstpUserTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCommFluxTypeÊÇÒ»¸öÍ¨Ñ¶Á÷Á¿ÀàĞÍ
+	/// TTORATstpCommFluxTypeæ˜¯ä¸€ä¸ªé€šè®¯æµé‡ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpCommFluxType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpBoolTypeÊÇÒ»¸ö²¼¶ûĞÍÀàĞÍ
+	/// TTORATstpBoolTypeæ˜¯ä¸€ä¸ªå¸ƒå°”å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpBoolType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpErrorIDTypeÊÇÒ»¸ö´íÎó´úÂëÀàĞÍ
+	/// TTORATstpErrorIDTypeæ˜¯ä¸€ä¸ªé”™è¯¯ä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpErrorIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpErrorMsgTypeÊÇÒ»¸ö´íÎóĞÅÏ¢ÀàĞÍ
+	/// TTORATstpErrorMsgTypeæ˜¯ä¸€ä¸ªé”™è¯¯ä¿¡æ¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpErrorMsgType[81];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpExchangeIDTypeÊÇÒ»¸ö½»Ò×Ëù´úÂëÀàĞÍ
+	/// TTORATstpExchangeIDTypeæ˜¯ä¸€ä¸ªäº¤æ˜“æ‰€ä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Í¨ÓÃ(ÄÚ²¿Ê¹ÓÃ)
+	/// é€šç”¨(å†…éƒ¨ä½¿ç”¨)
 	const char TORA_TSTP_EXD_COMM = '0';
-	///ÉÏº£½»Ò×Ëù
+	/// ä¸Šæµ·äº¤æ˜“æ‰€
 	const char TORA_TSTP_EXD_SSE = '1';
-	///ÉîÛÚ½»Ò×Ëù
+	/// æ·±åœ³äº¤æ˜“æ‰€
 	const char TORA_TSTP_EXD_SZSE = '2';
-	///Ïã¸Û½»Ò×Ëù
+	/// é¦™æ¸¯äº¤æ˜“æ‰€
 	const char TORA_TSTP_EXD_HK = '3';
-	///±±¾©Ö¤È¯½»Ò×Ëù
+	/// åŒ—äº¬è¯åˆ¸äº¤æ˜“æ‰€
 	const char TORA_TSTP_EXD_BSE = '4';
 	typedef char TTORATstpExchangeIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpInvestorIDTypeÊÇÒ»¸öÍ¶×ÊÕß´úÂëÀàĞÍ
+	/// TTORATstpInvestorIDTypeæ˜¯ä¸€ä¸ªæŠ•èµ„è€…ä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpInvestorIDType[16];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpBusinessUnitIDTypeÊÇÒ»¸öÍ¶×Êµ¥Ôª´úÂëÀàĞÍ
+	/// TTORATstpBusinessUnitIDTypeæ˜¯ä¸€ä¸ªæŠ•èµ„å•å…ƒä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpBusinessUnitIDType[16];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpShareholderIDTypeÊÇÒ»¸ö¹É¶«ÕË»§´úÂëÀàĞÍ
+	/// TTORATstpShareholderIDTypeæ˜¯ä¸€ä¸ªè‚¡ä¸œè´¦æˆ·ä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpShareholderIDType[11];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpSecurityIDTypeÊÇÒ»¸öÖ¤È¯´úÂëÀàĞÍ
+	/// TTORATstpSecurityIDTypeæ˜¯ä¸€ä¸ªè¯åˆ¸ä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpSecurityIDType[31];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpDirectionTypeÊÇÒ»¸ö±¨µ¥·½ÏòÀàĞÍ
+	/// TTORATstpDirectionTypeæ˜¯ä¸€ä¸ªæŠ¥å•æ–¹å‘ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÂòÈë
+	/// ä¹°å…¥
 	const char TORA_TSTP_D_Buy = '0';
-	///Âô³ö
+	/// å–å‡º
 	const char TORA_TSTP_D_Sell = '1';
-	///ETFÉê¹º
+	/// ETFç”³è´­
 	const char TORA_TSTP_D_ETFPur = '2';
-	///ETFÊê»Ø
+	/// ETFèµå›
 	const char TORA_TSTP_D_ETFRed = '3';
-	///ĞÂ¹ÉÉê¹º
+	/// æ–°è‚¡ç”³è´­
 	const char TORA_TSTP_D_IPO = '4';
-	///Õı»Ø¹º
+	/// æ­£å›è´­
 	const char TORA_TSTP_D_Repurchase = '5';
-	///Äæ»Ø¹º
+	/// é€†å›è´­
 	const char TORA_TSTP_D_ReverseRepur = '6';
-	///¿ª·ÅÊ½»ù½ğÉê¹º
+	/// å¼€æ”¾å¼åŸºé‡‘ç”³è´­
 	const char TORA_TSTP_D_OeFundPur = '8';
-	///¿ª·ÅÊ½»ù½ğÊê»Ø
+	/// å¼€æ”¾å¼åŸºé‡‘èµå›
 	const char TORA_TSTP_D_OeFundRed = '9';
-	///µ£±£Æ·»®Èë
+	/// æ‹…ä¿å“åˆ’å…¥
 	const char TORA_TSTP_D_CollateralIn = 'a';
-	///µ£±£Æ·»®³ö
+	/// æ‹…ä¿å“åˆ’å‡º
 	const char TORA_TSTP_D_CollateralOut = 'b';
-	///ÖÊÑºÈë¿â
+	/// è´¨æŠ¼å…¥åº“
 	const char TORA_TSTP_D_PledgeIn = 'd';
-	///ÖÊÑº³ö¿â
+	/// è´¨æŠ¼å‡ºåº“
 	const char TORA_TSTP_D_PledgeOut = 'e';
-	///Åä¹ÉÅäÕ®
+	/// é…è‚¡é…å€º
 	const char TORA_TSTP_D_Rationed = 'f';
-	///»ù½ğ²ğ·Ö
+	/// åŸºé‡‘æ‹†åˆ†
 	const char TORA_TSTP_D_Split = 'g';
-	///»ù½ğºÏ²¢
+	/// åŸºé‡‘åˆå¹¶
 	const char TORA_TSTP_D_Merge = 'h';
-	///ÈÚ×ÊÂòÈë
+	/// èèµ„ä¹°å…¥
 	const char TORA_TSTP_D_CreditBuy = 'i';
-	///ÈÚÈ¯Âô³ö
+	/// èåˆ¸å–å‡º
 	const char TORA_TSTP_D_CreditSell = 'j';
-	///ÂôÈ¯»¹¿î
+	/// å–åˆ¸è¿˜æ¬¾
 	const char TORA_TSTP_D_SellRepay = 'k';
-	///ÂòÈ¯»¹È¯
+	/// ä¹°åˆ¸è¿˜åˆ¸
 	const char TORA_TSTP_D_BuyRepay = 'l';
-	///»¹È¯»®×ª
+	/// è¿˜åˆ¸åˆ’è½¬
 	const char TORA_TSTP_D_RepayTransfer = 'm';
-	///ÓàÈ¯»®×ª
+	/// ä½™åˆ¸åˆ’è½¬
 	const char TORA_TSTP_D_SurplusTransfer = 'n';
-	///Ô´È¯»®×ª
+	/// æºåˆ¸åˆ’è½¬
 	const char TORA_TSTP_D_SourceTransfer = 'o';
-	///Õ®È¯×ª¹É
+	/// å€ºåˆ¸è½¬è‚¡
 	const char TORA_TSTP_D_BondConvertStock = 't';
-	///Õ®È¯»ØÊÛ
+	/// å€ºåˆ¸å›å”®
 	const char TORA_TSTP_D_BondPutback = 'u';
-	///ETFÊµÎïÉê¹º
+	/// ETFå®ç‰©ç”³è´­
 	const char TORA_TSTP_D_ETFOtPur = 'v';
-	///ETFÊµÎïÊê»Ø
+	/// ETFå®ç‰©èµå›
 	const char TORA_TSTP_D_ETFOtRed = 'w';
-	///»ØÊÛ³·Ïú
+	/// å›å”®æ’¤é”€
 	const char TORA_TSTP_D_PutbackRelieve = 'x';
-	///ÒâÏòÂòÈë
+	/// æ„å‘ä¹°å…¥
 	const char TORA_TSTP_D_IOIBuy = 'A';
-	///ÒâÏòÂô³ö
+	/// æ„å‘å–å‡º
 	const char TORA_TSTP_D_IOISell = 'B';
-	///³É½»È·ÈÏÂòÈë
+	/// æˆäº¤ç¡®è®¤ä¹°å…¥
 	const char TORA_TSTP_D_TCRBuy = 'C';
-	///³É½»È·ÈÏÂô³ö
+	/// æˆäº¤ç¡®è®¤å–å‡º
 	const char TORA_TSTP_D_TCRSell = 'D';
 	typedef char TTORATstpDirectionType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpPriceTypeÊÇÒ»¸ö¼Û¸ñÀàĞÍ
+	/// TTORATstpPriceTypeæ˜¯ä¸€ä¸ªä»·æ ¼ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef double TTORATstpPriceType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOrderPriceTypeTypeÊÇÒ»¸ö±¨µ¥¼Û¸ñÌõ¼şÀàĞÍ
+	/// TTORATstpOrderPriceTypeTypeæ˜¯ä¸€ä¸ªæŠ¥å•ä»·æ ¼æ¡ä»¶ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÈÎÒâ¼Û
+	/// ä»»æ„ä»·
 	const char TORA_TSTP_OPT_AnyPrice = '1';
-	///ÏŞ¼Û
+	/// é™ä»·
 	const char TORA_TSTP_OPT_LimitPrice = '2';
-	///×îÓÅ¼Û
+	/// æœ€ä¼˜ä»·
 	const char TORA_TSTP_OPT_BestPrice = '3';
-	///ÅÌºó¶¨¼Û
+	/// ç›˜åå®šä»·
 	const char TORA_TSTP_OPT_FixPrice = '4';
-	///Îåµµ¼Û
+	/// äº”æ¡£ä»·
 	const char TORA_TSTP_OPT_FiveLevelPrice = '5';
-	///±¾·½×îÓÅ
+	/// æœ¬æ–¹æœ€ä¼˜
 	const char TORA_TSTP_OPT_HomeBestPrice = '6';
 	typedef char TTORATstpOrderPriceTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTimeConditionTypeÊÇÒ»¸öÓĞĞ§ÆÚÀàĞÍÀàĞÍ
+	/// TTORATstpTimeConditionTypeæ˜¯ä¸€ä¸ªæœ‰æ•ˆæœŸç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Á¢¼´Íê³É£¬·ñÔò³·Ïú
+	/// ç«‹å³å®Œæˆï¼Œå¦åˆ™æ’¤é”€
 	const char TORA_TSTP_TC_IOC = '1';
-	///±¾½ÚÓĞĞ§
+	/// æœ¬èŠ‚æœ‰æ•ˆ
 	const char TORA_TSTP_TC_GFS = '2';
-	///µ±ÈÕÓĞĞ§
+	/// å½“æ—¥æœ‰æ•ˆ
 	const char TORA_TSTP_TC_GFD = '3';
-	///Ö¸¶¨ÈÕÆÚÇ°ÓĞĞ§
+	/// æŒ‡å®šæ—¥æœŸå‰æœ‰æ•ˆ
 	const char TORA_TSTP_TC_GTD = '4';
-	///³·ÏúÇ°ÓĞĞ§
+	/// æ’¤é”€å‰æœ‰æ•ˆ
 	const char TORA_TSTP_TC_GTC = '5';
-	///¼¯ºÏ¾º¼ÛÓĞĞ§
+	/// é›†åˆç«ä»·æœ‰æ•ˆ
 	const char TORA_TSTP_TC_GFA = '6';
 	typedef char TTORATstpTimeConditionType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpVolumeConditionTypeÊÇÒ»¸ö³É½»Á¿ÀàĞÍÀàĞÍ
+	/// TTORATstpVolumeConditionTypeæ˜¯ä¸€ä¸ªæˆäº¤é‡ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÈÎºÎÊıÁ¿
+	/// ä»»ä½•æ•°é‡
 	const char TORA_TSTP_VC_AV = '1';
-	///×îĞ¡ÊıÁ¿
+	/// æœ€å°æ•°é‡
 	const char TORA_TSTP_VC_MV = '2';
-	///È«²¿ÊıÁ¿
+	/// å…¨éƒ¨æ•°é‡
 	const char TORA_TSTP_VC_CV = '3';
 	typedef char TTORATstpVolumeConditionType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOperwayTypeÊÇÒ»¸öÎ¯ÍĞ·½Ê½ÀàĞÍ
+	/// TTORATstpOperwayTypeæ˜¯ä¸€ä¸ªå§”æ‰˜æ–¹å¼ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///¿Õ
+	/// ç©º
 	const char TORA_TSTP_OPERW_Non = ' ';
-	///µç»°Î¯ÍĞ
+	/// ç”µè¯å§”æ‰˜
 	const char TORA_TSTP_OPERW_Telephone = '0';
-	///¹ñÌ¨Î¯ÍĞ
+	/// æŸœå°å§”æ‰˜
 	const char TORA_TSTP_OPERW_OTC = '1';
-	///ÒÆ¶¯¿Í»§¶ËÎ¯ÍĞ
+	/// ç§»åŠ¨å®¢æˆ·ç«¯å§”æ‰˜
 	const char TORA_TSTP_OPERW_MobileClient = '2';
-	///PC¿Í»§¶ËÎ¯ÍĞ
+	/// PCå®¢æˆ·ç«¯å§”æ‰˜
 	const char TORA_TSTP_OPERW_PCClient = '3';
-	///TYÎ¯ÍĞ
+	/// TYå§”æ‰˜
 	const char TORA_TSTP_OPERW_TY = '4';
-	///Í¨µÀÎ¯ÍĞ
+	/// é€šé“å§”æ‰˜
 	const char TORA_TSTP_OPERW_Channel = '5';
 	typedef char TTORATstpOperwayType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpLotTypeTypeÊÇÒ»¸ö¸Û¹É¶©µ¥ÊıÁ¿ÀàĞÍÀàĞÍ
+	/// TTORATstpLotTypeTypeæ˜¯ä¸€ä¸ªæ¸¯è‚¡è®¢å•æ•°é‡ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Áã¹É¶©µ¥
+	/// é›¶è‚¡è®¢å•
 	const char TORA_TSTP_LT_OddLot = '0';
-	///ÕûÊÖ¶©µ¥
+	/// æ•´æ‰‹è®¢å•
 	const char TORA_TSTP_LT_RoundLot = '1';
 	typedef char TTORATstpLotTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOrderSysIDTypeÊÇÒ»¸öÏµÍ³±¨µ¥±àºÅÀàĞÍ
+	/// TTORATstpOrderSysIDTypeæ˜¯ä¸€ä¸ªç³»ç»ŸæŠ¥å•ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpOrderSysIDType[21];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCondCheckTypeÊÇÒ»¸öÎ¯ÍĞÌõ¼ş¼ì²éÀàĞÍ
+	/// TTORATstpCondCheckTypeæ˜¯ä¸€ä¸ªå§”æ‰˜æ¡ä»¶æ£€æŸ¥ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///²»×öÈÎºÎ¼ì²é
+	/// ä¸åšä»»ä½•æ£€æŸ¥
 	const char TORA_TSTP_CCT_None = '0';
-	///×Ô³É½»¼ì²é
+	/// è‡ªæˆäº¤æ£€æŸ¥
 	const char TORA_TSTP_CCT_SelfDeal = '1';
 	typedef char TTORATstpCondCheckType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpForceCloseReasonTypeÊÇÒ»¸öÇ¿Æ½Ô­ÒòÀàĞÍ
+	/// TTORATstpForceCloseReasonTypeæ˜¯ä¸€ä¸ªå¼ºå¹³åŸå› ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///·ÇÇ¿Æ½
+	/// éå¼ºå¹³
 	const char TORA_TSTP_FCC_NotForceClose = '0';
-	///×Ê½ğ²»×ã
+	/// èµ„é‡‘ä¸è¶³
 	const char TORA_TSTP_FCC_MoneyNotEnough = '1';
-	///²ÖÎ»³¬ÏŞ
+	/// ä»“ä½è¶…é™
 	const char TORA_TSTP_FCC_PositionOverFull = '2';
-	///ÆäËü
+	/// å…¶å®ƒ
 	const char TORA_TSTP_FCC_Other = '3';
 	typedef char TTORATstpForceCloseReasonType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCreditDebtIDTypeÊÇÒ»¸öĞÅÓÃ¸ºÕ®±àºÅÀàĞÍ
+	/// TTORATstpCreditDebtIDTypeæ˜¯ä¸€ä¸ªä¿¡ç”¨è´Ÿå€ºç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpCreditDebtIDType[21];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCreditQuotaTypeTypeÊÇÒ»¸öĞÅÓÃÍ·´çÀàĞÍÀàĞÍ
+	/// TTORATstpCreditQuotaTypeTypeæ˜¯ä¸€ä¸ªä¿¡ç”¨å¤´å¯¸ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÆÕÍ¨
+	/// æ™®é€š
 	const char TORA_TSTP_CQT_Normal = '0';
-	///×¨Ïî
+	/// ä¸“é¡¹
 	const char TORA_TSTP_CQT_Special = '1';
 	typedef char TTORATstpCreditQuotaTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpIntSerialTypeÊÇÒ»¸öÕûÊıÁ÷Ë®ºÅÀàĞÍ
+	/// TTORATstpIntSerialTypeæ˜¯ä¸€ä¸ªæ•´æ•°æµæ°´å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpIntSerialType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpStrInfoTypeÊÇÒ»¸ö×Ö·û´®¸½¼ÓĞÅÏ¢ÀàĞÍ
+	/// TTORATstpStrInfoTypeæ˜¯ä¸€ä¸ªå­—ç¬¦ä¸²é™„åŠ ä¿¡æ¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpStrInfoType[33];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpIntInfoTypeÊÇÒ»¸öÕûĞÎ¸½¼ÓĞÅÏ¢ÀàĞÍ
+	/// TTORATstpIntInfoTypeæ˜¯ä¸€ä¸ªæ•´å½¢é™„åŠ ä¿¡æ¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpIntInfoType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpRequestIDTypeÊÇÒ»¸öÇëÇó±àºÅÀàĞÍ
+	/// TTORATstpRequestIDTypeæ˜¯ä¸€ä¸ªè¯·æ±‚ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpRequestIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOrderLocalIDTypeÊÇÒ»¸ö±¾µØ±¨µ¥±àºÅÀàĞÍ
+	/// TTORATstpOrderLocalIDTypeæ˜¯ä¸€ä¸ªæœ¬åœ°æŠ¥å•ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpOrderLocalIDType[13];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOrderStatusTypeÊÇÒ»¸ö±¨µ¥×´Ì¬ÀàĞÍ
+	/// TTORATstpOrderStatusTypeæ˜¯ä¸€ä¸ªæŠ¥å•çŠ¶æ€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Ô¤Âñ
+	/// é¢„åŸ‹
 	const char TORA_TSTP_OST_Cached = '0';
-	///Î´Öª
+	/// æœªçŸ¥
 	const char TORA_TSTP_OST_Unknown = '1';
-	///½»Ò×ËùÒÑ½ÓÊÕ
+	/// äº¤æ˜“æ‰€å·²æ¥æ”¶
 	const char TORA_TSTP_OST_Accepted = '2';
-	///²¿·Ö³É½»
+	/// éƒ¨åˆ†æˆäº¤
 	const char TORA_TSTP_OST_PartTraded = '3';
-	///È«²¿³É½»
+	/// å…¨éƒ¨æˆäº¤
 	const char TORA_TSTP_OST_AllTraded = '4';
-	///²¿³É²¿³·
+	/// éƒ¨æˆéƒ¨æ’¤
 	const char TORA_TSTP_OST_PartTradeCanceled = '5';
-	///È«²¿³·µ¥
+	/// å…¨éƒ¨æ’¤å•
 	const char TORA_TSTP_OST_AllCanceled = '6';
-	///½»Ò×ËùÒÑ¾Ü¾ø
+	/// äº¤æ˜“æ‰€å·²æ‹’ç»
 	const char TORA_TSTP_OST_Rejected = '7';
-	///·¢Íù½»Ò×ºËĞÄ
+	/// å‘å¾€äº¤æ˜“æ ¸å¿ƒ
 	const char TORA_TSTP_OST_SendTradeEngine = '#';
 	typedef char TTORATstpOrderStatusType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOrderSubmitStatusTypeÊÇÒ»¸ö±¨µ¥Ìá½»×´Ì¬ÀàĞÍ
+	/// TTORATstpOrderSubmitStatusTypeæ˜¯ä¸€ä¸ªæŠ¥å•æäº¤çŠ¶æ€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Î´Ìá½»
+	/// æœªæäº¤
 	const char TORA_TSTP_OSS_InsertUnSubmit = '0';
-	///ÒÑÌá½»
+	/// å·²æäº¤
 	const char TORA_TSTP_OSS_InsertSubmitted = '1';
-	///³·µ¥Î´Ìá½»
+	/// æ’¤å•æœªæäº¤
 	const char TORA_TSTP_OSS_CancelUnSubmit = '2';
-	///³·µ¥ÒÑÌá½»
+	/// æ’¤å•å·²æäº¤
 	const char TORA_TSTP_OSS_CancelSubmitted = '3';
-	///³·µ¥ÒÑ±»¾Ü¾ø
+	/// æ’¤å•å·²è¢«æ‹’ç»
 	const char TORA_TSTP_OSS_CancelRejected = '4';
-	///³·µ¥ÒÑÉ¾³ı
+	/// æ’¤å•å·²åˆ é™¤
 	const char TORA_TSTP_OSS_CancelDeleted = '5';
 	typedef char TTORATstpOrderSubmitStatusType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpAccountIDTypeÊÇÒ»¸ö×Ê½ğÕÊºÅÀàĞÍ
+	/// TTORATstpAccountIDTypeæ˜¯ä¸€ä¸ªèµ„é‡‘å¸å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpAccountIDType[21];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCurrencyIDTypeÊÇÒ»¸ö±ÒÖÖÀàĞÍ
+	/// TTORATstpCurrencyIDTypeæ˜¯ä¸€ä¸ªå¸ç§ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÈËÃñ±Ò
+	/// äººæ°‘å¸
 	const char TORA_TSTP_CID_CNY = '1';
-	///¸Û±Ò
+	/// æ¸¯å¸
 	const char TORA_TSTP_CID_HKD = '2';
-	///ÃÀÔª
+	/// ç¾å…ƒ
 	const char TORA_TSTP_CID_USD = '3';
 	typedef char TTORATstpCurrencyIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpPbuIDTypeÊÇÒ»¸ö½»Ò×µ¥Ôª´úÂëÀàĞÍ
+	/// TTORATstpPbuIDTypeæ˜¯ä¸€ä¸ªäº¤æ˜“å•å…ƒä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpPbuIDType[11];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpMoneyTypeÊÇÒ»¸ö×Ê½ğÀàĞÍ
+	/// TTORATstpMoneyTypeæ˜¯ä¸€ä¸ªèµ„é‡‘ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef double TTORATstpMoneyType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOrderTypeTypeÊÇÒ»¸ö±¨µ¥ÀàĞÍÀàĞÍ
+	/// TTORATstpOrderTypeTypeæ˜¯ä¸€ä¸ªæŠ¥å•ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Õı³£
+	/// æ­£å¸¸
 	const char TORA_TSTP_ORDT_Normal = '0';
-	///±¨¼ÛÑÜÉú
+	/// æŠ¥ä»·è¡ç”Ÿ
 	const char TORA_TSTP_ORDT_DeriveFromQuote = '1';
-	///×éºÏÑÜÉú
+	/// ç»„åˆè¡ç”Ÿ
 	const char TORA_TSTP_ORDT_DeriveFromCombination = '2';
-	///×éºÏ±¨µ¥
+	/// ç»„åˆæŠ¥å•
 	const char TORA_TSTP_ORDT_Combination = '3';
-	///Ìõ¼şµ¥
+	/// æ¡ä»¶å•
 	const char TORA_TSTP_ORDT_ConditionalOrder = '4';
-	///»¥»»µ¥
+	/// äº’æ¢å•
 	const char TORA_TSTP_ORDT_Swap = '5';
-	///Ô¤Âñµ¥
+	/// é¢„åŸ‹å•
 	const char TORA_TSTP_ORDT_Cache = '6';
-	///Ò¹ÊĞÎ¯ÍĞ
+	/// å¤œå¸‚å§”æ‰˜
 	const char TORA_TSTP_ORDT_Night = '7';
-	///Í¨µÀÎ¯ÍĞ
+	/// é€šé“å§”æ‰˜
 	const char TORA_TSTP_ORDT_Board = '8';
 	typedef char TTORATstpOrderTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpQuotaIDTypeÊÇÒ»¸ö¶î¶È±àºÅÀàĞÍ
+	/// TTORATstpQuotaIDTypeæ˜¯ä¸€ä¸ªé¢åº¦ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpQuotaIDType[17];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpFloatInfoTypeÊÇÒ»¸ö¸¡µãĞÍ¸½¼ÓĞÅÏ¢ÀàĞÍ
+	/// TTORATstpFloatInfoTypeæ˜¯ä¸€ä¸ªæµ®ç‚¹å‹é™„åŠ ä¿¡æ¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef double TTORATstpFloatInfoType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTradeIDTypeÊÇÒ»¸ö³É½»±àºÅÀàĞÍ
+	/// TTORATstpTradeIDTypeæ˜¯ä¸€ä¸ªæˆäº¤ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpTradeIDType[21];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpActionFlagTypeÊÇÒ»¸ö²Ù×÷±êÖ¾ÀàĞÍ
+	/// TTORATstpActionFlagTypeæ˜¯ä¸€ä¸ªæ“ä½œæ ‡å¿—ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///É¾³ı
+	/// åˆ é™¤
 	const char TORA_TSTP_AF_Delete = '0';
-	///ĞŞ¸Ä
+	/// ä¿®æ”¹
 	const char TORA_TSTP_AF_Modify = '3';
-	///Ç¿ÖÆÉ¾³ı
+	/// å¼ºåˆ¶åˆ é™¤
 	const char TORA_TSTP_AF_ForceDelete = '4';
 	typedef char TTORATstpActionFlagType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCondOrderIDTypeÊÇÒ»¸öÌõ¼ş±¨µ¥±àºÅÀàĞÍ
+	/// TTORATstpCondOrderIDTypeæ˜¯ä¸€ä¸ªæ¡ä»¶æŠ¥å•ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpCondOrderIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTriggerOrderVolumeTypeTypeÊÇÒ»¸ö´¥·¢»ù×¼ÊıÁ¿ÀàĞÍÀàĞÍ
+	/// TTORATstpTriggerOrderVolumeTypeTypeæ˜¯ä¸€ä¸ªè§¦å‘åŸºå‡†æ•°é‡ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///×Ô¶¨ÒåÊıÁ¿
+	/// è‡ªå®šä¹‰æ•°é‡
 	const char TORA_TSTP_TOVT_CustomVol = '1';
-	///Ïà¹ØÊıÁ¿
+	/// ç›¸å…³æ•°é‡
 	const char TORA_TSTP_TOVT_RelativeVol = '2';
 	typedef char TTORATstpTriggerOrderVolumeTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTriggerOrderPriceTypeTypeÊÇÒ»¸ö´¥·¢»ù×¼¼Û¸ñÀàĞÍÀàĞÍ
+	/// TTORATstpTriggerOrderPriceTypeTypeæ˜¯ä¸€ä¸ªè§¦å‘åŸºå‡†ä»·æ ¼ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///×Ô¶¨Òå¼Û¸ñ
+	/// è‡ªå®šä¹‰ä»·æ ¼
 	const char TORA_TSTP_TOPT_CustomPrice = '1';
-	///×îĞÂ¼Û
+	/// æœ€æ–°ä»·
 	const char TORA_TSTP_TOPT_LastPrice = '2';
-	///ÂôÒ»¼Û
+	/// å–ä¸€ä»·
 	const char TORA_TSTP_TOPT_AskPrice1 = '3';
-	///ÂòÒ»¼Û
+	/// ä¹°ä¸€ä»·
 	const char TORA_TSTP_TOPT_BidPrice1 = '4';
-	///Ïà¹Ø¼Û
+	/// ç›¸å…³ä»·
 	const char TORA_TSTP_TOPT_Relative = '5';
 	typedef char TTORATstpTriggerOrderPriceTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpContingentConditionTypeÊÇÒ»¸ö´¥·¢Ìõ¼şÀàĞÍ
+	/// TTORATstpContingentConditionTypeæ˜¯ä¸€ä¸ªè§¦å‘æ¡ä»¶ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///³É½»´¥·¢
+	/// æˆäº¤è§¦å‘
 	const char TORA_TSTP_CC_TradeTouch = '0';
-	///³·µ¥´¥·¢
+	/// æ’¤å•è§¦å‘
 	const char TORA_TSTP_CC_CancelTouch = '1';
-	///Ê±¼ä´¥·¢
+	/// æ—¶é—´è§¦å‘
 	const char TORA_TSTP_CC_TimeTouch = '2';
-	///½»Ò×Ê±¶Î´¥·¢
+	/// äº¤æ˜“æ—¶æ®µè§¦å‘
 	const char TORA_TSTP_CC_SegmentTouch = '3';
-	///×îĞÂ¼Û´óÓÚµÈÓÚÌõ¼ş¼Û
+	/// æœ€æ–°ä»·å¤§äºç­‰äºæ¡ä»¶ä»·
 	const char TORA_TSTP_CC_LastPriceGreaterThanStopPrice = '4';
-	///×îĞÂ¼ÛĞ¡ÓÚµÈÓÚÌõ¼ş¼Û
+	/// æœ€æ–°ä»·å°äºç­‰äºæ¡ä»¶ä»·
 	const char TORA_TSTP_CC_LastPriceLesserThanStopPrice = '5';
-	///ÂôÒ»¼Û´óÓÚµÈÓÚÌõ¼ş¼Û
+	/// å–ä¸€ä»·å¤§äºç­‰äºæ¡ä»¶ä»·
 	const char TORA_TSTP_CC_AskPriceGreaterEqualStopPrice = '6';
-	///ÂôÒ»¼ÛĞ¡ÓÚµÈÓÚÌõ¼ş¼Û
+	/// å–ä¸€ä»·å°äºç­‰äºæ¡ä»¶ä»·
 	const char TORA_TSTP_CC_AskPriceLesserEqualStopPrice = '7';
-	///ÂòÒ»¼Û´óÓÚµÈÓÚÌõ¼ş¼Û
+	/// ä¹°ä¸€ä»·å¤§äºç­‰äºæ¡ä»¶ä»·
 	const char TORA_TSTP_CC_BidPriceGreaterEqualStopPrice = '8';
-	///ÂòÒ»¼ÛĞ¡ÓÚµÈÓÚÌõ¼ş¼Û
+	/// ä¹°ä¸€ä»·å°äºç­‰äºæ¡ä»¶ä»·
 	const char TORA_TSTP_CC_BidPriceLesserEqualStopPrice = '9';
 	typedef char TTORATstpContingentConditionType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpVolumeMultipleTypeÊÇÒ»¸öºÏÔ¼ÊıÁ¿³ËÊıÀàĞÍ
+	/// TTORATstpVolumeMultipleTypeæ˜¯ä¸€ä¸ªåˆçº¦æ•°é‡ä¹˜æ•°ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpVolumeMultipleType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpRelativeCondParamTypeÊÇÒ»¸öÏà¹ØÌõ¼ş²ÎÊıÀàĞÍ
+	/// TTORATstpRelativeCondParamTypeæ˜¯ä¸€ä¸ªç›¸å…³æ¡ä»¶å‚æ•°ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpRelativeCondParamType[31];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCondOrderStatusTypeÊÇÒ»¸öÌõ¼şµ¥×´Ì¬ÀàĞÍ
+	/// TTORATstpCondOrderStatusTypeæ˜¯ä¸€ä¸ªæ¡ä»¶å•çŠ¶æ€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///³õÊ¼
+	/// åˆå§‹
 	const char TORA_TSTP_COST_Initial = '#';
-	///Î´´¥·¢
+	/// æœªè§¦å‘
 	const char TORA_TSTP_COST_NotTouched = '0';
-	///ÒÑ´¥·¢
+	/// å·²è§¦å‘
 	const char TORA_TSTP_COST_Touched = '1';
-	///ÒÑ½áÊø
+	/// å·²ç»“æŸ
 	const char TORA_TSTP_COST_Finished = '2';
-	///ÒÑ³·Ïú
+	/// å·²æ’¤é”€
 	const char TORA_TSTP_COST_Cancel = '3';
-	///´¥·¢Ê§°Ü
+	/// è§¦å‘å¤±è´¥
 	const char TORA_TSTP_COST_Failed = '4';
 	typedef char TTORATstpCondOrderStatusType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpNegoContractorTypeÊÇÒ»¸öÁªÏµÈËÀàĞÍ
+	/// TTORATstpNegoContractorTypeæ˜¯ä¸€ä¸ªè”ç³»äººç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpNegoContractorType[17];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpNegoContractorInfoTypeÊÇÒ»¸öÁªÏµ·½Ê½ÀàĞÍ
+	/// TTORATstpNegoContractorInfoTypeæ˜¯ä¸€ä¸ªè”ç³»æ–¹å¼ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpNegoContractorInfoType[65];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpNegoConfirmIDTypeÊÇÒ»¸öÔ¼¶¨ºÅÀàĞÍ
+	/// TTORATstpNegoConfirmIDTypeæ˜¯ä¸€ä¸ªçº¦å®šå·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpNegoConfirmIDType[17];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpMarketIDTypeÊÇÒ»¸öÊĞ³¡´úÂëÀàĞÍ
+	/// TTORATstpMarketIDTypeæ˜¯ä¸€ä¸ªå¸‚åœºä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Í¨ÓÃ(ÄÚ²¿Ê¹ÓÃ)
+	/// é€šç”¨(å†…éƒ¨ä½¿ç”¨)
 	const char TORA_TSTP_MKD_COMMON = '0';
-	///ÉÏº£A¹É
+	/// ä¸Šæµ·Aè‚¡
 	const char TORA_TSTP_MKD_SHA = '1';
-	///ÉîÛÚA¹É
+	/// æ·±åœ³Aè‚¡
 	const char TORA_TSTP_MKD_SZA = '2';
-	///ÉÏº£B¹É
+	/// ä¸Šæµ·Bè‚¡
 	const char TORA_TSTP_MKD_SHB = '3';
-	///ÉîÛÚB¹É
+	/// æ·±åœ³Bè‚¡
 	const char TORA_TSTP_MKD_SZB = '4';
-	///ÉîÛÚÈı°æA¹É
+	/// æ·±åœ³ä¸‰ç‰ˆAè‚¡
 	const char TORA_TSTP_MKD_SZThreeA = '5';
-	///ÉîÛÚÈı°æB¹É
+	/// æ·±åœ³ä¸‰ç‰ˆBè‚¡
 	const char TORA_TSTP_MKD_SZThreeB = '6';
-	///¾³ÍâÊĞ³¡
+	/// å¢ƒå¤–å¸‚åœº
 	const char TORA_TSTP_MKD_Foreign = '7';
-	///ÉîÛÚ¸Û¹ÉÍ¨ÊĞ³¡
+	/// æ·±åœ³æ¸¯è‚¡é€šå¸‚åœº
 	const char TORA_TSTP_MKD_SZHK = '8';
-	///ÉÏº£¸Û¹ÉÍ¨ÊĞ³¡
+	/// ä¸Šæµ·æ¸¯è‚¡é€šå¸‚åœº
 	const char TORA_TSTP_MKD_SHHK = '9';
-	///±±¾©Ö÷°å
+	/// åŒ—äº¬ä¸»æ¿
 	const char TORA_TSTP_MKD_BJMain = 'a';
 	typedef char TTORATstpMarketIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpMarketStatusTypeÊÇÒ»¸öÊĞ³¡×´Ì¬ÀàĞÍ
+	/// TTORATstpMarketStatusTypeæ˜¯ä¸€ä¸ªå¸‚åœºçŠ¶æ€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Î´Öª
+	/// æœªçŸ¥
 	const char TORA_TSTP_MST_UnKnown = '#';
-	///¿ªÅÌÇ°
+	/// å¼€ç›˜å‰
 	const char TORA_TSTP_MST_BeforeTrading = '0';
-	///Á¬Ğø½»Ò×
+	/// è¿ç»­äº¤æ˜“
 	const char TORA_TSTP_MST_Continous = '1';
-	///ÊÕÅÌ
+	/// æ”¶ç›˜
 	const char TORA_TSTP_MST_Closed = '2';
-	///¿ªÅÌ¼¯ºÏ¾º¼Û
+	/// å¼€ç›˜é›†åˆç«ä»·
 	const char TORA_TSTP_MST_OpenCallAuction = '3';
-	///(¸Û¹ÉÍ¨)Î´¿ªÊĞ
+	///(æ¸¯è‚¡é€š)æœªå¼€å¸‚
 	const char TORA_TSTP_MST_SZSEHKUnopened = 'a';
-	///(¸Û¹ÉÍ¨)¿ªÅÌ¼¯ºÏ¾º¼ÛÊäÈëÂòÂôÅÌ
+	///(æ¸¯è‚¡é€š)å¼€ç›˜é›†åˆç«ä»·è¾“å…¥ä¹°å–ç›˜
 	const char TORA_TSTP_MST_SZSEHKOpenCallAuctionInput = 'b';
-	///(¸Û¹ÉÍ¨)¿ªÅÌ¼¯ºÏ¾º¼Û¶ÔÅÌÇ°
+	///(æ¸¯è‚¡é€š)å¼€ç›˜é›†åˆç«ä»·å¯¹ç›˜å‰
 	const char TORA_TSTP_MST_SZSEHKOpenCallAuctionBeforeMatch = 'c';
-	///(¸Û¹ÉÍ¨)¿ªÅÌ¼¯ºÏ¾º¼Û¶ÔÅÌ
+	///(æ¸¯è‚¡é€š)å¼€ç›˜é›†åˆç«ä»·å¯¹ç›˜
 	const char TORA_TSTP_MST_SZSEHKOpenCallAuctionMatch = 'd';
-	///(¸Û¹ÉÍ¨)ÔİÍ£
+	///(æ¸¯è‚¡é€š)æš‚åœ
 	const char TORA_TSTP_MST_SZSEHKHalt = 'e';
-	///(¸Û¹ÉÍ¨)³ÖĞø½»Ò×
+	///(æ¸¯è‚¡é€š)æŒç»­äº¤æ˜“
 	const char TORA_TSTP_MST_SZSEHKContinous = 'f';
-	///(¸Û¹ÉÍ¨)Exchange Intervention
+	///(æ¸¯è‚¡é€š)Exchange Intervention
 	const char TORA_TSTP_MST_SZSEHKExchangeIntervention = 'g';
-	///(¸Û¹ÉÍ¨)ÊÕÅÌ¼¯ºÏ¾º¼Û²Î¿¼¼Û¶¨¼Û
+	///(æ¸¯è‚¡é€š)æ”¶ç›˜é›†åˆç«ä»·å‚è€ƒä»·å®šä»·
 	const char TORA_TSTP_MST_SZSEHKCloseCallAuctionReferencePrice = 'h';
-	///(¸Û¹ÉÍ¨)ÊÕÅÌ¼¯ºÏ¾º¼ÛÊäÈëÂòÂôÅÌ
+	///(æ¸¯è‚¡é€š)æ”¶ç›˜é›†åˆç«ä»·è¾“å…¥ä¹°å–ç›˜
 	const char TORA_TSTP_MST_SZSEHKCloseCallAuctionInput = 'i';
-	///(¸Û¹ÉÍ¨)ÊÕÅÌ¼¯ºÏ¾º¼Û²»¿ÉÈ¡Ïû
+	///(æ¸¯è‚¡é€š)æ”¶ç›˜é›†åˆç«ä»·ä¸å¯å–æ¶ˆ
 	const char TORA_TSTP_MST_SZSEHKCloseCallAuctionCannotCancel = 'j';
-	///(¸Û¹ÉÍ¨)ÊÕÅÌ¼¯ºÏ¾º¼Û¶ÔÅÌ
+	///(æ¸¯è‚¡é€š)æ”¶ç›˜é›†åˆç«ä»·å¯¹ç›˜
 	const char TORA_TSTP_MST_SZSEHKCloseCallAuctionMatch = 'k';
-	///(¸Û¹ÉÍ¨)ÊÕÅÌ¼¯ºÏ¾º¼ÛËæ»úÊÕÊĞ
+	///(æ¸¯è‚¡é€š)æ”¶ç›˜é›†åˆç«ä»·éšæœºæ”¶å¸‚
 	const char TORA_TSTP_MST_SZSEHKCloseCallAuctionRandomClosed = 'l';
-	///(¸Û¹ÉÍ¨)È¡ÏûÂòÂôÅÌ
+	///(æ¸¯è‚¡é€š)å–æ¶ˆä¹°å–ç›˜
 	const char TORA_TSTP_MST_SZSEHKCancel = 'm';
-	///(¸Û¹ÉÍ¨)ÊÕÊĞ
+	///(æ¸¯è‚¡é€š)æ”¶å¸‚
 	const char TORA_TSTP_MST_SZSEHKClosed = 'n';
-	///(¸Û¹ÉÍ¨)È«ÈÕÊÕÊĞ
+	///(æ¸¯è‚¡é€š)å…¨æ—¥æ”¶å¸‚
 	const char TORA_TSTP_MST_SZSEHKWholeClosed = 'o';
 	typedef char TTORATstpMarketStatusType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTransferDirectionTypeÊÇÒ»¸ö×ªÒÆ·½ÏòÀàĞÍ
+	/// TTORATstpTransferDirectionTypeæ˜¯ä¸€ä¸ªè½¬ç§»æ–¹å‘ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///À¶²¹
+	/// è“è¡¥
 	const char TORA_TSTP_TRNSD_In = '0';
-	///ºì³å
+	/// çº¢å†²
 	const char TORA_TSTP_TRNSD_Out = '1';
-	///¼¯ÖĞ½»Ò×µ÷Èë
+	/// é›†ä¸­äº¤æ˜“è°ƒå…¥
 	const char TORA_TSTP_TRNSD_MoveIn = '2';
-	///¼¯ÖĞ½»Ò×µ÷³ö
+	/// é›†ä¸­äº¤æ˜“è°ƒå‡º
 	const char TORA_TSTP_TRNSD_MoveOut = '3';
-	///¶³½á
+	/// å†»ç»“
 	const char TORA_TSTP_TRNSD_Freeze = '4';
-	///½â¶³
+	/// è§£å†»
 	const char TORA_TSTP_TRNSD_UnFreeze = '5';
-	///Ö¤È¯×ªÒøĞĞ
+	/// è¯åˆ¸è½¬é“¶è¡Œ
 	const char TORA_TSTP_TRNSD_StockToBank = '6';
-	///ÒøĞĞ×ªÖ¤È¯
+	/// é“¶è¡Œè½¬è¯åˆ¸
 	const char TORA_TSTP_TRNSD_BankToStock = '7';
-	///Íâ²¿½Úµã×ªÈë
+	/// å¤–éƒ¨èŠ‚ç‚¹è½¬å…¥
 	const char TORA_TSTP_TRNSD_NodeMoveIn = 'c';
-	///Íâ²¿½Úµã×ª³ö
+	/// å¤–éƒ¨èŠ‚ç‚¹è½¬å‡º
 	const char TORA_TSTP_TRNSD_NodeMoveOut = 'd';
-	///Ö±½Ó»¹¿î
+	/// ç›´æ¥è¿˜æ¬¾
 	const char TORA_TSTP_TRNSD_CashRepay = 'f';
-	///Ö±½Ó»¹Ï¢(ÄÚ²¿Ê¹ÓÃ)
+	/// ç›´æ¥è¿˜æ¯(å†…éƒ¨ä½¿ç”¨)
 	const char TORA_TSTP_TRNSD_CashRepayInterestFee = 'g';
 	typedef char TTORATstpTransferDirectionType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpBankIDTypeÊÇÒ»¸öÒøĞĞ´úÂëÀàĞÍ
+	/// TTORATstpBankIDTypeæ˜¯ä¸€ä¸ªé“¶è¡Œä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÖĞ¹ú½¨ÉèÒøĞĞ
+	/// ä¸­å›½å»ºè®¾é“¶è¡Œ
 	const char TORA_TSTP_BKID_CCB = '1';
-	///ÖĞ¹úÅ©ÒµÒøĞĞ
+	/// ä¸­å›½å†œä¸šé“¶è¡Œ
 	const char TORA_TSTP_BKID_ABC = '2';
-	///ÖĞ¹ú¹¤ÉÌÒøĞĞ
+	/// ä¸­å›½å·¥å•†é“¶è¡Œ
 	const char TORA_TSTP_BKID_ICBC = '3';
-	///ÖĞ¹úÒøĞĞ
+	/// ä¸­å›½é“¶è¡Œ
 	const char TORA_TSTP_BKID_BOC = '4';
-	///ÖĞ¹úÕĞÉÌÒøĞĞ
+	/// ä¸­å›½æ‹›å•†é“¶è¡Œ
 	const char TORA_TSTP_BKID_CMB = '5';
-	///ÖĞ¹ú½»Í¨ÒøĞĞ
+	/// ä¸­å›½äº¤é€šé“¶è¡Œ
 	const char TORA_TSTP_BKID_BC = '6';
-	///ÆÖ¶«·¢Õ¹ÒøĞĞ
+	/// æµ¦ä¸œå‘å±•é“¶è¡Œ
 	const char TORA_TSTP_BKID_SPDB = '7';
-	///ĞËÒµÒøĞĞ
+	/// å…´ä¸šé“¶è¡Œ
 	const char TORA_TSTP_BKID_CIB = '8';
-	///ÖĞ¹ú¹â´óÒøĞĞ
+	/// ä¸­å›½å…‰å¤§é“¶è¡Œ
 	const char TORA_TSTP_BKID_CEB = '9';
-	///¹ã¶«·¢Õ¹ÒøĞĞ
+	/// å¹¿ä¸œå‘å±•é“¶è¡Œ
 	const char TORA_TSTP_BKID_GDB = 'a';
-	///ÄÏ¾©ÒøĞĞ
+	/// å—äº¬é“¶è¡Œ
 	const char TORA_TSTP_BKID_NJCB = 'b';
-	///ÉÏº£ÒøĞĞ
+	/// ä¸Šæµ·é“¶è¡Œ
 	const char TORA_TSTP_BKID_SHCB = 'c';
-	///ÖĞĞÅÒøĞĞ
+	/// ä¸­ä¿¡é“¶è¡Œ
 	const char TORA_TSTP_BKID_CITICB = 'd';
-	///»ªÏÄÒøĞĞ
+	/// åå¤é“¶è¡Œ
 	const char TORA_TSTP_BKID_HXB = 'e';
-	///ÃñÉúÒøĞĞ
+	/// æ°‘ç”Ÿé“¶è¡Œ
 	const char TORA_TSTP_BKID_CMBC = 'f';
-	///Æ½°²ÒøĞĞ
+	/// å¹³å®‰é“¶è¡Œ
 	const char TORA_TSTP_BKID_PACB = 'g';
-	///Äş²¨ÒøĞĞ
+	/// å®æ³¢é“¶è¡Œ
 	const char TORA_TSTP_BKID_NBCB = 'h';
-	///±±¾©ÒøĞĞ
+	/// åŒ—äº¬é“¶è¡Œ
 	const char TORA_TSTP_BKID_BOB = 'i';
-	///ÓÊ´¢ÒøĞĞ
+	/// é‚®å‚¨é“¶è¡Œ
 	const char TORA_TSTP_BKID_PSBC = 'j';
 	typedef char TTORATstpBankIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpNodeIDTypeÊÇÒ»¸ö½Úµã±àºÅÀàĞÍ
+	/// TTORATstpNodeIDTypeæ˜¯ä¸€ä¸ªèŠ‚ç‚¹ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpNodeIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTransferStatusTypeÊÇÒ»¸ö×ªÒÆ×´Ì¬ÀàĞÍ
+	/// TTORATstpTransferStatusTypeæ˜¯ä¸€ä¸ªè½¬ç§»çŠ¶æ€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///×ªÒÆÕıÔÚ´¦Àí
+	/// è½¬ç§»æ­£åœ¨å¤„ç†
 	const char TORA_TSTP_TRANST_TranferHandling = '0';
-	///×ªÒÆ³É¹¦
+	/// è½¬ç§»æˆåŠŸ
 	const char TORA_TSTP_TRANST_TransferSuccess = '1';
-	///×ªÒÆÊ§°Ü
+	/// è½¬ç§»å¤±è´¥
 	const char TORA_TSTP_TRANST_TransferFail = '2';
-	///³åÕıÕıÔÚ´¦Àí
+	/// å†²æ­£æ­£åœ¨å¤„ç†
 	const char TORA_TSTP_TRANST_RepealHandling = '3';
-	///³åÕı³É¹¦
+	/// å†²æ­£æˆåŠŸ
 	const char TORA_TSTP_TRANST_RepealSuccess = '4';
-	///³åÕıÊ§°Ü
+	/// å†²æ­£å¤±è´¥
 	const char TORA_TSTP_TRANST_RepealFail = '5';
-	///Íâ²¿ÏµÍ³ÒÑ½ÓÊÕ
+	/// å¤–éƒ¨ç³»ç»Ÿå·²æ¥æ”¶
 	const char TORA_TSTP_TRANST_ExternalAccepted = '6';
-	///·¢Íù½»Ò×ºËĞÄ
+	/// å‘å¾€äº¤æ˜“æ ¸å¿ƒ
 	const char TORA_TSTP_TRANST_SendTradeEngine = '#';
 	typedef char TTORATstpTransferStatusType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpBankAccountIDTypeÊÇÒ»¸öÇ©Ô¼ÒøĞĞÕËºÅÀàĞÍ
+	/// TTORATstpBankAccountIDTypeæ˜¯ä¸€ä¸ªç­¾çº¦é“¶è¡Œè´¦å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpBankAccountIDType[31];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTransferPositionTypeTypeÊÇÒ»¸ö×ªÒÆ³Ö²ÖÀàĞÍÀàĞÍ
+	/// TTORATstpTransferPositionTypeTypeæ˜¯ä¸€ä¸ªè½¬ç§»æŒä»“ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÈÎÒâ²Ö
+	/// ä»»æ„ä»“
 	const char TORA_TSTP_TPT_ALL = '0';
-	///×ò²Ö
+	/// æ˜¨ä»“
 	const char TORA_TSTP_TPT_History = '1';
-	///½ñÂòÂô²Ö
+	/// ä»Šä¹°å–ä»“
 	const char TORA_TSTP_TPT_TodayBS = '2';
-	///½ñÉêÊê²Ö
+	/// ä»Šç”³èµä»“
 	const char TORA_TSTP_TPT_TodayPR = '3';
-	///½ñ²ğ·ÖºÏ²¢²Ö
+	/// ä»Šæ‹†åˆ†åˆå¹¶ä»“
 	const char TORA_TSTP_TPT_TodaySM = '4';
 	typedef char TTORATstpTransferPositionTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTransferReasonTypeÊÇÒ»¸öÍâÎ§ÏµÍ³²ÖÎ»µ÷²¦Ô­ÒòÀàĞÍ
+	/// TTORATstpTransferReasonTypeæ˜¯ä¸€ä¸ªå¤–å›´ç³»ç»Ÿä»“ä½è°ƒæ‹¨åŸå› ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpTransferReasonType[21];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpContentTypeÊÇÒ»¸öÏûÏ¢ÕıÎÄÀàĞÍ
+	/// TTORATstpContentTypeæ˜¯ä¸€ä¸ªæ¶ˆæ¯æ­£æ–‡ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpContentType[501];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpRatioTypeÊÇÒ»¸ö±ÈÂÊÀàĞÍ
+	/// TTORATstpRatioTypeæ˜¯ä¸€ä¸ªæ¯”ç‡ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef double TTORATstpRatioType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpNameTypeÊÇÒ»¸öÃû³ÆÀàĞÍ
+	/// TTORATstpNameTypeæ˜¯ä¸€ä¸ªåç§°ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpNameType[61];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpDataSyncStatusTypeÊÇÒ»¸öÊı¾İÍ¬²½×´Ì¬ÀàĞÍ
+	/// TTORATstpDataSyncStatusTypeæ˜¯ä¸€ä¸ªæ•°æ®åŒæ­¥çŠ¶æ€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Î´Í¬²½
+	/// æœªåŒæ­¥
 	const char TORA_TSTP_DS_Asynchronous = '1';
-	///Í¬²½ÖĞ
+	/// åŒæ­¥ä¸­
 	const char TORA_TSTP_DS_Synchronizing = '2';
-	///ÒÑÍ¬²½
+	/// å·²åŒæ­¥
 	const char TORA_TSTP_DS_Synchronized = '3';
-	///È«²¿Í¬²½Íê³É
+	/// å…¨éƒ¨åŒæ­¥å®Œæˆ
 	const char TORA_TSTP_DS_AllSynchronized = '4';
-	///Ô¤Í¬²½Íê³É
+	/// é¢„åŒæ­¥å®Œæˆ
 	const char TORA_TSTP_DS_PreSync = '5';
 	typedef char TTORATstpDataSyncStatusType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpProductIDTypeÊÇÒ»¸öÖ¤È¯Æ·ÖÖ´úÂëÀàĞÍ
+	/// TTORATstpProductIDTypeæ˜¯ä¸€ä¸ªè¯åˆ¸å“ç§ä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Í¨ÓÃ(ÄÚ²¿Ê¹ÓÃ)
+	/// é€šç”¨(å†…éƒ¨ä½¿ç”¨)
 	const char TORA_TSTP_PID_COMMON = '0';
-	///ÉÏº£¹ÉÆ±
+	/// ä¸Šæµ·è‚¡ç¥¨
 	const char TORA_TSTP_PID_SHStock = '1';
-	///ÉÏº£»ù½ğ
+	/// ä¸Šæµ·åŸºé‡‘
 	const char TORA_TSTP_PID_SHFund = '3';
-	///ÉÏº£Õ®È¯
+	/// ä¸Šæµ·å€ºåˆ¸
 	const char TORA_TSTP_PID_SHBond = '4';
-	///ÉÏº£±ê×¼È¯
+	/// ä¸Šæµ·æ ‡å‡†åˆ¸
 	const char TORA_TSTP_PID_SHStandard = '5';
-	///ÉÏº£ÖÊÑºÊ½»Ø¹º
+	/// ä¸Šæµ·è´¨æŠ¼å¼å›è´­
 	const char TORA_TSTP_PID_SHRepurchase = '6';
-	///ÉîÛÚ¹ÉÆ±
+	/// æ·±åœ³è‚¡ç¥¨
 	const char TORA_TSTP_PID_SZStock = '7';
-	///ÉîÛÚ»ù½ğ
+	/// æ·±åœ³åŸºé‡‘
 	const char TORA_TSTP_PID_SZFund = '9';
-	///ÉîÛÚÕ®È¯
+	/// æ·±åœ³å€ºåˆ¸
 	const char TORA_TSTP_PID_SZBond = 'a';
-	///ÉîÛÚ±ê×¼È¯
+	/// æ·±åœ³æ ‡å‡†åˆ¸
 	const char TORA_TSTP_PID_SZStandard = 'b';
-	///ÉîÛÚÖÊÑºÊ½»Ø¹º
+	/// æ·±åœ³è´¨æŠ¼å¼å›è´­
 	const char TORA_TSTP_PID_SZRepurchase = 'c';
-	///Éî¸ÛÍ¨¸Û¹ÉÖ÷°å
+	/// æ·±æ¸¯é€šæ¸¯è‚¡ä¸»æ¿
 	const char TORA_TSTP_PID_SZSEHKMain = 'd';
-	///Éî¸ÛÍ¨¸Û¹É´´Òµ°å
+	/// æ·±æ¸¯é€šæ¸¯è‚¡åˆ›ä¸šæ¿
 	const char TORA_TSTP_PID_SZSEHKGEM = 'e';
-	///Éî¸ÛÍ¨¸Û¹ÉÀ©³ä½»Ò×Ö¤È¯
+	/// æ·±æ¸¯é€šæ¸¯è‚¡æ‰©å……äº¤æ˜“è¯åˆ¸
 	const char TORA_TSTP_PID_SZSEHKETS = 'f';
-	///Éî¸ÛÍ¨¸Û¹ÉNasdaqAMXÊĞ³¡
+	/// æ·±æ¸¯é€šæ¸¯è‚¡NasdaqAMXå¸‚åœº
 	const char TORA_TSTP_PID_SZSEHKNasdaqAMX = 'g';
-	///ÉÏº£¿Æ´´°å
+	/// ä¸Šæµ·ç§‘åˆ›æ¿
 	const char TORA_TSTP_PID_SHKC = 'i';
-	///±±¾©¹ÉÆ±
+	/// åŒ—äº¬è‚¡ç¥¨
 	const char TORA_TSTP_PID_BJStock = 'j';
 	typedef char TTORATstpProductIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpSecurityNameTypeÊÇÒ»¸öÖ¤È¯Ãû³ÆÀàĞÍ
+	/// TTORATstpSecurityNameTypeæ˜¯ä¸€ä¸ªè¯åˆ¸åç§°ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpSecurityNameType[81];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpSecurityTypeTypeÊÇÒ»¸öÖ¤È¯Àà±ğÀàĞÍ
+	/// TTORATstpSecurityTypeTypeæ˜¯ä¸€ä¸ªè¯åˆ¸ç±»åˆ«ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Í¨ÓÃ(ÄÚ²¿Ê¹ÓÃ)
+	/// é€šç”¨(å†…éƒ¨ä½¿ç”¨)
 	const char TORA_TSTP_STP_COMMON = '0';
-	///ÉÏº£A¹É
+	/// ä¸Šæµ·Aè‚¡
 	const char TORA_TSTP_STP_SHAShares = 'a';
-	///ÉÏº£µ¥ÊĞ³¡¹ÉÆ±ETF
+	/// ä¸Šæµ·å•å¸‚åœºè‚¡ç¥¨ETF
 	const char TORA_TSTP_STP_SHSingleMarketStockETF = 'b';
-	///ÉÏº£µ¥ÊĞ³¡ÊµÎïÕ®È¯ETF
+	/// ä¸Šæµ·å•å¸‚åœºå®ç‰©å€ºåˆ¸ETF
 	const char TORA_TSTP_STP_SHSingleMarketBondETF = 'c';
-	///ÉÏº£»Æ½ğETF
+	/// ä¸Šæµ·é»„é‡‘ETF
 	const char TORA_TSTP_STP_SHGoldETF = 'd';
-	///ÉÏº£»õ±ÒETF
+	/// ä¸Šæµ·è´§å¸ETF
 	const char TORA_TSTP_STP_SHTradableMonetaryFund = 'e';
-	///ÉÏº£¹úÕ®µØ·½Õ®
+	/// ä¸Šæµ·å›½å€ºåœ°æ–¹å€º
 	const char TORA_TSTP_STP_SHBondNation = 'f';
-	///ÉÏº£ÆóÒµÕ®
+	/// ä¸Šæµ·ä¼ä¸šå€º
 	const char TORA_TSTP_STP_SHBondCorporation = 'g';
-	///ÉÏº£¹«Ë¾Õ®
+	/// ä¸Šæµ·å…¬å¸å€º
 	const char TORA_TSTP_STP_SHBondCompany = 'h';
-	///ÉÏº£¿É×ªÕ®
+	/// ä¸Šæµ·å¯è½¬å€º
 	const char TORA_TSTP_STP_SHBondConversion = 'i';
-	///ÉÏº£·ÖÀëÕ®
+	/// ä¸Šæµ·åˆ†ç¦»å€º
 	const char TORA_TSTP_STP_SHBondSeparation = 'j';
-	///ÉÏº£±ê×¼È¯
+	/// ä¸Šæµ·æ ‡å‡†åˆ¸
 	const char TORA_TSTP_STP_SHStandard = 'o';
-	///ÉÏº£ÖÊÑºÊ½»Ø¹º
+	/// ä¸Šæµ·è´¨æŠ¼å¼å›è´­
 	const char TORA_TSTP_STP_SHRepo = 'p';
-	///ÉÏº£·â±ÕÊ½»ù½ğ
+	/// ä¸Šæµ·å°é—­å¼åŸºé‡‘
 	const char TORA_TSTP_STP_SHCEFund = 'q';
-	///ÉÏº£¿ª·ÅÊ½»ù½ğ
+	/// ä¸Šæµ·å¼€æ”¾å¼åŸºé‡‘
 	const char TORA_TSTP_STP_SHOEFund = 'r';
-	///ÉÏº£¿çÊĞ³¡ETF
+	/// ä¸Šæµ·è·¨å¸‚åœºETF
 	const char TORA_TSTP_STP_SHCrossMarketStockETF = 's';
-	///ÉÏº£¿ç¾³ETF
+	/// ä¸Šæµ·è·¨å¢ƒETF
 	const char TORA_TSTP_STP_SHCrossBorderETF = 't';
-	///ÉÏº£·Ö¼¶Ä¸»ù½ğ
+	/// ä¸Šæµ·åˆ†çº§æ¯åŸºé‡‘
 	const char TORA_TSTP_STP_SHMontherStructFund = 'u';
-	///ÉÏº£·Ö¼¶×Ó»ù½ğ
+	/// ä¸Šæµ·åˆ†çº§å­åŸºé‡‘
 	const char TORA_TSTP_STP_SHSubStructFund = 'v';
-	///ÉÏº£ÊµÊ±ÉêÊê»õ±Ò»ù½ğ
+	/// ä¸Šæµ·å®æ—¶ç”³èµè´§å¸åŸºé‡‘
 	const char TORA_TSTP_STP_SHRealTimeMonetaryFund = 'w';
-	///ÉÏº£¿É½»»»Õ®
+	/// ä¸Šæµ·å¯äº¤æ¢å€º
 	const char TORA_TSTP_STP_SHExchangeableBond = 'x';
-	///ÉÏº£±ê×¼LOF»ù½ğ
+	/// ä¸Šæµ·æ ‡å‡†LOFåŸºé‡‘
 	const char TORA_TSTP_STP_SHLOF = 'A';
-	///ÉîÛÚÖ÷°åA¹É
+	/// æ·±åœ³ä¸»æ¿Aè‚¡
 	const char TORA_TSTP_STP_SZMainAShares = 'B';
-	///ÉîÛÚÖĞĞ¡ÆóÒµ°å
+	/// æ·±åœ³ä¸­å°ä¼ä¸šæ¿
 	const char TORA_TSTP_STP_SZSME = 'C';
-	///ÉîÛÚ¹úÕ®¡¢µØ·½Õ®
+	/// æ·±åœ³å›½å€ºã€åœ°æ–¹å€º
 	const char TORA_TSTP_STP_SZBondNation = 'D';
-	///ÉîÛÚÆóÒµÕ®
+	/// æ·±åœ³ä¼ä¸šå€º
 	const char TORA_TSTP_STP_SZBondCorporation = 'E';
-	///ÉîÛÚ¹«Ë¾Õ®
+	/// æ·±åœ³å…¬å¸å€º
 	const char TORA_TSTP_STP_SZBondCompany = 'F';
-	///ÉîÛÚ¿É×ªÕ®
+	/// æ·±åœ³å¯è½¬å€º
 	const char TORA_TSTP_STP_SZBondConversion = 'G';
-	///ÉîÛÚ·ÖÀëÕ®
+	/// æ·±åœ³åˆ†ç¦»å€º
 	const char TORA_TSTP_STP_SZBondSeparation = 'H';
-	///ÉîÛÚ´´Òµ°å(×¢²áÖÆ)
+	/// æ·±åœ³åˆ›ä¸šæ¿(æ³¨å†Œåˆ¶)
 	const char TORA_TSTP_STP_SZGEMReg = 'I';
-	///ÉîÛÚ´´Òµ°å¿É×ªÕ®(×¢²áÖÆ)
+	/// æ·±åœ³åˆ›ä¸šæ¿å¯è½¬å€º(æ³¨å†Œåˆ¶)
 	const char TORA_TSTP_STP_SZGEMBondConversionReg = 'J';
-	///ÉîÛÚ¿ç¾³ETF
+	/// æ·±åœ³è·¨å¢ƒETF
 	const char TORA_TSTP_STP_SZCrossBorderETF = 'K';
-	///ÉîÛÚ»Æ½ğETF
+	/// æ·±åœ³é»„é‡‘ETF
 	const char TORA_TSTP_STP_SZGoldETF = 'L';
-	///ÉîÛÚÏÖ½ğÕ®È¯ETF
+	/// æ·±åœ³ç°é‡‘å€ºåˆ¸ETF
 	const char TORA_TSTP_STP_SZCashBondETF = 'M';
-	///ÉîÛÚµ¥ÊĞ³¡¹ÉÆ±ETF
+	/// æ·±åœ³å•å¸‚åœºè‚¡ç¥¨ETF
 	const char TORA_TSTP_STP_SZSingleMarketStockETF = 'N';
-	///ÉîÛÚµ¥ÊĞ³¡ÊµÎïÕ®È¯ETF
+	/// æ·±åœ³å•å¸‚åœºå®ç‰©å€ºåˆ¸ETF
 	const char TORA_TSTP_STP_SZSingleMarketBondETF = 'O';
-	///ÉîÛÚ»õ±ÒETF
+	/// æ·±åœ³è´§å¸ETF
 	const char TORA_TSTP_STP_SZMonetaryFundETF = 'P';
-	///ÉîÛÚ´´Òµ°å
+	/// æ·±åœ³åˆ›ä¸šæ¿
 	const char TORA_TSTP_STP_SZGEM = 'Q';
-	///ÉîÛÚ´´Òµ°å¿É½»»»Õ®
+	/// æ·±åœ³åˆ›ä¸šæ¿å¯äº¤æ¢å€º
 	const char TORA_TSTP_STP_SZGEMExchangeableBond = 'R';
-	///ÉîÛÚ´´Òµ°å¿É½»»»Õ®(×¢²áÖÆ)
+	/// æ·±åœ³åˆ›ä¸šæ¿å¯äº¤æ¢å€º(æ³¨å†Œåˆ¶)
 	const char TORA_TSTP_STP_SZGEMExchangeableBondReg = 'S';
-	///ÉîÛÚ±ê×¼È¯
+	/// æ·±åœ³æ ‡å‡†åˆ¸
 	const char TORA_TSTP_STP_SZStandard = 'T';
-	///ÉîÛÚÖÊÑºÊ½»Ø¹º
+	/// æ·±åœ³è´¨æŠ¼å¼å›è´­
 	const char TORA_TSTP_STP_SZRepo = 'U';
-	///ÉîÛÚ·â±ÕÊ½»ù½ğ
+	/// æ·±åœ³å°é—­å¼åŸºé‡‘
 	const char TORA_TSTP_STP_SZCEFund = 'V';
-	///ÉîÛÚ¿ª·ÅÊ½»ù½ğ
+	/// æ·±åœ³å¼€æ”¾å¼åŸºé‡‘
 	const char TORA_TSTP_STP_SZOEFund = 'W';
-	///ÉîÛÚ¿ç¾³¿ª·ÅÊ½»ù½ğ
+	/// æ·±åœ³è·¨å¢ƒå¼€æ”¾å¼åŸºé‡‘
 	const char TORA_TSTP_STP_SZCrossBorderOEFund = 'X';
-	///ÉîÛÚ¿çÊĞ³¡¹ÉÆ±ETF
+	/// æ·±åœ³è·¨å¸‚åœºè‚¡ç¥¨ETF
 	const char TORA_TSTP_STP_SZCrossMarketStockETF = 'Y';
-	///ÉîÛÚ±ê×¼LOF»ù½ğ
+	/// æ·±åœ³æ ‡å‡†LOFåŸºé‡‘
 	const char TORA_TSTP_STP_SZLOF = 'Z';
-	///ÉîÛÚ¿ç¾³LOF»ù½ğ
+	/// æ·±åœ³è·¨å¢ƒLOFåŸºé‡‘
 	const char TORA_TSTP_STP_SZCrossBorderLOF = '1';
-	///ÉîÛÚ´«Í³·Ö¼¶Ä¸»ù½ğ
+	/// æ·±åœ³ä¼ ç»Ÿåˆ†çº§æ¯åŸºé‡‘
 	const char TORA_TSTP_STP_SZMontherStructFund = '2';
-	///ÉîÛÚ´«Í³·Ö¼¶×Ó»ù½ğ
+	/// æ·±åœ³ä¼ ç»Ÿåˆ†çº§å­åŸºé‡‘
 	const char TORA_TSTP_STP_SZSubStructFund = '3';
-	///ÉîÛÚ¿ç¾³·Ö¼¶Ä¸»ù½ğ
+	/// æ·±åœ³è·¨å¢ƒåˆ†çº§æ¯åŸºé‡‘
 	const char TORA_TSTP_STP_SZMontherCrossBorderStructFund = '4';
-	///ÉîÛÚ¿ç¾³·Ö¼¶×Ó»ù½ğ
+	/// æ·±åœ³è·¨å¢ƒåˆ†çº§å­åŸºé‡‘
 	const char TORA_TSTP_STP_SZSubCrossBorderStructFund = '5';
-	///ÉîÛÚ¿É½»»»Õ®
+	/// æ·±åœ³å¯äº¤æ¢å€º
 	const char TORA_TSTP_STP_SZExchangeableBond = '6';
-	///ÉîÛÚ´´Òµ°å¿É×ªÕ®
+	/// æ·±åœ³åˆ›ä¸šæ¿å¯è½¬å€º
 	const char TORA_TSTP_STP_SZGEMBondConversion = '7';
-	///Éî¸ÛÍ¨¸Û¹ÉÕ®È¯
+	/// æ·±æ¸¯é€šæ¸¯è‚¡å€ºåˆ¸
 	const char TORA_TSTP_STP_SZSEHKBond = '8';
-	///Éî¸ÛÍ¨¸Û¹ÉÒ»Àº×ÓÈ¨Ö¤
+	/// æ·±æ¸¯é€šæ¸¯è‚¡ä¸€ç¯®å­æƒè¯
 	const char TORA_TSTP_STP_SZSEHKBasketWarrant = '9';
-	///Éî¸ÛÍ¨¸Û¹É¹É±¾
+	/// æ·±æ¸¯é€šæ¸¯è‚¡è‚¡æœ¬
 	const char TORA_TSTP_STP_SZSEHKEquity = 'y';
-	///Éî¸ÛÍ¨¸Û¹ÉĞÅÍĞ
+	/// æ·±æ¸¯é€šæ¸¯è‚¡ä¿¡æ‰˜
 	const char TORA_TSTP_STP_SZSEHKTrust = 'z';
-	///Éî¸ÛÍ¨¸Û¹ÉÈ¨Ö¤
+	/// æ·±æ¸¯é€šæ¸¯è‚¡æƒè¯
 	const char TORA_TSTP_STP_SZSEHKWarrant = '#';
-	///ÉÏº£´æÍĞÆ¾Ö¤
+	/// ä¸Šæµ·å­˜æ‰˜å‡­è¯
 	const char TORA_TSTP_STP_SHCDR = '+';
-	///ÉÏº£¿Æ´´°å¹ÉÆ±
+	/// ä¸Šæµ·ç§‘åˆ›æ¿è‚¡ç¥¨
 	const char TORA_TSTP_STP_SHKC = '*';
-	///¿Æ´´°å²úÆ·£¨ÉÏÊĞºóÇ°5¸ö½»Ò×ÈÕ£©
+	/// ç§‘åˆ›æ¿äº§å“ï¼ˆä¸Šå¸‚åå‰5ä¸ªäº¤æ˜“æ—¥ï¼‰
 	const char TORA_TSTP_STP_SHKC1 = '^';
-	///ÉÏº£¿Æ´´°å´æÍĞÆ¾Ö¤
+	/// ä¸Šæµ·ç§‘åˆ›æ¿å­˜æ‰˜å‡­è¯
 	const char TORA_TSTP_STP_SHKCCDR = '-';
-	///ÉîÛÚÖ÷°å¡¢ÖĞĞ¡°å´´ĞÂÆóÒµ¹ÉÆ±»ò´æÍĞÆ¾Ö¤
+	/// æ·±åœ³ä¸»æ¿ã€ä¸­å°æ¿åˆ›æ–°ä¼ä¸šè‚¡ç¥¨æˆ–å­˜æ‰˜å‡­è¯
 	const char TORA_TSTP_STP_SZCDR = 'k';
-	///ÉîÛÚ´´Òµ°å´´ĞÂÆóÒµ¹ÉÆ±»ò´æÍĞÆ¾Ö¤
+	/// æ·±åœ³åˆ›ä¸šæ¿åˆ›æ–°ä¼ä¸šè‚¡ç¥¨æˆ–å­˜æ‰˜å‡­è¯
 	const char TORA_TSTP_STP_SZGEMCDR = 'l';
-	///ÉîÛÚ´´Òµ°å´´ĞÂÆóÒµ¹ÉÆ±»ò´æÍĞÆ¾Ö¤(×¢²áÖÆ)
+	/// æ·±åœ³åˆ›ä¸šæ¿åˆ›æ–°ä¼ä¸šè‚¡ç¥¨æˆ–å­˜æ‰˜å‡­è¯(æ³¨å†Œåˆ¶)
 	const char TORA_TSTP_STP_SZGEMCDRReg = 'm';
-	///ÉîÛÚÉÌÆ·ÆÚ»õETF
+	/// æ·±åœ³å•†å“æœŸè´§ETF
 	const char TORA_TSTP_STP_SZCommFuturesETF = 'n';
-	///ÉîÛÚ»ù´¡ÉèÊ©»ù½ğ
+	/// æ·±åœ³åŸºç¡€è®¾æ–½åŸºé‡‘
 	const char TORA_TSTP_STP_SZInfrastructureFund = '=';
-	///ÉÏº£¿Æ´´°åETF
+	/// ä¸Šæµ·ç§‘åˆ›æ¿ETF
 	const char TORA_TSTP_STP_SHKCETF = '@';
-	///ÉÏº£¿Æ´´°åLOF
+	/// ä¸Šæµ·ç§‘åˆ›æ¿LOF
 	const char TORA_TSTP_STP_SHKCLOF = '%';
-	///ÉÏº£¿Æ´´°å¿É×ªÕ®
+	/// ä¸Šæµ·ç§‘åˆ›æ¿å¯è½¬å€º
 	const char TORA_TSTP_STP_SHKCBondConversion = '$';
-	///ÉÏº£¶¨Ïò¿É×ªÕ®
+	/// ä¸Šæµ·å®šå‘å¯è½¬å€º
 	const char TORA_TSTP_STP_SHOrientedConversionBond = '<';
-	///ÉîÛÚ¶¨Ïò¿É×ªÕ®
+	/// æ·±åœ³å®šå‘å¯è½¬å€º
 	const char TORA_TSTP_STP_SZOrientedConversionBond = '>';
-	///ÉÏº£»ù´¡ÉèÊ©»ù½ğ
+	/// ä¸Šæµ·åŸºç¡€è®¾æ–½åŸºé‡‘
 	const char TORA_TSTP_STP_SHInfrastructureFund = '~';
-	///±±¾©¹ÉÆ±
+	/// åŒ—äº¬è‚¡ç¥¨
 	const char TORA_TSTP_STP_BJStock = '[';
 	typedef char TTORATstpSecurityTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOrderUnitTypeÊÇÒ»¸öÉê±¨µ¥Î»ÀàĞÍ
+	/// TTORATstpOrderUnitTypeæ˜¯ä¸€ä¸ªç”³æŠ¥å•ä½ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÊÖ
+	/// æ‰‹
 	const char TORA_TSTP_OUT_Shou = '0';
-	///¹É
+	/// è‚¡
 	const char TORA_TSTP_OUT_Gu = '1';
-	///·İ
+	/// ä»½
 	const char TORA_TSTP_OUT_Fen = '2';
-	///ÕÅ
+	/// å¼ 
 	const char TORA_TSTP_OUT_Zhang = '3';
 	typedef char TTORATstpOrderUnitType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTradingUnitTypeÊÇÒ»¸ö½»Ò×µ¥Î»ÀàĞÍ
+	/// TTORATstpTradingUnitTypeæ˜¯ä¸€ä¸ªäº¤æ˜“å•ä½ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpTradingUnitType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpPriceTickTypeÊÇÒ»¸ö×îĞ¡±ä¶¯¼ÛÎ»ÀàĞÍ
+	/// TTORATstpPriceTickTypeæ˜¯ä¸€ä¸ªæœ€å°å˜åŠ¨ä»·ä½ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef double TTORATstpPriceTickType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpParValueTypeÊÇÒ»¸öÃæÖµÀàĞÍ
+	/// TTORATstpParValueTypeæ˜¯ä¸€ä¸ªé¢å€¼ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef double TTORATstpParValueType;
-	
-	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpSecurityStatusTypeÊÇÒ»¸öÖ¤È¯×´Ì¬ÀàĞÍ
-	/////////////////////////////////////////////////////////////////////////
-	#ifdef WINDOWS
+
+/////////////////////////////////////////////////////////////////////////
+/// TTORATstpSecurityStatusTypeæ˜¯ä¸€ä¸ªè¯åˆ¸çŠ¶æ€ç±»å‹
+/////////////////////////////////////////////////////////////////////////
+#ifdef WINDOWS
 	typedef __int64 TTORATstpSecurityStatusType;
-	#else
+#else
 	typedef long long int TTORATstpSecurityStatusType;
-	#endif
-	
+#endif
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpInterestTypeÊÇÒ»¸öÀûÏ¢ÀàĞÍ
+	/// TTORATstpInterestTypeæ˜¯ä¸€ä¸ªåˆ©æ¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef double TTORATstpInterestType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpLargeVolumeTypeÊÇÒ»¸ö´ó¶îÊıÁ¿ÀàĞÍ
+	/// TTORATstpLargeVolumeTypeæ˜¯ä¸€ä¸ªå¤§é¢æ•°é‡ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef double TTORATstpLargeVolumeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpIssueModeTypeÊÇÒ»¸ö·¢ĞĞ·½Ê½ÀàĞÍ
+	/// TTORATstpIssueModeTypeæ˜¯ä¸€ä¸ªå‘è¡Œæ–¹å¼ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÊĞÖµÅäÊÛ·½Ê½
+	/// å¸‚å€¼é…å”®æ–¹å¼
 	const char TORA_TSTP_IMO_ValueLimit = '0';
-	///Ôö·¢¶¨¼Û·½Ê½
+	/// å¢å‘å®šä»·æ–¹å¼
 	const char TORA_TSTP_IMO_AddIssue = '1';
-	///ĞÅÓÃÉê¹º·½Ê½
+	/// ä¿¡ç”¨ç”³è´­æ–¹å¼
 	const char TORA_TSTP_IMO_Credit = '2';
-	///¶¨¼Û·¢ĞĞ(±±½»Ëù)
+	/// å®šä»·å‘è¡Œ(åŒ—äº¤æ‰€)
 	const char TORA_TSTP_IMO_Fixed = '3';
-	///¾º¼Û·¢ĞĞ(±±½»Ëù)
+	/// ç«ä»·å‘è¡Œ(åŒ—äº¤æ‰€)
 	const char TORA_TSTP_IMO_Auction = '4';
 	typedef char TTORATstpIssueModeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpLoginLimitTypeÊÇÒ»¸öµÇÂ¼ÏŞÖÆÀàĞÍ
+	/// TTORATstpLoginLimitTypeæ˜¯ä¸€ä¸ªç™»å½•é™åˆ¶ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpLoginLimitType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpLoginStatusTypeÊÇÒ»¸öµÇÂ¼×´Ì¬ÀàĞÍ
+	/// TTORATstpLoginStatusTypeæ˜¯ä¸€ä¸ªç™»å½•çŠ¶æ€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÆôÓÃ
+	/// å¯ç”¨
 	const char TORA_TSTP_USTS_Enabled = '1';
-	///½ûÓÃ
+	/// ç¦ç”¨
 	const char TORA_TSTP_USTS_Disabled = '2';
-	///Ëø¶¨
+	/// é”å®š
 	const char TORA_TSTP_USTS_Locked = '4';
 	typedef char TTORATstpLoginStatusType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpInvestorTypeTypeÊÇÒ»¸öÍ¶×ÊÕßÀàĞÍÀàĞÍ
+	/// TTORATstpInvestorTypeTypeæ˜¯ä¸€ä¸ªæŠ•èµ„è€…ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///¸öÈË
+	/// ä¸ªäºº
 	const char TORA_TSTP_CT_Person = '0';
-	///»ú¹¹
+	/// æœºæ„
 	const char TORA_TSTP_CT_Company = '1';
-	///×ÔÓª
+	/// è‡ªè¥
 	const char TORA_TSTP_CT_SelfOperate = '5';
 	typedef char TTORATstpInvestorTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpInvestorNameTypeÊÇÒ»¸öÍ¶×ÊÕßÃû³ÆÀàĞÍ
+	/// TTORATstpInvestorNameTypeæ˜¯ä¸€ä¸ªæŠ•èµ„è€…åç§°ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpInvestorNameType[81];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpIdCardTypeTypeÊÇÒ»¸öÖ¤¼şÀàĞÍÀàĞÍ
+	/// TTORATstpIdCardTypeTypeæ˜¯ä¸€ä¸ªè¯ä»¶ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///×éÖ¯»ú¹¹´úÂë
+	/// ç»„ç»‡æœºæ„ä»£ç 
 	const char TORA_TSTP_ICT_EID = '0';
-	///ÖĞ¹ú¹«ÃñÉí·İÖ¤
+	/// ä¸­å›½å…¬æ°‘èº«ä»½è¯
 	const char TORA_TSTP_ICT_IDCard = '1';
-	///¾ü¹ÙÖ¤
+	/// å†›å®˜è¯
 	const char TORA_TSTP_ICT_OfficerIDCard = '2';
-	///¾¯¹ÙÖ¤
+	/// è­¦å®˜è¯
 	const char TORA_TSTP_ICT_PoliceIDCard = '3';
-	///Ê¿±øÖ¤
+	/// å£«å…µè¯
 	const char TORA_TSTP_ICT_SoldierIDCard = '4';
-	///»§¿Ú²¾
+	/// æˆ·å£ç°¿
 	const char TORA_TSTP_ICT_HouseholdRegister = '5';
-	///»¤ÕÕ
+	/// æŠ¤ç…§
 	const char TORA_TSTP_ICT_Passport = '6';
-	///Ì¨°ûÖ¤
+	/// å°èƒè¯
 	const char TORA_TSTP_ICT_TaiwanCompatriotIDCard = '7';
-	///»ØÏçÖ¤
+	/// å›ä¹¡è¯
 	const char TORA_TSTP_ICT_HomeComingCard = '8';
-	///ÓªÒµÖ´ÕÕºÅ
+	/// è¥ä¸šæ‰§ç…§å·
 	const char TORA_TSTP_ICT_LicenseNo = '9';
-	///Ë°ÎñµÇ¼ÇºÅ/µ±µØÄÉË°ID
+	/// ç¨åŠ¡ç™»è®°å·/å½“åœ°çº³ç¨ID
 	const char TORA_TSTP_ICT_TaxNo = 'A';
-	///¸Û°Ä¾ÓÃñÀ´ÍùÄÚµØÍ¨ĞĞÖ¤
+	/// æ¸¯æ¾³å±…æ°‘æ¥å¾€å†…åœ°é€šè¡Œè¯
 	const char TORA_TSTP_ICT_HMMainlandTravelPermit = 'B';
-	///Ì¨Íå¾ÓÃñÀ´Íù´óÂ½Í¨ĞĞÖ¤
+	/// å°æ¹¾å±…æ°‘æ¥å¾€å¤§é™†é€šè¡Œè¯
 	const char TORA_TSTP_ICT_TwMainlandTravelPermit = 'C';
-	///¼İÕÕ
+	/// é©¾ç…§
 	const char TORA_TSTP_ICT_DrivingLicense = 'D';
-	///µ±µØÉç±£ID
+	/// å½“åœ°ç¤¾ä¿ID
 	const char TORA_TSTP_ICT_SocialID = 'F';
-	///µ±µØÉí·İÖ¤
+	/// å½“åœ°èº«ä»½è¯
 	const char TORA_TSTP_ICT_LocalID = 'G';
-	///ÉÌÒµµÇ¼ÇÖ¤
+	/// å•†ä¸šç™»è®°è¯
 	const char TORA_TSTP_ICT_BusinessRegistration = 'H';
-	///¸Û°ÄÓÀ¾ÃĞÔ¾ÓÃñÉí·İÖ¤
+	/// æ¸¯æ¾³æ°¸ä¹…æ€§å±…æ°‘èº«ä»½è¯
 	const char TORA_TSTP_ICT_HKMCIDCard = 'I';
-	///ÈËĞĞ¿ª»§Ğí¿ÉÖ¤
+	/// äººè¡Œå¼€æˆ·è®¸å¯è¯
 	const char TORA_TSTP_ICT_AccountsPermits = 'J';
-	///ÆäËûÖ¤¼ş
+	/// å…¶ä»–è¯ä»¶
 	const char TORA_TSTP_ICT_OtherCard = 'x';
 	typedef char TTORATstpIdCardTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpIdCardNoTypeÊÇÒ»¸öÖ¤¼ş±àºÅÀàĞÍ
+	/// TTORATstpIdCardNoTypeæ˜¯ä¸€ä¸ªè¯ä»¶ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpIdCardNoType[51];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTradingStatusTypeÊÇÒ»¸ö½»Ò××´Ì¬ÀàĞÍ
+	/// TTORATstpTradingStatusTypeæ˜¯ä¸€ä¸ªäº¤æ˜“çŠ¶æ€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Õı³£
+	/// æ­£å¸¸
 	const char TORA_TSTP_TS_Normal = '1';
-	///ÕıÔÚÇ¿Æ½
+	/// æ­£åœ¨å¼ºå¹³
 	const char TORA_TSTP_TS_ForceClosing = '2';
-	///Òì³£
+	/// å¼‚å¸¸
 	const char TORA_TSTP_TS_Exception = '3';
 	typedef char TTORATstpTradingStatusType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOperwaysTypeÊÇÒ»¸öÎ¯ÍĞ·½Ê½ºÏ¼¯ÀàĞÍ
+	/// TTORATstpOperwaysTypeæ˜¯ä¸€ä¸ªå§”æ‰˜æ–¹å¼åˆé›†ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpOperwaysType[41];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpMobileTypeÊÇÒ»¸öÊÖ»úÀàĞÍ
+	/// TTORATstpMobileTypeæ˜¯ä¸€ä¸ªæ‰‹æœºç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpMobileType[41];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpTelephoneTypeÊÇÒ»¸öÁªÏµµç»°ÀàĞÍ
+	/// TTORATstpTelephoneTypeæ˜¯ä¸€ä¸ªè”ç³»ç”µè¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpTelephoneType[41];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpEmailTypeÊÇÒ»¸öEmailÀàĞÍ
+	/// TTORATstpEmailTypeæ˜¯ä¸€ä¸ªEmailç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpEmailType[61];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpFaxTypeÊÇÒ»¸ö´«ÕæÀàĞÍ
+	/// TTORATstpFaxTypeæ˜¯ä¸€ä¸ªä¼ çœŸç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpFaxType[21];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpAddressTypeÊÇÒ»¸öÍ¨Ñ¶µØÖ·ÀàĞÍ
+	/// TTORATstpAddressTypeæ˜¯ä¸€ä¸ªé€šè®¯åœ°å€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpAddressType[101];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpZipCodeTypeÊÇÒ»¸öÓÊÕş±àÂëÀàĞÍ
+	/// TTORATstpZipCodeTypeæ˜¯ä¸€ä¸ªé‚®æ”¿ç¼–ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpZipCodeType[21];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpProfInvestorTypeTypeÊÇÒ»¸ö×¨ÒµÍ¶×ÊÕßÀà±ğÀàĞÍ
+	/// TTORATstpProfInvestorTypeTypeæ˜¯ä¸€ä¸ªä¸“ä¸šæŠ•èµ„è€…ç±»åˆ«ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///·Ç×¨ÒµÍ¶×ÊÕß
+	/// éä¸“ä¸šæŠ•èµ„è€…
 	const char TORA_TSTP_PIT_Normal = '0';
-	///×¨ÒµÍ¶×ÊÕß
+	/// ä¸“ä¸šæŠ•èµ„è€…
 	const char TORA_TSTP_PIT_Professional = '1';
 	typedef char TTORATstpProfInvestorTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpPlanTypeTypeÊÇÒ»¸öÌ×²ÍÀàĞÍÀàĞÍ
+	/// TTORATstpPlanTypeTypeæ˜¯ä¸€ä¸ªå¥—é¤ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///±ê×¼Ì×²Í
+	/// æ ‡å‡†å¥—é¤
 	const char TORA_TSTP_PLTP_Standard = '0';
-	///ÖÇÄÜÌ×²Í
+	/// æ™ºèƒ½å¥—é¤
 	const char TORA_TSTP_PLTP_Smart = '1';
-	///Ô¤Áô1
+	/// é¢„ç•™1
 	const char TORA_TSTP_PLTP_Reserve1 = '2';
-	///Ô¤Áô2
+	/// é¢„ç•™2
 	const char TORA_TSTP_PLTP_Reserve2 = '3';
-	///Î´¶¨ÒåÀàĞÍ£¨ÄÚ²¿Ê¹ÓÃ£©
+	/// æœªå®šä¹‰ç±»å‹ï¼ˆå†…éƒ¨ä½¿ç”¨ï¼‰
 	const char TORA_TSTP_PLTP_Undefined = '4';
 	typedef char TTORATstpPlanTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpRemarkTypeÊÇÒ»¸ö±¸×¢ÀàĞÍ
+	/// TTORATstpRemarkTypeæ˜¯ä¸€ä¸ªå¤‡æ³¨ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpRemarkType[513];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpShareholderIDTypeTypeÊÇÒ»¸ö¹É¶«ÕË»§ÀàĞÍÀàĞÍ
+	/// TTORATstpShareholderIDTypeTypeæ˜¯ä¸€ä¸ªè‚¡ä¸œè´¦æˆ·ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Í¶»ú
+	/// æŠ•æœº
 	const char TORA_TSTP_SIDT_Speculation = '1';
-	///Ì×Àû
+	/// å¥—åˆ©
 	const char TORA_TSTP_SIDT_Arbitrage = '2';
-	///Ì×±£
+	/// å¥—ä¿
 	const char TORA_TSTP_SIDT_Hedge = '3';
-	///ÆÕÍ¨
+	/// æ™®é€š
 	const char TORA_TSTP_SIDT_Normal = 'a';
-	///ĞÅÓÃ
+	/// ä¿¡ç”¨
 	const char TORA_TSTP_SIDT_Credit = 'b';
-	///ÑÜÉúÆ·
+	/// è¡ç”Ÿå“
 	const char TORA_TSTP_SIDT_Derivatives = 'c';
 	typedef char TTORATstpShareholderIDTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCancelOrderStatusTypeÊÇÒ»¸ö³·µ¥×´Ì¬ÀàĞÍ
+	/// TTORATstpCancelOrderStatusTypeæ˜¯ä¸€ä¸ªæ’¤å•çŠ¶æ€ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Ô¤Âñ
+	/// é¢„åŸ‹
 	const char TORA_TSTP_CORDS_Cached = '0';
-	///ÒÑÌá½»
+	/// å·²æäº¤
 	const char TORA_TSTP_CORDS_Submitted = '1';
-	///³É¹¦
+	/// æˆåŠŸ
 	const char TORA_TSTP_CORDS_Success = '2';
-	///¾Ü¾ø
+	/// æ‹’ç»
 	const char TORA_TSTP_CORDS_Rejected = '3';
 	typedef char TTORATstpCancelOrderStatusType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCancelOrderTypeTypeÊÇÒ»¸ö³·µ¥ÀàĞÍÀàĞÍ
+	/// TTORATstpCancelOrderTypeTypeæ˜¯ä¸€ä¸ªæ’¤å•ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÆÕÍ¨³·µ¥
+	/// æ™®é€šæ’¤å•
 	const char TORA_TSTP_CORDT_Normal = '0';
-	///Ç¿ÖÆ³·µ¥
+	/// å¼ºåˆ¶æ’¤å•
 	const char TORA_TSTP_CORDT_Force = '1';
-	///Ô¤Âñ³·µ¥
+	/// é¢„åŸ‹æ’¤å•
 	const char TORA_TSTP_CORDT_Cache = '2';
-	///Í¨µÀ³·µ¥
+	/// é€šé“æ’¤å•
 	const char TORA_TSTP_CORDT_Board = '3';
 	typedef char TTORATstpCancelOrderTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpAccountTypeTypeÊÇÒ»¸ö×Ê½ğÕË»§ÀàĞÍÀàĞÍ
+	/// TTORATstpAccountTypeTypeæ˜¯ä¸€ä¸ªèµ„é‡‘è´¦æˆ·ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÆÕÍ¨
+	/// æ™®é€š
 	const char TORA_TSTP_FAT_Normal = '1';
-	///ĞÅÓÃ
+	/// ä¿¡ç”¨
 	const char TORA_TSTP_FAT_Credit = '2';
-	///ÑÜÉúÆ·
+	/// è¡ç”Ÿå“
 	const char TORA_TSTP_FAT_Derivatives = '3';
 	typedef char TTORATstpAccountTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpBizClassTypeÊÇÒ»¸öÒµÎñÀà±ğÀàĞÍ
+	/// TTORATstpBizClassTypeæ˜¯ä¸€ä¸ªä¸šåŠ¡ç±»åˆ«ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÂòÈë
+	/// ä¹°å…¥
 	const char TORA_TSTP_BC_Buy = '0';
-	///Âô³ö
+	/// å–å‡º
 	const char TORA_TSTP_BC_Sell = '1';
-	///ETFÉê¹º
+	/// ETFç”³è´­
 	const char TORA_TSTP_BC_ETFPur = '2';
-	///ETFÊê»Ø
+	/// ETFèµå›
 	const char TORA_TSTP_BC_ETFRed = '3';
-	///ĞÂ¹ÉÉê¹º
+	/// æ–°è‚¡ç”³è´­
 	const char TORA_TSTP_BC_SubscribingShares = '4';
-	///Õı»Ø¹º
+	/// æ­£å›è´­
 	const char TORA_TSTP_BC_Repurchase = '5';
-	///Äæ»Ø¹º
+	/// é€†å›è´­
 	const char TORA_TSTP_BC_ReverseRepur = '6';
-	///¿ª·ÅÊ½»ù½ğÉê¹º
+	/// å¼€æ”¾å¼åŸºé‡‘ç”³è´­
 	const char TORA_TSTP_BC_OeFundPur = '8';
-	///¿ª·ÅÊ½»ù½ğÊê»Ø
+	/// å¼€æ”¾å¼åŸºé‡‘èµå›
 	const char TORA_TSTP_BC_OeFundRed = '9';
-	///µ£±£Æ·»®Èë
+	/// æ‹…ä¿å“åˆ’å…¥
 	const char TORA_TSTP_BC_CollateralIn = 'a';
-	///µ£±£Æ·»®³ö
+	/// æ‹…ä¿å“åˆ’å‡º
 	const char TORA_TSTP_BC_CollateralOut = 'b';
-	///ÖÊÑºÈë¿â
+	/// è´¨æŠ¼å…¥åº“
 	const char TORA_TSTP_BC_PledgeIn = 'd';
-	///ÖÊÑº³ö¿â
+	/// è´¨æŠ¼å‡ºåº“
 	const char TORA_TSTP_BC_PledgeOut = 'e';
-	///Åä¹ÉÅäÕ®
+	/// é…è‚¡é…å€º
 	const char TORA_TSTP_BC_Rationed = 'f';
-	///¿ª·ÅÊ½»ù½ğ²ğ·Ö
+	/// å¼€æ”¾å¼åŸºé‡‘æ‹†åˆ†
 	const char TORA_TSTP_BC_Split = 'g';
-	///¿ª·ÅÊ½»ù½ğºÏ²¢
+	/// å¼€æ”¾å¼åŸºé‡‘åˆå¹¶
 	const char TORA_TSTP_BC_Merge = 'h';
-	///ÈÚ×ÊÂòÈë
+	/// èèµ„ä¹°å…¥
 	const char TORA_TSTP_BC_CreditBuy = 'i';
-	///ÈÚÈ¯Âô³ö
+	/// èåˆ¸å–å‡º
 	const char TORA_TSTP_BC_CreditSell = 'j';
-	///ÂôÈ¯»¹¿î
+	/// å–åˆ¸è¿˜æ¬¾
 	const char TORA_TSTP_BC_SellRepay = 'k';
-	///ÂòÈ¯»¹È¯
+	/// ä¹°åˆ¸è¿˜åˆ¸
 	const char TORA_TSTP_BC_BuyRepay = 'l';
-	///»¹È¯»®×ª
+	/// è¿˜åˆ¸åˆ’è½¬
 	const char TORA_TSTP_BC_RepayTransfer = 'm';
-	///ÓàÈ¯»®×ª
+	/// ä½™åˆ¸åˆ’è½¬
 	const char TORA_TSTP_BC_SurplusTransfer = 'n';
-	///Ô´È¯»®×ª
+	/// æºåˆ¸åˆ’è½¬
 	const char TORA_TSTP_BC_SourceTransfer = 'o';
-	///ÂôÈ¯Ç¿Æ½»¹¿î(ÄÚ²¿Ê¹ÓÃ)
+	/// å–åˆ¸å¼ºå¹³è¿˜æ¬¾(å†…éƒ¨ä½¿ç”¨)
 	const char TORA_TSTP_BC_ForceSellRepay = 'p';
-	///ÂòÈ¯Ç¿Æ½»¹È¯(ÄÚ²¿Ê¹ÓÃ)
+	/// ä¹°åˆ¸å¼ºå¹³è¿˜åˆ¸(å†…éƒ¨ä½¿ç”¨)
 	const char TORA_TSTP_BC_ForceBuyRepay = 'q';
-	///¸ºÕ®Õ¹ÆÚ(ÄÚ²¿Ê¹ÓÃ)
+	/// è´Ÿå€ºå±•æœŸ(å†…éƒ¨ä½¿ç”¨)
 	const char TORA_TSTP_BC_DebtExtend = 'r';
-	///×ªÍĞ¹Ü
+	/// è½¬æ‰˜ç®¡
 	const char TORA_TSTP_BC_CustodyTransfer = 's';
-	///Õ®È¯×ª¹É
+	/// å€ºåˆ¸è½¬è‚¡
 	const char TORA_TSTP_BC_BondConvertStock = 't';
-	///Õ®È¯»ØÊÛ
+	/// å€ºåˆ¸å›å”®
 	const char TORA_TSTP_BC_BondPutback = 'u';
-	///ETFÊµÎïÉê¹º
+	/// ETFå®ç‰©ç”³è´­
 	const char TORA_TSTP_BC_ETFOtPur = 'v';
-	///ETFÊµÎïÊê»Ø
+	/// ETFå®ç‰©èµå›
 	const char TORA_TSTP_BC_ETFOtRed = 'w';
-	///»ØÊÛ³·Ïú
+	/// å›å”®æ’¤é”€
 	const char TORA_TSTP_BC_PutbackRelieve = 'x';
 	typedef char TTORATstpBizClassType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpBrokerageTypeTypeÊÇÒ»¸öÓ¶½ğÀàĞÍÀàĞÍ
+	/// TTORATstpBrokerageTypeTypeæ˜¯ä¸€ä¸ªä½£é‡‘ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///Ã«Ó¶½ğ
+	/// æ¯›ä½£é‡‘
 	const char TORA_TSTP_BT_Gross = '0';
-	///¾»Ó¶½ğ
+	/// å‡€ä½£é‡‘
 	const char TORA_TSTP_BT_Net = '1';
 	typedef char TTORATstpBrokerageTypeType;
-	
-	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpLongVolumeTypeÊÇÒ»¸öLongVolumeÀàĞÍ
-	/////////////////////////////////////////////////////////////////////////
-	#ifdef WINDOWS
+
+/////////////////////////////////////////////////////////////////////////
+/// TTORATstpLongVolumeTypeæ˜¯ä¸€ä¸ªLongVolumeç±»å‹
+/////////////////////////////////////////////////////////////////////////
+#ifdef WINDOWS
 	typedef __int64 TTORATstpLongVolumeType;
-	#else
+#else
 	typedef long long int TTORATstpLongVolumeType;
-	#endif
-	
+#endif
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpOperateSourceTypeÊÇÒ»¸ö²Ù×÷À´Ô´ÀàĞÍ
+	/// TTORATstpOperateSourceTypeæ˜¯ä¸€ä¸ªæ“ä½œæ¥æºç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÊµÊ±ÉÏ³¡
+	/// å®æ—¶ä¸Šåœº
 	const char TORA_TSTP_OPRTSRC_DBCommand = '0';
-	///APIµ÷ÓÃ
+	/// APIè°ƒç”¨
 	const char TORA_TSTP_OPRTSRC_SyncAPI = '1';
-	///×Ô¶¯´¥·¢
+	/// è‡ªåŠ¨è§¦å‘
 	const char TORA_TSTP_OPRTSRC_AutoTrigger = '2';
-	///API½ô¼±ÉÏ³¡
+	/// APIç´§æ€¥ä¸Šåœº
 	const char TORA_TSTP_OPRTSRC_EmergencyAPI = '3';
 	typedef char TTORATstpOperateSourceType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpExternalSerialTypeÊÇÒ»¸öÍâ²¿Á÷Ë®ºÅÀàĞÍ
+	/// TTORATstpExternalSerialTypeæ˜¯ä¸€ä¸ªå¤–éƒ¨æµæ°´å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpExternalSerialType[65];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpIPONumberIDTypeÊÇÒ»¸öĞÂ¹ÉÉê¹ºÅä¹ÉºÅÀàĞÍ
+	/// TTORATstpIPONumberIDTypeæ˜¯ä¸€ä¸ªæ–°è‚¡ç”³è´­é…è‚¡å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpIPONumberIDType[31];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpSpecPrivilegeTypeTypeÊÇÒ»¸öÌØÊâÈ¨ÏŞÀà±ğÀàĞÍ
+	/// TTORATstpSpecPrivilegeTypeTypeæ˜¯ä¸€ä¸ªç‰¹æ®Šæƒé™ç±»åˆ«ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///´´Òµ°å
+	/// åˆ›ä¸šæ¿
 	const char TORA_TSTP_SPLT_GEM = '0';
-	///·çÏÕ¾¯Ê¾°å
+	/// é£é™©è­¦ç¤ºæ¿
 	const char TORA_TSTP_SPLT_RiskWarning = '1';
-	///ÍËÊĞÕûÀí°å
+	/// é€€å¸‚æ•´ç†æ¿
 	const char TORA_TSTP_SPLT_Delisting = '2';
-	///¸Û¹ÉÍ¨
+	/// æ¸¯è‚¡é€š
 	const char TORA_TSTP_SPLT_SZSEHK = '3';
-	///¿Æ´´°å
+	/// ç§‘åˆ›æ¿
 	const char TORA_TSTP_SPLT_SHKC = '4';
-	///´´Òµ°å×¢²áÖÆ
+	/// åˆ›ä¸šæ¿æ³¨å†Œåˆ¶
 	const char TORA_TSTP_SPLT_GEMRegistration = '5';
-	///·Ö¼¶»ù½ğ
+	/// åˆ†çº§åŸºé‡‘
 	const char TORA_TSTP_SPLT_StructFund = '6';
-	///¿É×ªÕ®
+	/// å¯è½¬å€º
 	const char TORA_TSTP_SPLT_ConvertBond = '7';
-	///»ù´¡ÉèÊ©»ù½ğ
+	/// åŸºç¡€è®¾æ–½åŸºé‡‘
 	const char TORA_TSTP_SPLT_InfrastructureFund = '8';
-	///¶¨Ïò¿É×ªÕ®
+	/// å®šå‘å¯è½¬å€º
 	const char TORA_TSTP_SPLT_OrientedConvertBond = '9';
-	///±±½»Ëù¹ÉÆ±
+	/// åŒ—äº¤æ‰€è‚¡ç¥¨
 	const char TORA_TSTP_SPLT_BJStock = 'a';
 	typedef char TTORATstpSpecPrivilegeTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpCreRedTypeTypeÊÇÒ»¸öÉêÊêÀàĞÍÀàĞÍ
+	/// TTORATstpCreRedTypeTypeæ˜¯ä¸€ä¸ªç”³èµç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///ÆÕÍ¨ÉêÊê
+	/// æ™®é€šç”³èµ
 	const char TORA_TSTP_CRT_IS = '0';
-	///ÊµÎïÉêÊê
+	/// å®ç‰©ç”³èµ
 	const char TORA_TSTP_CRT_OS = '1';
 	typedef char TTORATstpCreRedTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpETFCurrenceReplaceStatusTypeÊÇÒ»¸öETFÏÖ½ğÌæ´ú±êÖ¾ÀàĞÍ
+	/// TTORATstpETFCurrenceReplaceStatusTypeæ˜¯ä¸€ä¸ªETFç°é‡‘æ›¿ä»£æ ‡å¿—ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///½ûÖ¹ÏÖ½ğÌæ´ú
+	/// ç¦æ­¢ç°é‡‘æ›¿ä»£
 	const char TORA_TSTP_ETFCTSTAT_Forbidden = '0';
-	///¿ÉÒÔÏÖ½ğÌæ´ú
+	/// å¯ä»¥ç°é‡‘æ›¿ä»£
 	const char TORA_TSTP_ETFCTSTAT_Allow = '1';
-	///±ØĞëÏÖ½ğÌæ´ú
+	/// å¿…é¡»ç°é‡‘æ›¿ä»£
 	const char TORA_TSTP_ETFCTSTAT_Force = '2';
-	///¿çÊĞÍË²¹ÏÖ½ğÌæ´ú
+	/// è·¨å¸‚é€€è¡¥ç°é‡‘æ›¿ä»£
 	const char TORA_TSTP_ETFCTSTAT_CBAllow = '3';
-	///¿çÊĞ±ØĞëÏÖ½ğÌæ´ú
+	/// è·¨å¸‚å¿…é¡»ç°é‡‘æ›¿ä»£
 	const char TORA_TSTP_ETFCTSTAT_CBForce = '4';
 	typedef char TTORATstpETFCurrenceReplaceStatusType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpPriceTickIDTypeÊÇÒ»¸ö¼Û²îÆ·ÖÖÀàĞÍ
+	/// TTORATstpPriceTickIDTypeæ˜¯ä¸€ä¸ªä»·å·®å“ç§ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///¹É±¾Ö¤È¯
+	/// è‚¡æœ¬è¯åˆ¸
 	const char TORA_TSTP_PTID_Stock = '0';
-	///Õ®ÎñÖ¤È¯
+	/// å€ºåŠ¡è¯åˆ¸
 	const char TORA_TSTP_PTID_Bond = '1';
-	///¹ÉÆ±ÆÚÈ¨
+	/// è‚¡ç¥¨æœŸæƒ
 	const char TORA_TSTP_PTID_Option = '2';
 	typedef char TTORATstpPriceTickIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpPriceTickGroupIDTypeÊÇÒ»¸ö¼Û²î×éºÅÀàĞÍ
+	/// TTORATstpPriceTickGroupIDTypeæ˜¯ä¸€ä¸ªä»·å·®ç»„å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpPriceTickGroupIDType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpPriceTickTypeTypeÊÇÒ»¸ö¼Û²îÀà±ğÀàĞÍ
+	/// TTORATstpPriceTickTypeTypeæ˜¯ä¸€ä¸ªä»·å·®ç±»åˆ«ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///¼Û¸ñÉÏÏÂÏŞ
+	/// ä»·æ ¼ä¸Šä¸‹é™
 	const char TORA_TSTP_PPT_LimitPrice = '0';
-	///¼Û²î×é
+	/// ä»·å·®ç»„
 	const char TORA_TSTP_PPT_PriceTick = '1';
 	typedef char TTORATstpPriceTickTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpFundTypeTypeÊÇÒ»¸ö»ù½ğÀàĞÍÀàĞÍ
+	/// TTORATstpFundTypeTypeæ˜¯ä¸€ä¸ªåŸºé‡‘ç±»å‹ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///±ê×¼LOF
+	/// æ ‡å‡†LOF
 	const char TORA_TSTP_FUT_Normal = '0';
-	///·Ö¼¶Ä¸»ù½ğ
+	/// åˆ†çº§æ¯åŸºé‡‘
 	const char TORA_TSTP_FUT_Mother = '1';
-	///·Ö¼¶×Ó»ù½ğ
+	/// åˆ†çº§å­åŸºé‡‘
 	const char TORA_TSTP_FUT_Sub = '2';
 	typedef char TTORATstpFundTypeType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpNodeInfoTypeÊÇÒ»¸ö½ÚµãĞÅÏ¢ÀàĞÍ
+	/// TTORATstpNodeInfoTypeæ˜¯ä¸€ä¸ªèŠ‚ç‚¹ä¿¡æ¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpNodeInfoType[33];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpFensVerTypeÊÇÒ»¸ö°æ±¾ºÅÀàĞÍ
+	/// TTORATstpFensVerTypeæ˜¯ä¸€ä¸ªç‰ˆæœ¬å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef short TTORATstpFensVerType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpFensEnvIDTypeÊÇÒ»¸ö»·¾³±àºÅÀàĞÍ
+	/// TTORATstpFensEnvIDTypeæ˜¯ä¸€ä¸ªç¯å¢ƒç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpFensEnvIDType[13];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpFensNodeIDTypeÊÇÒ»¸ö½Úµã±àºÅÀàĞÍ
+	/// TTORATstpFensNodeIDTypeæ˜¯ä¸€ä¸ªèŠ‚ç‚¹ç¼–å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpFensNodeIDType[11];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpFensUserIDTypeÊÇÒ»¸öÓÃ»§´úÂëÀàĞÍ
+	/// TTORATstpFensUserIDTypeæ˜¯ä¸€ä¸ªç”¨æˆ·ä»£ç ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpFensUserIDType[16];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpClientInfoTypeÊÇÒ»¸öÖÕ¶ËĞÅÏ¢ÀàĞÍ
+	/// TTORATstpClientInfoTypeæ˜¯ä¸€ä¸ªç»ˆç«¯ä¿¡æ¯ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef char TTORATstpClientInfoType[65];
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpPortTypeÊÇÒ»¸ö¶Ë¿ÚºÅÀàĞÍ
+	/// TTORATstpPortTypeæ˜¯ä¸€ä¸ªç«¯å£å·ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
 	typedef int TTORATstpPortType;
-	
+
 	/////////////////////////////////////////////////////////////////////////
-	/// TTORATstpMDSubModeTypeÊÇÒ»¸öĞĞÇé¶©ÔÄÄ£Ê½ÀàĞÍ
+	/// TTORATstpMDSubModeTypeæ˜¯ä¸€ä¸ªè¡Œæƒ…è®¢é˜…æ¨¡å¼ç±»å‹
 	/////////////////////////////////////////////////////////////////////////
-	///TCPÁ¬½ÓÄ£Ê½
+	/// TCPè¿æ¥æ¨¡å¼
 	const char TORA_TSTP_MST_TCP = '0';
-	///UDPµ¥²¥Ä£Ê½
+	/// UDPå•æ’­æ¨¡å¼
 	const char TORA_TSTP_MST_UDP = '1';
-	///UDP×é²¥Ä£Ê½
+	/// UDPç»„æ’­æ¨¡å¼
 	const char TORA_TSTP_MST_MCAST = '2';
 	typedef char TTORATstpMDSubModeType;
-	
+
 }
 #endif // TORATSTPUSERAPIDATATYPE_H__

@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////
-///@company ÉÏº£Ì©çüĞÅÏ¢¿Æ¼¼ÓĞÏŞ¹«Ë¾
+///@company ä¸Šæµ·æ³°ç°ä¿¡æ¯ç§‘æŠ€æœ‰é™å…¬å¸
 ///@file TORATstpXMdApiStruct.h
-///@brief ¶¨ÒåÁË¿Í»§¶Ë½Ó¿ÚÊ¹ÓÃµÄÒµÎñÊı¾İ½á¹¹
-///@history 
+///@brief å®šä¹‰äº†å®¢æˆ·ç«¯æ¥å£ä½¿ç”¨çš„ä¸šåŠ¡æ•°æ®ç»“æ„
+///@history
 /////////////////////////////////////////////////////////////////////////
 #ifndef TORATSTPXMDAPISTRUCT_H__
 #define TORATSTPXMDAPISTRUCT_H__
@@ -11,932 +11,932 @@
 
 namespace TORALEV1API
 {
-	
-	/// µÇÂ¼ÇëÇó
+
+	/// ç™»å½•è¯·æ±‚
 	struct CTORATstpReqUserLoginField
 	{
-		///µÇÂ¼ÕË»§
-		TTORATstpLogInAccountType	LogInAccount;
-	
-		///µÇÂ¼ÕË»§ÀàĞÍ
-		TTORATstpLogInAccountTypeType	LogInAccountType;
-	
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë£¨ÒÔ×Ê½ğÕËºÅ·½Ê½µÇÂ¼Ê±±ØÌî£©
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///ÈÏÖ¤·½Ê½(Ö¸ÎÆ»òÔ¿³×´®ÈÏÖ¤Ê±±ØÌî)
-		TTORATstpAuthModeType	AuthMode;
-	
-		///ÃÜÂë(ÃÜÂëÈÏÖ¤Ê±±ØÌî)
-		TTORATstpPasswordType	Password;
-	
-		///ÓÃ»§¶Ë²úÆ·ĞÅÏ¢
-		TTORATstpUserProductInfoType	UserProductInfo;
-	
-		///½Ó¿Ú¶Ë²úÆ·ĞÅÏ¢
-		TTORATstpInterfaceProductInfoType	InterfaceProductInfo;
-	
-		///ÖÕ¶Ë²É¼¯ĞÅÏ¢
-		TTORATstpTerminalInfoType	TerminalInfo;
-	
-		///ÄÚÍøIPµØÖ·
-		TTORATstpIPAddressType	InnerIPAddress;
-	
-		///ÍâÍøIPµØÖ·
-		TTORATstpIPAddressType	OuterIPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
-	
-		///½Ó¿ÚÓïÑÔ
-		TTORATstpLangType	Lang;
-	
-		///ÖÕ¶Ë¶¯Ì¬ÃØÔ¿
-		TTORATstpPasswordType	DynamicPassword;
-	
-		///Éè±¸±êÊ¶(Ö¸ÎÆÈÏÖ¤Ê±±ØÌî)
-		TTORATstpDeviceIDType	DeviceID;
-	
-		///ÈÏÖ¤ĞòÁĞºÅ(Ö¸ÎÆ»òÔ¿³×´®ÈÏÖ¤Ê±±ØÌî)
-		TTORATstpCertSerialType	CertSerial;
-	
-		///Éè±¸Àà±ğ(Ö¸ÎÆ»òÔ¿³×´®ÈÏÖ¤Ê±±ØÌî)
-		TTORATstpDeviceTypeType	DeviceType;
+		/// ç™»å½•è´¦æˆ·
+		TTORATstpLogInAccountType LogInAccount;
+
+		/// ç™»å½•è´¦æˆ·ç±»å‹
+		TTORATstpLogInAccountTypeType LogInAccountType;
+
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç ï¼ˆä»¥èµ„é‡‘è´¦å·æ–¹å¼ç™»å½•æ—¶å¿…å¡«ï¼‰
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// è®¤è¯æ–¹å¼(æŒ‡çº¹æˆ–é’¥åŒ™ä¸²è®¤è¯æ—¶å¿…å¡«)
+		TTORATstpAuthModeType AuthMode;
+
+		/// å¯†ç (å¯†ç è®¤è¯æ—¶å¿…å¡«)
+		TTORATstpPasswordType Password;
+
+		/// ç”¨æˆ·ç«¯äº§å“ä¿¡æ¯
+		TTORATstpUserProductInfoType UserProductInfo;
+
+		/// æ¥å£ç«¯äº§å“ä¿¡æ¯
+		TTORATstpInterfaceProductInfoType InterfaceProductInfo;
+
+		/// ç»ˆç«¯é‡‡é›†ä¿¡æ¯
+		TTORATstpTerminalInfoType TerminalInfo;
+
+		/// å†…ç½‘IPåœ°å€
+		TTORATstpIPAddressType InnerIPAddress;
+
+		/// å¤–ç½‘IPåœ°å€
+		TTORATstpIPAddressType OuterIPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
+
+		/// æ¥å£è¯­è¨€
+		TTORATstpLangType Lang;
+
+		/// ç»ˆç«¯åŠ¨æ€ç§˜é’¥
+		TTORATstpPasswordType DynamicPassword;
+
+		/// è®¾å¤‡æ ‡è¯†(æŒ‡çº¹è®¤è¯æ—¶å¿…å¡«)
+		TTORATstpDeviceIDType DeviceID;
+
+		/// è®¤è¯åºåˆ—å·(æŒ‡çº¹æˆ–é’¥åŒ™ä¸²è®¤è¯æ—¶å¿…å¡«)
+		TTORATstpCertSerialType CertSerial;
+
+		/// è®¾å¤‡ç±»åˆ«(æŒ‡çº¹æˆ–é’¥åŒ™ä¸²è®¤è¯æ—¶å¿…å¡«)
+		TTORATstpDeviceTypeType DeviceType;
 	};
-	
-	/// µÇÂ¼ÏìÓ¦
+
+	/// ç™»å½•å“åº”
 	struct CTORATstpRspUserLoginField
 	{
-		///¾­¼Í¹«Ë¾²¿ÃÅ´úÂë
-		TTORATstpDepartmentIDType	DepartmentID;
-	
-		///µÇÂ¼ÕË»§
-		TTORATstpLogInAccountType	LogInAccount;
-	
-		///µÇÂ¼ÕË»§ÀàĞÍ
-		TTORATstpLogInAccountTypeType	LogInAccountType;
-	
-		///Ç°ÖÃ±àºÅ
-		TTORATstpFrontIDType	FrontID;
-	
-		///»á»°±àºÅ
-		TTORATstpSessionIDType	SessionID;
-	
-		///×î´ó±¨µ¥ÒıÓÃ
-		TTORATstpOrderRefType	MaxOrderRef;
-	
-		///Ë½ÓĞÁ÷³¤¶È
-		TTORATstpVolumeType	PrivateFlowCount;
-	
-		///¹«ÓĞÁ÷³¤¶È
-		TTORATstpVolumeType	PublicFlowCount;
-	
-		///µÇÂ¼Ê±¼ä
-		TTORATstpTimeType	LoginTime;
-	
-		///½»Ò×ÏµÍ³Ãû³Æ
-		TTORATstpSystemNameType	SystemName;
-	
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
-	
-		///ÓÃ»§Ãû³Æ
-		TTORATstpUserNameType	UserName;
-	
-		///ÓÃ»§ÀàĞÍ
-		TTORATstpUserTypeType	UserType;
-	
-		///±¨µ¥Á÷¿Ø
-		TTORATstpCommFluxType	OrderInsertCommFlux;
-	
-		///³·µ¥Á÷¿Ø
-		TTORATstpCommFluxType	OrderActionCommFlux;
-	
-		///ÃÜÂëµ½ÆÚÈÕÆÚ
-		TTORATstpDateType	PasswordExpiryDate;
-	
-		///ÊÇ·ñĞèÒª¸ÄÃÜ
-		TTORATstpBoolType	NeedUpdatePassword;
-	
-		///ÈÏÖ¤ĞòÁĞºÅ
-		TTORATstpCertSerialType	CertSerial;
-	
-		///ÄÚÍøIPµØÖ·
-		TTORATstpIPAddressType	InnerIPAddress;
-	
-		///ÍâÍøIPµØÖ·
-		TTORATstpIPAddressType	OuterIPAddress;
-	
-		///MacµØÖ·
-		TTORATstpMacAddressType	MacAddress;
+		/// ç»çºªå…¬å¸éƒ¨é—¨ä»£ç 
+		TTORATstpDepartmentIDType DepartmentID;
+
+		/// ç™»å½•è´¦æˆ·
+		TTORATstpLogInAccountType LogInAccount;
+
+		/// ç™»å½•è´¦æˆ·ç±»å‹
+		TTORATstpLogInAccountTypeType LogInAccountType;
+
+		/// å‰ç½®ç¼–å·
+		TTORATstpFrontIDType FrontID;
+
+		/// ä¼šè¯ç¼–å·
+		TTORATstpSessionIDType SessionID;
+
+		/// æœ€å¤§æŠ¥å•å¼•ç”¨
+		TTORATstpOrderRefType MaxOrderRef;
+
+		/// ç§æœ‰æµé•¿åº¦
+		TTORATstpVolumeType PrivateFlowCount;
+
+		/// å…¬æœ‰æµé•¿åº¦
+		TTORATstpVolumeType PublicFlowCount;
+
+		/// ç™»å½•æ—¶é—´
+		TTORATstpTimeType LoginTime;
+
+		/// äº¤æ˜“ç³»ç»Ÿåç§°
+		TTORATstpSystemNameType SystemName;
+
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
+
+		/// ç”¨æˆ·åç§°
+		TTORATstpUserNameType UserName;
+
+		/// ç”¨æˆ·ç±»å‹
+		TTORATstpUserTypeType UserType;
+
+		/// æŠ¥å•æµæ§
+		TTORATstpCommFluxType OrderInsertCommFlux;
+
+		/// æ’¤å•æµæ§
+		TTORATstpCommFluxType OrderActionCommFlux;
+
+		/// å¯†ç åˆ°æœŸæ—¥æœŸ
+		TTORATstpDateType PasswordExpiryDate;
+
+		/// æ˜¯å¦éœ€è¦æ”¹å¯†
+		TTORATstpBoolType NeedUpdatePassword;
+
+		/// è®¤è¯åºåˆ—å·
+		TTORATstpCertSerialType CertSerial;
+
+		/// å†…ç½‘IPåœ°å€
+		TTORATstpIPAddressType InnerIPAddress;
+
+		/// å¤–ç½‘IPåœ°å€
+		TTORATstpIPAddressType OuterIPAddress;
+
+		/// Macåœ°å€
+		TTORATstpMacAddressType MacAddress;
 	};
-	
-	/// ÏìÓ¦ĞÅÏ¢
+
+	/// å“åº”ä¿¡æ¯
 	struct CTORATstpRspInfoField
 	{
-		///´íÎó´úÂë
-		TTORATstpErrorIDType	ErrorID;
-	
-		///´íÎóĞÅÏ¢
-		TTORATstpErrorMsgType	ErrorMsg;
+		/// é”™è¯¯ä»£ç 
+		TTORATstpErrorIDType ErrorID;
+
+		/// é”™è¯¯ä¿¡æ¯
+		TTORATstpErrorMsgType ErrorMsg;
 	};
-	
-	/// ÓÃ»§µÇ³ö
+
+	/// ç”¨æˆ·ç™»å‡º
 	struct CTORATstpUserLogoutField
 	{
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
 	};
-	
-	/// ¶©ÔÄĞĞÇé
+
+	/// è®¢é˜…è¡Œæƒ…
 	struct CTORATstpSpecificSecurityField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// ¶©ÔÄÊĞ³¡
+
+	/// è®¢é˜…å¸‚åœº
 	struct CTORATstpSpecificMarketField
 	{
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
 	};
-	
-	/// ²éÑ¯ĞĞÇé¿ìÕÕ
+
+	/// æŸ¥è¯¢è¡Œæƒ…å¿«ç…§
 	struct CTORATstpInquiryMarketDataField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// Éî¶ÈĞĞÇéÍ¨Öª
+
+	/// æ·±åº¦è¡Œæƒ…é€šçŸ¥
 	struct CTORATstpMarketDataField
 	{
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///×òÊÕÅÌ¼Û
-		TTORATstpPriceType	PreClosePrice;
-	
-		///½ñ¿ªÅÌ¼Û
-		TTORATstpPriceType	OpenPrice;
-	
-		///³É½»Á¿
-		TTORATstpLongVolumeType	Volume;
-	
-		///³É½»¶î
-		TTORATstpMoneyType	Turnover;
-	
-		///³É½»±ÊÊı
-		TTORATstpLongVolumeType	TradingCount;
-	
-		///×îĞÂ¼Û
-		TTORATstpPriceType	LastPrice;
-	
-		///×î¸ß¼Û
-		TTORATstpPriceType	HighestPrice;
-	
-		///×îµÍ¼Û
-		TTORATstpPriceType	LowestPrice;
-	
-		///Âò1¼Û
-		TTORATstpPriceType	BidPrice1;
-	
-		///Âô1¼Û
-		TTORATstpPriceType	AskPrice1;
-	
-		///ÕÇÍ£¼Û
-		TTORATstpPriceType	UpperLimitPrice;
-	
-		///µøÍ£¼Û
-		TTORATstpPriceType	LowerLimitPrice;
-	
-		///ÊĞÓ¯ÂÊ1
-		TTORATstpRatioType	PERatio1;
-	
-		///ÊĞÓ¯ÂÊ2
-		TTORATstpRatioType	PERatio2;
-	
-		///¼Û¸ñÉıµø1
-		TTORATstpPriceType	PriceUpDown1;
-	
-		///¼Û¸ñÉıµø2
-		TTORATstpPriceType	PriceUpDown2;
-	
-		///³Ö²ÖÁ¿
-		TTORATstpLargeVolumeType	OpenInterest;
-	
-		///Âò1Á¿
-		TTORATstpLongVolumeType	BidVolume1;
-	
-		///Âô1Á¿
-		TTORATstpLongVolumeType	AskVolume1;
-	
-		///Âò2¼Û
-		TTORATstpPriceType	BidPrice2;
-	
-		///Âò2Á¿
-		TTORATstpLongVolumeType	BidVolume2;
-	
-		///Âô2¼Û
-		TTORATstpPriceType	AskPrice2;
-	
-		///Âô2Á¿
-		TTORATstpLongVolumeType	AskVolume2;
-	
-		///Âò3¼Û
-		TTORATstpPriceType	BidPrice3;
-	
-		///Âò3Á¿
-		TTORATstpLongVolumeType	BidVolume3;
-	
-		///Âô3¼Û
-		TTORATstpPriceType	AskPrice3;
-	
-		///Âô3Á¿
-		TTORATstpLongVolumeType	AskVolume3;
-	
-		///Âò4¼Û
-		TTORATstpPriceType	BidPrice4;
-	
-		///Âò4Á¿
-		TTORATstpLongVolumeType	BidVolume4;
-	
-		///Âô4¼Û
-		TTORATstpPriceType	AskPrice4;
-	
-		///Âô4Á¿
-		TTORATstpLongVolumeType	AskVolume4;
-	
-		///Âò5¼Û
-		TTORATstpPriceType	BidPrice5;
-	
-		///Âò5Á¿
-		TTORATstpLongVolumeType	BidVolume5;
-	
-		///Âô5¼Û
-		TTORATstpPriceType	AskPrice5;
-	
-		///Âô5Á¿
-		TTORATstpLongVolumeType	AskVolume5;
-	
-		///¸üĞÂÊ±¼ä
-		TTORATstpTimeType	UpdateTime;
-	
-		///¸üĞÂºÁÃë
-		TTORATstpMillisecType	UpdateMillisec;
-	
-		///½ñÊÕÅÌ¼Û
-		TTORATstpPriceType	ClosePrice;
-	
-		///½ñ½áËã¼Û
-		TTORATstpPriceType	SettlementPrice;
-	
-		///ĞĞÇé²úÆ·ÊµÊ±×´Ì¬
-		TTORATstpMDSecurityStatType	MDSecurityStat;
-	
-		///¾¯Ê¾¼¶±ğ
-		TTORATstpHWLevelType	HWLevel;
-	
-		///»ù½ğT-1ÈÕÊÕÅÌÊ±¿Ì¾»Öµ
-		TTORATstpPriceType	PreCloseIOPV;
-	
-		///»ù½ğÊµÊ±²Î¿¼¾»Öµ
-		TTORATstpPriceType	IOPV;
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// æ˜¨æ”¶ç›˜ä»·
+		TTORATstpPriceType PreClosePrice;
+
+		/// ä»Šå¼€ç›˜ä»·
+		TTORATstpPriceType OpenPrice;
+
+		/// æˆäº¤é‡
+		TTORATstpLongVolumeType Volume;
+
+		/// æˆäº¤é¢
+		TTORATstpMoneyType Turnover;
+
+		/// æˆäº¤ç¬”æ•°
+		TTORATstpLongVolumeType TradingCount;
+
+		/// æœ€æ–°ä»·
+		TTORATstpPriceType LastPrice;
+
+		/// æœ€é«˜ä»·
+		TTORATstpPriceType HighestPrice;
+
+		/// æœ€ä½ä»·
+		TTORATstpPriceType LowestPrice;
+
+		/// ä¹°1ä»·
+		TTORATstpPriceType BidPrice1;
+
+		/// å–1ä»·
+		TTORATstpPriceType AskPrice1;
+
+		/// æ¶¨åœä»·
+		TTORATstpPriceType UpperLimitPrice;
+
+		/// è·Œåœä»·
+		TTORATstpPriceType LowerLimitPrice;
+
+		/// å¸‚ç›ˆç‡1
+		TTORATstpRatioType PERatio1;
+
+		/// å¸‚ç›ˆç‡2
+		TTORATstpRatioType PERatio2;
+
+		/// ä»·æ ¼å‡è·Œ1
+		TTORATstpPriceType PriceUpDown1;
+
+		/// ä»·æ ¼å‡è·Œ2
+		TTORATstpPriceType PriceUpDown2;
+
+		/// æŒä»“é‡
+		TTORATstpLargeVolumeType OpenInterest;
+
+		/// ä¹°1é‡
+		TTORATstpLongVolumeType BidVolume1;
+
+		/// å–1é‡
+		TTORATstpLongVolumeType AskVolume1;
+
+		/// ä¹°2ä»·
+		TTORATstpPriceType BidPrice2;
+
+		/// ä¹°2é‡
+		TTORATstpLongVolumeType BidVolume2;
+
+		/// å–2ä»·
+		TTORATstpPriceType AskPrice2;
+
+		/// å–2é‡
+		TTORATstpLongVolumeType AskVolume2;
+
+		/// ä¹°3ä»·
+		TTORATstpPriceType BidPrice3;
+
+		/// ä¹°3é‡
+		TTORATstpLongVolumeType BidVolume3;
+
+		/// å–3ä»·
+		TTORATstpPriceType AskPrice3;
+
+		/// å–3é‡
+		TTORATstpLongVolumeType AskVolume3;
+
+		/// ä¹°4ä»·
+		TTORATstpPriceType BidPrice4;
+
+		/// ä¹°4é‡
+		TTORATstpLongVolumeType BidVolume4;
+
+		/// å–4ä»·
+		TTORATstpPriceType AskPrice4;
+
+		/// å–4é‡
+		TTORATstpLongVolumeType AskVolume4;
+
+		/// ä¹°5ä»·
+		TTORATstpPriceType BidPrice5;
+
+		/// ä¹°5é‡
+		TTORATstpLongVolumeType BidVolume5;
+
+		/// å–5ä»·
+		TTORATstpPriceType AskPrice5;
+
+		/// å–5é‡
+		TTORATstpLongVolumeType AskVolume5;
+
+		/// æ›´æ–°æ—¶é—´
+		TTORATstpTimeType UpdateTime;
+
+		/// æ›´æ–°æ¯«ç§’
+		TTORATstpMillisecType UpdateMillisec;
+
+		/// ä»Šæ”¶ç›˜ä»·
+		TTORATstpPriceType ClosePrice;
+
+		/// ä»Šç»“ç®—ä»·
+		TTORATstpPriceType SettlementPrice;
+
+		/// è¡Œæƒ…äº§å“å®æ—¶çŠ¶æ€
+		TTORATstpMDSecurityStatType MDSecurityStat;
+
+		/// è­¦ç¤ºçº§åˆ«
+		TTORATstpHWLevelType HWLevel;
+
+		/// åŸºé‡‘T-1æ—¥æ”¶ç›˜æ—¶åˆ»å‡€å€¼
+		TTORATstpPriceType PreCloseIOPV;
+
+		/// åŸºé‡‘å®æ—¶å‚è€ƒå‡€å€¼
+		TTORATstpPriceType IOPV;
 	};
-	
-	/// ²éÑ¯ÏìÓ¦Óò
+
+	/// æŸ¥è¯¢å“åº”åŸŸ
 	struct CTORATstpQryRspInfoField
 	{
-		///½áÊø±êÊ¶
-		TTORATstpEndFlagType	EndFlag;
-	
-		///´íÎó´úÂë
-		TTORATstpErrorIDType	ErrorID;
-	
-		///´íÎóĞÅÏ¢
-		TTORATstpErrorMsgType	ErrorMsg;
+		/// ç»“æŸæ ‡è¯†
+		TTORATstpEndFlagType EndFlag;
+
+		/// é”™è¯¯ä»£ç 
+		TTORATstpErrorIDType ErrorID;
+
+		/// é”™è¯¯ä¿¡æ¯
+		TTORATstpErrorMsgType ErrorMsg;
 	};
-	
-	/// ÅÌºóĞĞÇéÍ¨Öª
+
+	/// ç›˜åè¡Œæƒ…é€šçŸ¥
 	struct CTORATstpPHMarketDataField
 	{
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///³É½»Á¿
-		TTORATstpLongVolumeType	Volume;
-	
-		///³É½»½ğ¶î
-		TTORATstpMoneyType	Turnover;
-	
-		///½ñÊÕÅÌ¼Û
-		TTORATstpPriceType	ClosePrice;
-	
-		///ÕÇÍ£¼Û
-		TTORATstpPriceType	UpperLimitPrice;
-	
-		///µøÍ£¼Û
-		TTORATstpPriceType	LowerLimitPrice;
-	
-		///ÂòÈëÉê±¨ÊıÁ¿
-		TTORATstpLongVolumeType	BidVolume;
-	
-		///Âô³öÉê±¨ÊıÁ¿
-		TTORATstpLongVolumeType	AskVolume;
-	
-		///¸üĞÂÊ±¼ä
-		TTORATstpTimeType	UpdateTime;
-	
-		///¸üĞÂºÁÃë
-		TTORATstpMillisecType	UpdateMillisec;
-	
-		///ĞĞÇé²úÆ·ÊµÊ±×´Ì¬
-		TTORATstpMDSecurityStatType	MDSecurityStat;
-	
-		///¾¯Ê¾¼¶±ğ
-		TTORATstpHWLevelType	HWLevel;
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// æˆäº¤é‡
+		TTORATstpLongVolumeType Volume;
+
+		/// æˆäº¤é‡‘é¢
+		TTORATstpMoneyType Turnover;
+
+		/// ä»Šæ”¶ç›˜ä»·
+		TTORATstpPriceType ClosePrice;
+
+		/// æ¶¨åœä»·
+		TTORATstpPriceType UpperLimitPrice;
+
+		/// è·Œåœä»·
+		TTORATstpPriceType LowerLimitPrice;
+
+		/// ä¹°å…¥ç”³æŠ¥æ•°é‡
+		TTORATstpLongVolumeType BidVolume;
+
+		/// å–å‡ºç”³æŠ¥æ•°é‡
+		TTORATstpLongVolumeType AskVolume;
+
+		/// æ›´æ–°æ—¶é—´
+		TTORATstpTimeType UpdateTime;
+
+		/// æ›´æ–°æ¯«ç§’
+		TTORATstpMillisecType UpdateMillisec;
+
+		/// è¡Œæƒ…äº§å“å®æ—¶çŠ¶æ€
+		TTORATstpMDSecurityStatType MDSecurityStat;
+
+		/// è­¦ç¤ºçº§åˆ«
+		TTORATstpHWLevelType HWLevel;
 	};
-	
-	/// ²éÑ¯ÌØ¶¨ĞĞÇé¿ìÕÕ
+
+	/// æŸ¥è¯¢ç‰¹å®šè¡Œæƒ…å¿«ç…§
 	struct CTORATstpInquirySpecialMarketDataField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
 	};
-	
-	/// ÌØ±ğĞĞÇéÍ¨Öª
+
+	/// ç‰¹åˆ«è¡Œæƒ…é€šçŸ¥
 	struct CTORATstpSpecialMarketDataField
 	{
-		///½»Ò×ÈÕ
-		TTORATstpDateType	TradingDay;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///ÒÆ¶¯Æ½¾ù¼Û
-		TTORATstpPriceType	MovingAvgPrice;
-	
-		///²ÉÑùÊıÁ¿
-		TTORATstpVolumeType	MovingAvgPriceSamplingNum;
-	
-		///×îºóĞŞ¸ÄÊ±¼ä
-		TTORATstpTimeType	UpdateTime;
-	
-		///×îºóĞŞ¸ÄºÁÃë
-		TTORATstpMillisecType	UpdateMillisec;
+		/// äº¤æ˜“æ—¥
+		TTORATstpDateType TradingDay;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// ç§»åŠ¨å¹³å‡ä»·
+		TTORATstpPriceType MovingAvgPrice;
+
+		/// é‡‡æ ·æ•°é‡
+		TTORATstpVolumeType MovingAvgPriceSamplingNum;
+
+		/// æœ€åä¿®æ”¹æ—¶é—´
+		TTORATstpTimeType UpdateTime;
+
+		/// æœ€åä¿®æ”¹æ¯«ç§’
+		TTORATstpMillisecType UpdateMillisec;
 	};
-	
-	/// ¼òÒ×ĞĞÇé
+
+	/// ç®€æ˜“è¡Œæƒ…
 	struct CTORATstpSimplifyMarketDataField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///Ö¤È¯Ãû³Æ
-		TTORATstpSecurityNameType	SecurityName;
-	
-		///×òÊÕÅÌ¼Û
-		TTORATstpPriceType	PreClosePrice;
-	
-		///×îĞÂ¼Û
-		TTORATstpPriceType	LastPrice;
-	
-		///Âò1¼Û
-		TTORATstpPriceType	BidPrice1;
-	
-		///Âô1¼Û
-		TTORATstpPriceType	AskPrice1;
-	
-		///×î¸ß¼Û
-		TTORATstpPriceType	HighestPrice;
-	
-		///×îµÍ¼Û
-		TTORATstpPriceType	LowestPrice;
-	
-		///ÕÇÍ£¼Û
-		TTORATstpPriceType	UpperLimitPrice;
-	
-		///µøÍ£¼Û
-		TTORATstpPriceType	LowerLimitPrice;
-	
-		///½ñÊÕÅÌ¼Û
-		TTORATstpPriceType	ClosePrice;
-	
-		///½ñ½áËã¼Û
-		TTORATstpPriceType	SettlementPrice;
-	
-		///¸üĞÂÊ±¼ä
-		TTORATstpTimeType	UpdateTime;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// è¯åˆ¸åç§°
+		TTORATstpSecurityNameType SecurityName;
+
+		/// æ˜¨æ”¶ç›˜ä»·
+		TTORATstpPriceType PreClosePrice;
+
+		/// æœ€æ–°ä»·
+		TTORATstpPriceType LastPrice;
+
+		/// ä¹°1ä»·
+		TTORATstpPriceType BidPrice1;
+
+		/// å–1ä»·
+		TTORATstpPriceType AskPrice1;
+
+		/// æœ€é«˜ä»·
+		TTORATstpPriceType HighestPrice;
+
+		/// æœ€ä½ä»·
+		TTORATstpPriceType LowestPrice;
+
+		/// æ¶¨åœä»·
+		TTORATstpPriceType UpperLimitPrice;
+
+		/// è·Œåœä»·
+		TTORATstpPriceType LowerLimitPrice;
+
+		/// ä»Šæ”¶ç›˜ä»·
+		TTORATstpPriceType ClosePrice;
+
+		/// ä»Šç»“ç®—ä»·
+		TTORATstpPriceType SettlementPrice;
+
+		/// æ›´æ–°æ—¶é—´
+		TTORATstpTimeType UpdateTime;
 	};
-	
-	/// ºÏÔ¼×´Ì¬
+
+	/// åˆçº¦çŠ¶æ€
 	struct CTORATstpSecurityStatusField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///ÊÇ·ñÍ£ÅÆ
-		TTORATstpBoolType	IsSuspend;
-	
-		///ÊÇ·ñ²¨¶¯ĞÔÖĞ¶Ï
-		TTORATstpBoolType	IsBreak;
-	
-		///ÊÇ·ñ³¤ÆÚÍ£ÅÆ
-		TTORATstpBoolType	IsLongSuspend;
-	
-		///ÊÇ·ñÈÛ¶Ï
-		TTORATstpBoolType	IsCircuitBreak;
-	
-		///ÊÇ·ñ¿ÉÈÚ×ÊÂòÈë
-		TTORATstpBoolType	IsSupportMarginBuy;
-	
-		///ÊÇ·ñ¿ÉÈÚÈ¯Âô³ö
-		TTORATstpBoolType	IsSupportShortSell;
-	
-		///ÊÇ·ñ¿ÉÉê¹º
-		TTORATstpBoolType	IsSupportPur;
-	
-		///ÊÇ·ñ¿ÉÊê»Ø
-		TTORATstpBoolType	IsSupportRed;
-	
-		///ÊÇ·ñ¿É²ğ·Ö
-		TTORATstpBoolType	IsSupportSplit;
-	
-		///ÊÇ·ñ¿ÉºÏ²¢
-		TTORATstpBoolType	IsSupportMerge;
-	
-		///ÊÇ·ñ¿ÉÖÊÑºÈë¿â
-		TTORATstpBoolType	IsSupportPleadgeIn;
-	
-		///ÊÇ·ñ¿ÉÖÊÑº³ö¿â
-		TTORATstpBoolType	IsSupportPleadgeOut;
-	
-		///ÊÇ·ñ¿ÉÕûÊÖÂò
-		TTORATstpBoolType	IsSupportRoundLotBuy;
-	
-		///ÊÇ·ñ¿ÉÕûÊÖÂô
-		TTORATstpBoolType	IsSupportRoundLotSell;
-	
-		///ÊÇ·ñ¿ÉÁã¹ÉÂò
-		TTORATstpBoolType	IsSupportOddLotBuy;
-	
-		///ÊÇ·ñ¿ÉÁã¹ÉÂô
-		TTORATstpBoolType	IsSupportOddLotSell;
-	
-		///ÊÇ·ñ¿ÉĞĞÈ¨
-		TTORATstpBoolType	IsSupportExercise;
-	
-		///ÊÇ·ñÏŞÖÆÂòÈë¿ª²Ö
-		TTORATstpBoolType	IsLimitBuy;
-	
-		///ÊÇ·ñÏŞÖÆÂô³ö¿ª²Ö
-		TTORATstpBoolType	IsLimitSell;
-	
-		///ÊÇ·ñÏŞÖÆ±¸¶Ò¿ª²Ö
-		TTORATstpBoolType	IsLimitCover;
-	
-		///ÊÇ·ñÏŞÖÆ×öÊĞÉÌ±¨¼Û
-		TTORATstpBoolType	IsLimitMarketMaker;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// æ˜¯å¦åœç‰Œ
+		TTORATstpBoolType IsSuspend;
+
+		/// æ˜¯å¦æ³¢åŠ¨æ€§ä¸­æ–­
+		TTORATstpBoolType IsBreak;
+
+		/// æ˜¯å¦é•¿æœŸåœç‰Œ
+		TTORATstpBoolType IsLongSuspend;
+
+		/// æ˜¯å¦ç†”æ–­
+		TTORATstpBoolType IsCircuitBreak;
+
+		/// æ˜¯å¦å¯èèµ„ä¹°å…¥
+		TTORATstpBoolType IsSupportMarginBuy;
+
+		/// æ˜¯å¦å¯èåˆ¸å–å‡º
+		TTORATstpBoolType IsSupportShortSell;
+
+		/// æ˜¯å¦å¯ç”³è´­
+		TTORATstpBoolType IsSupportPur;
+
+		/// æ˜¯å¦å¯èµå›
+		TTORATstpBoolType IsSupportRed;
+
+		/// æ˜¯å¦å¯æ‹†åˆ†
+		TTORATstpBoolType IsSupportSplit;
+
+		/// æ˜¯å¦å¯åˆå¹¶
+		TTORATstpBoolType IsSupportMerge;
+
+		/// æ˜¯å¦å¯è´¨æŠ¼å…¥åº“
+		TTORATstpBoolType IsSupportPleadgeIn;
+
+		/// æ˜¯å¦å¯è´¨æŠ¼å‡ºåº“
+		TTORATstpBoolType IsSupportPleadgeOut;
+
+		/// æ˜¯å¦å¯æ•´æ‰‹ä¹°
+		TTORATstpBoolType IsSupportRoundLotBuy;
+
+		/// æ˜¯å¦å¯æ•´æ‰‹å–
+		TTORATstpBoolType IsSupportRoundLotSell;
+
+		/// æ˜¯å¦å¯é›¶è‚¡ä¹°
+		TTORATstpBoolType IsSupportOddLotBuy;
+
+		/// æ˜¯å¦å¯é›¶è‚¡å–
+		TTORATstpBoolType IsSupportOddLotSell;
+
+		/// æ˜¯å¦å¯è¡Œæƒ
+		TTORATstpBoolType IsSupportExercise;
+
+		/// æ˜¯å¦é™åˆ¶ä¹°å…¥å¼€ä»“
+		TTORATstpBoolType IsLimitBuy;
+
+		/// æ˜¯å¦é™åˆ¶å–å‡ºå¼€ä»“
+		TTORATstpBoolType IsLimitSell;
+
+		/// æ˜¯å¦é™åˆ¶å¤‡å…‘å¼€ä»“
+		TTORATstpBoolType IsLimitCover;
+
+		/// æ˜¯å¦é™åˆ¶åšå¸‚å•†æŠ¥ä»·
+		TTORATstpBoolType IsLimitMarketMaker;
 	};
-	
-	/// ÊĞ³¡×´Ì¬
+
+	/// å¸‚åœºçŠ¶æ€
 	struct CTORATstpMarketStatusField
 	{
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///ÊĞ³¡×´Ì¬
-		TTORATstpMarketStatusType	MarketStatus;
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// å¸‚åœºçŠ¶æ€
+		TTORATstpMarketStatusType MarketStatus;
 	};
-	
-	/// Éî¸ÛÍ¨¹ú¼ÊÊĞ³¡»¥Áª×´Ì¬ĞÅÏ¢
+
+	/// æ·±æ¸¯é€šå›½é™…å¸‚åœºäº’è”çŠ¶æ€ä¿¡æ¯
 	struct CTORATstpImcParamsField
 	{
-		///ÊĞ³¡´úÂë
-		TTORATstpMarketIDType	MarketID;
-	
-		///ÊÇ·ñ¿ª·Å
-		TTORATstpBoolType	OpenFlag;
-	
-		///³õÊ¼¶î¶È
-		TTORATstpMoneyType	ThresholdAmount;
-	
-		///ÈÕÖĞÊ£Óà¶î¶È
-		TTORATstpMoneyType	PosAmt;
-	
-		///¶î¶ÈÊÇ·ñ¿ÉÓÃ
-		TTORATstpBoolType	AmountStatus;
+		/// å¸‚åœºä»£ç 
+		TTORATstpMarketIDType MarketID;
+
+		/// æ˜¯å¦å¼€æ”¾
+		TTORATstpBoolType OpenFlag;
+
+		/// åˆå§‹é¢åº¦
+		TTORATstpMoneyType ThresholdAmount;
+
+		/// æ—¥ä¸­å‰©ä½™é¢åº¦
+		TTORATstpMoneyType PosAmt;
+
+		/// é¢åº¦æ˜¯å¦å¯ç”¨
+		TTORATstpBoolType AmountStatus;
 	};
-	
-	/// ¼«ËÙĞĞÇé¿ìÕÕ
+
+	/// æé€Ÿè¡Œæƒ…å¿«ç…§
 	struct CTORATstpRapidMarketDataField
 	{
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ê±¼ä´Á
-		TTORATstpTimeStampType	DataTimeStamp;
-	
-		///×òÊÕÅÌ
-		TTORATstpPriceType	PreClosePrice;
-	
-		///½ñ¿ªÅÌ
-		TTORATstpPriceType	OpenPrice;
-	
-		///³É½»±ÊÊı
-		TTORATstpLongVolumeType	NumTrades;
-	
-		///³É½»×ÜÁ¿
-		TTORATstpLongVolumeType	TotalVolumeTrade;
-	
-		///³É½»×Ü½ğ¶î
-		TTORATstpMoneyType	TotalValueTrade;
-	
-		///×î¸ß¼Û
-		TTORATstpPriceType	HighestPrice;
-	
-		///×îµÍ¼Û
-		TTORATstpPriceType	LowestPrice;
-	
-		///ÏÖ¼Û
-		TTORATstpPriceType	LastPrice;
-	
-		///ÉêÂò¼ÛÒ»
-		TTORATstpPriceType	BidPrice1;
-	
-		///ÉêÂòÁ¿Ò»
-		TTORATstpLongVolumeType	BidVolume1;
-	
-		///ÉêÂô¼ÛÒ»
-		TTORATstpPriceType	AskPrice1;
-	
-		///ÉêÂôÁ¿Ò»
-		TTORATstpLongVolumeType	AskVolume1;
-	
-		///ÉêÂô¼Û¶ş
-		TTORATstpPriceType	AskPrice2;
-	
-		///ÉêÂôÁ¿¶ş
-		TTORATstpLongVolumeType	AskVolume2;
-	
-		///ÉêÂô¼ÛÈı
-		TTORATstpPriceType	AskPrice3;
-	
-		///ÉêÂôÁ¿Èı
-		TTORATstpLongVolumeType	AskVolume3;
-	
-		///ÉêÂò¼Û¶ş
-		TTORATstpPriceType	BidPrice2;
-	
-		///ÉêÂòÁ¿¶ş
-		TTORATstpLongVolumeType	BidVolume2;
-	
-		///ÉêÂò¼ÛÈı
-		TTORATstpPriceType	BidPrice3;
-	
-		///ÉêÂòÁ¿Èı
-		TTORATstpLongVolumeType	BidVolume3;
-	
-		///ÉêÂô¼ÛËÄ
-		TTORATstpPriceType	AskPrice4;
-	
-		///ÉêÂôÁ¿ËÄ
-		TTORATstpLongVolumeType	AskVolume4;
-	
-		///ÉêÂô¼ÛÎå
-		TTORATstpPriceType	AskPrice5;
-	
-		///ÉêÂôÁ¿Îå
-		TTORATstpLongVolumeType	AskVolume5;
-	
-		///ÉêÂò¼ÛËÄ
-		TTORATstpPriceType	BidPrice4;
-	
-		///ÉêÂòÁ¿ËÄ
-		TTORATstpLongVolumeType	BidVolume4;
-	
-		///ÉêÂò¼ÛÎå
-		TTORATstpPriceType	BidPrice5;
-	
-		///ÉêÂòÁ¿Îå
-		TTORATstpLongVolumeType	BidVolume5;
-	
-		///ÉêÂô¼ÛÁù
-		TTORATstpPriceType	AskPrice6;
-	
-		///ÉêÂôÁ¿Áù
-		TTORATstpLongVolumeType	AskVolume6;
-	
-		///ÉêÂô¼ÛÆß
-		TTORATstpPriceType	AskPrice7;
-	
-		///ÉêÂôÁ¿Æß
-		TTORATstpLongVolumeType	AskVolume7;
-	
-		///ÉêÂò¼ÛÁù
-		TTORATstpPriceType	BidPrice6;
-	
-		///ÉêÂòÁ¿Áù
-		TTORATstpLongVolumeType	BidVolume6;
-	
-		///ÉêÂò¼ÛÆß
-		TTORATstpPriceType	BidPrice7;
-	
-		///ÉêÂòÁ¿Æß
-		TTORATstpLongVolumeType	BidVolume7;
-	
-		///ÉêÂô¼Û°Ë
-		TTORATstpPriceType	AskPrice8;
-	
-		///ÉêÂôÁ¿°Ë
-		TTORATstpLongVolumeType	AskVolume8;
-	
-		///ÉêÂô¼Û¾Å
-		TTORATstpPriceType	AskPrice9;
-	
-		///ÉêÂôÁ¿¾Å
-		TTORATstpLongVolumeType	AskVolume9;
-	
-		///ÉêÂò¼Û°Ë
-		TTORATstpPriceType	BidPrice8;
-	
-		///ÉêÂòÁ¿°Ë
-		TTORATstpLongVolumeType	BidVolume8;
-	
-		///ÉêÂò¼Û¾Å
-		TTORATstpPriceType	BidPrice9;
-	
-		///ÉêÂòÁ¿¾Å
-		TTORATstpLongVolumeType	BidVolume9;
-	
-		///ÉêÂò¼ÛÊ®
-		TTORATstpPriceType	BidPrice10;
-	
-		///ÉêÂòÁ¿Ê®
-		TTORATstpLongVolumeType	BidVolume10;
-	
-		///ÉêÂô¼ÛÊ®
-		TTORATstpPriceType	AskPrice10;
-	
-		///ÉêÂôÁ¿Ê®
-		TTORATstpLongVolumeType	AskVolume10;
-	
-		///ÕÇÍ£°å¼Û(Ö»ÓĞÉîÛÚĞĞÇéÓĞĞ§)
-		TTORATstpPriceType	UpperLimitPrice;
-	
-		///µøÍ£°å¼Û(Ö»ÓĞÉîÛÚĞĞÇéÓĞĞ§)
-		TTORATstpPriceType	LowerLimitPrice;
-	
-		///½ñÊÕÅÌ¼Û(Ö»ÓĞÉÏº£ĞĞÇéÓĞĞ§)
-		TTORATstpPriceType	ClosePrice;
-	
-		///ĞĞÇé²úÆ·ÊµÊ±×´Ì¬
-		TTORATstpMDSecurityStatType	MDSecurityStat;
-	
-		///»ù½ğÊµÊ±²Î¿¼¾»Öµ
-		TTORATstpPriceType	IOPV;
-	
-		///ÄÚÅÌ
-		TTORATstpLongVolumeType	InnerSell;
-	
-		///ÍâÅÌ
-		TTORATstpLongVolumeType	OuterBuy;
-	
-		///ÉêÂòÊ£Óà±ÊÊıÒ»
-		TTORATstpVolumeType	BidCount1;
-	
-		///ÉêÂôÊ£Óà±ÊÊıÒ»
-		TTORATstpVolumeType	AskCount1;
-	
-		///ÉêÂôÊ£Óà±ÊÊı¶ş
-		TTORATstpVolumeType	AskCount2;
-	
-		///ÉêÂôÊ£Óà±ÊÊıÈı
-		TTORATstpVolumeType	AskCount3;
-	
-		///ÉêÂòÊ£Óà±ÊÊı¶ş
-		TTORATstpVolumeType	BidCount2;
-	
-		///ÉêÂòÊ£Óà±ÊÊıÈı
-		TTORATstpVolumeType	BidCount3;
-	
-		///ÉêÂôÊ£Óà±ÊÊıËÄ
-		TTORATstpVolumeType	AskCount4;
-	
-		///ÉêÂôÊ£Óà±ÊÊıÎå
-		TTORATstpVolumeType	AskCount5;
-	
-		///ÉêÂòÊ£Óà±ÊÊıËÄ
-		TTORATstpVolumeType	BidCount4;
-	
-		///ÉêÂòÊ£Óà±ÊÊıÎå
-		TTORATstpVolumeType	BidCount5;
-	
-		///ÉêÂôÊ£Óà±ÊÊıÁù
-		TTORATstpVolumeType	AskCount6;
-	
-		///ÉêÂôÊ£Óà±ÊÊıÆß
-		TTORATstpVolumeType	AskCount7;
-	
-		///ÉêÂòÊ£Óà±ÊÊıÁù
-		TTORATstpVolumeType	BidCount6;
-	
-		///ÉêÂòÊ£Óà±ÊÊıÆß
-		TTORATstpVolumeType	BidCount7;
-	
-		///ÉêÂôÊ£Óà±ÊÊı°Ë
-		TTORATstpVolumeType	AskCount8;
-	
-		///ÉêÂôÊ£Óà±ÊÊı¾Å
-		TTORATstpVolumeType	AskCount9;
-	
-		///ÉêÂòÊ£Óà±ÊÊı°Ë
-		TTORATstpVolumeType	BidCount8;
-	
-		///ÉêÂòÊ£Óà±ÊÊı¾Å
-		TTORATstpVolumeType	BidCount9;
-	
-		///ÉêÂòÊ£Óà±ÊÊıÊ®
-		TTORATstpVolumeType	BidCount10;
-	
-		///ÉêÂôÊ£Óà±ÊÊıÊ®
-		TTORATstpVolumeType	AskCount10;
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// æ—¶é—´æˆ³
+		TTORATstpTimeStampType DataTimeStamp;
+
+		/// æ˜¨æ”¶ç›˜
+		TTORATstpPriceType PreClosePrice;
+
+		/// ä»Šå¼€ç›˜
+		TTORATstpPriceType OpenPrice;
+
+		/// æˆäº¤ç¬”æ•°
+		TTORATstpLongVolumeType NumTrades;
+
+		/// æˆäº¤æ€»é‡
+		TTORATstpLongVolumeType TotalVolumeTrade;
+
+		/// æˆäº¤æ€»é‡‘é¢
+		TTORATstpMoneyType TotalValueTrade;
+
+		/// æœ€é«˜ä»·
+		TTORATstpPriceType HighestPrice;
+
+		/// æœ€ä½ä»·
+		TTORATstpPriceType LowestPrice;
+
+		/// ç°ä»·
+		TTORATstpPriceType LastPrice;
+
+		/// ç”³ä¹°ä»·ä¸€
+		TTORATstpPriceType BidPrice1;
+
+		/// ç”³ä¹°é‡ä¸€
+		TTORATstpLongVolumeType BidVolume1;
+
+		/// ç”³å–ä»·ä¸€
+		TTORATstpPriceType AskPrice1;
+
+		/// ç”³å–é‡ä¸€
+		TTORATstpLongVolumeType AskVolume1;
+
+		/// ç”³å–ä»·äºŒ
+		TTORATstpPriceType AskPrice2;
+
+		/// ç”³å–é‡äºŒ
+		TTORATstpLongVolumeType AskVolume2;
+
+		/// ç”³å–ä»·ä¸‰
+		TTORATstpPriceType AskPrice3;
+
+		/// ç”³å–é‡ä¸‰
+		TTORATstpLongVolumeType AskVolume3;
+
+		/// ç”³ä¹°ä»·äºŒ
+		TTORATstpPriceType BidPrice2;
+
+		/// ç”³ä¹°é‡äºŒ
+		TTORATstpLongVolumeType BidVolume2;
+
+		/// ç”³ä¹°ä»·ä¸‰
+		TTORATstpPriceType BidPrice3;
+
+		/// ç”³ä¹°é‡ä¸‰
+		TTORATstpLongVolumeType BidVolume3;
+
+		/// ç”³å–ä»·å››
+		TTORATstpPriceType AskPrice4;
+
+		/// ç”³å–é‡å››
+		TTORATstpLongVolumeType AskVolume4;
+
+		/// ç”³å–ä»·äº”
+		TTORATstpPriceType AskPrice5;
+
+		/// ç”³å–é‡äº”
+		TTORATstpLongVolumeType AskVolume5;
+
+		/// ç”³ä¹°ä»·å››
+		TTORATstpPriceType BidPrice4;
+
+		/// ç”³ä¹°é‡å››
+		TTORATstpLongVolumeType BidVolume4;
+
+		/// ç”³ä¹°ä»·äº”
+		TTORATstpPriceType BidPrice5;
+
+		/// ç”³ä¹°é‡äº”
+		TTORATstpLongVolumeType BidVolume5;
+
+		/// ç”³å–ä»·å…­
+		TTORATstpPriceType AskPrice6;
+
+		/// ç”³å–é‡å…­
+		TTORATstpLongVolumeType AskVolume6;
+
+		/// ç”³å–ä»·ä¸ƒ
+		TTORATstpPriceType AskPrice7;
+
+		/// ç”³å–é‡ä¸ƒ
+		TTORATstpLongVolumeType AskVolume7;
+
+		/// ç”³ä¹°ä»·å…­
+		TTORATstpPriceType BidPrice6;
+
+		/// ç”³ä¹°é‡å…­
+		TTORATstpLongVolumeType BidVolume6;
+
+		/// ç”³ä¹°ä»·ä¸ƒ
+		TTORATstpPriceType BidPrice7;
+
+		/// ç”³ä¹°é‡ä¸ƒ
+		TTORATstpLongVolumeType BidVolume7;
+
+		/// ç”³å–ä»·å…«
+		TTORATstpPriceType AskPrice8;
+
+		/// ç”³å–é‡å…«
+		TTORATstpLongVolumeType AskVolume8;
+
+		/// ç”³å–ä»·ä¹
+		TTORATstpPriceType AskPrice9;
+
+		/// ç”³å–é‡ä¹
+		TTORATstpLongVolumeType AskVolume9;
+
+		/// ç”³ä¹°ä»·å…«
+		TTORATstpPriceType BidPrice8;
+
+		/// ç”³ä¹°é‡å…«
+		TTORATstpLongVolumeType BidVolume8;
+
+		/// ç”³ä¹°ä»·ä¹
+		TTORATstpPriceType BidPrice9;
+
+		/// ç”³ä¹°é‡ä¹
+		TTORATstpLongVolumeType BidVolume9;
+
+		/// ç”³ä¹°ä»·å
+		TTORATstpPriceType BidPrice10;
+
+		/// ç”³ä¹°é‡å
+		TTORATstpLongVolumeType BidVolume10;
+
+		/// ç”³å–ä»·å
+		TTORATstpPriceType AskPrice10;
+
+		/// ç”³å–é‡å
+		TTORATstpLongVolumeType AskVolume10;
+
+		/// æ¶¨åœæ¿ä»·(åªæœ‰æ·±åœ³è¡Œæƒ…æœ‰æ•ˆ)
+		TTORATstpPriceType UpperLimitPrice;
+
+		/// è·Œåœæ¿ä»·(åªæœ‰æ·±åœ³è¡Œæƒ…æœ‰æ•ˆ)
+		TTORATstpPriceType LowerLimitPrice;
+
+		/// ä»Šæ”¶ç›˜ä»·(åªæœ‰ä¸Šæµ·è¡Œæƒ…æœ‰æ•ˆ)
+		TTORATstpPriceType ClosePrice;
+
+		/// è¡Œæƒ…äº§å“å®æ—¶çŠ¶æ€
+		TTORATstpMDSecurityStatType MDSecurityStat;
+
+		/// åŸºé‡‘å®æ—¶å‚è€ƒå‡€å€¼
+		TTORATstpPriceType IOPV;
+
+		/// å†…ç›˜
+		TTORATstpLongVolumeType InnerSell;
+
+		/// å¤–ç›˜
+		TTORATstpLongVolumeType OuterBuy;
+
+		/// ç”³ä¹°å‰©ä½™ç¬”æ•°ä¸€
+		TTORATstpVolumeType BidCount1;
+
+		/// ç”³å–å‰©ä½™ç¬”æ•°ä¸€
+		TTORATstpVolumeType AskCount1;
+
+		/// ç”³å–å‰©ä½™ç¬”æ•°äºŒ
+		TTORATstpVolumeType AskCount2;
+
+		/// ç”³å–å‰©ä½™ç¬”æ•°ä¸‰
+		TTORATstpVolumeType AskCount3;
+
+		/// ç”³ä¹°å‰©ä½™ç¬”æ•°äºŒ
+		TTORATstpVolumeType BidCount2;
+
+		/// ç”³ä¹°å‰©ä½™ç¬”æ•°ä¸‰
+		TTORATstpVolumeType BidCount3;
+
+		/// ç”³å–å‰©ä½™ç¬”æ•°å››
+		TTORATstpVolumeType AskCount4;
+
+		/// ç”³å–å‰©ä½™ç¬”æ•°äº”
+		TTORATstpVolumeType AskCount5;
+
+		/// ç”³ä¹°å‰©ä½™ç¬”æ•°å››
+		TTORATstpVolumeType BidCount4;
+
+		/// ç”³ä¹°å‰©ä½™ç¬”æ•°äº”
+		TTORATstpVolumeType BidCount5;
+
+		/// ç”³å–å‰©ä½™ç¬”æ•°å…­
+		TTORATstpVolumeType AskCount6;
+
+		/// ç”³å–å‰©ä½™ç¬”æ•°ä¸ƒ
+		TTORATstpVolumeType AskCount7;
+
+		/// ç”³ä¹°å‰©ä½™ç¬”æ•°å…­
+		TTORATstpVolumeType BidCount6;
+
+		/// ç”³ä¹°å‰©ä½™ç¬”æ•°ä¸ƒ
+		TTORATstpVolumeType BidCount7;
+
+		/// ç”³å–å‰©ä½™ç¬”æ•°å…«
+		TTORATstpVolumeType AskCount8;
+
+		/// ç”³å–å‰©ä½™ç¬”æ•°ä¹
+		TTORATstpVolumeType AskCount9;
+
+		/// ç”³ä¹°å‰©ä½™ç¬”æ•°å…«
+		TTORATstpVolumeType BidCount8;
+
+		/// ç”³ä¹°å‰©ä½™ç¬”æ•°ä¹
+		TTORATstpVolumeType BidCount9;
+
+		/// ç”³ä¹°å‰©ä½™ç¬”æ•°å
+		TTORATstpVolumeType BidCount10;
+
+		/// ç”³å–å‰©ä½™ç¬”æ•°å
+		TTORATstpVolumeType AskCount10;
 	};
-	
-	/// ×Ê½ğÁ÷ÏòÊı¾İĞĞÇé
+
+	/// èµ„é‡‘æµå‘æ•°æ®è¡Œæƒ…
 	struct CTORATstpFundsFlowMarketDataField
 	{
-		///½»Ò×Ëù´úÂë
-		TTORATstpExchangeIDType	ExchangeID;
-	
-		///Ö¤È¯´úÂë
-		TTORATstpSecurityIDType	SecurityID;
-	
-		///×îºóĞŞ¸ÄÊ±¼ä
-		TTORATstpTimeType	UpdateTime;
-	
-		///×îºóĞŞ¸ÄºÁÃë
-		TTORATstpMillisecType	UpdateMillisec;
-	
-		///É¢»§ÂòÈë½ğ¶î
-		TTORATstpMoneyType	RetailBuyTurnover;
-	
-		///É¢»§ÂòÈëÊıÁ¿
-		TTORATstpLongVolumeType	RetailBuyVolume;
-	
-		///É¢»§ÂòÈë±ÊÊı
-		TTORATstpLongVolumeType	RetailBuyAmount;
-	
-		///É¢»§Âô³ö½ğ¶î
-		TTORATstpMoneyType	RetailSellTurnover;
-	
-		///É¢»§Âô³öÊıÁ¿
-		TTORATstpLongVolumeType	RetailSellVolume;
-	
-		///É¢»§Âô³ö±ÊÊı
-		TTORATstpLongVolumeType	RetailSellAmount;
-	
-		///ÖĞ»§ÂòÈë½ğ¶î
-		TTORATstpMoneyType	MiddleBuyTurnover;
-	
-		///ÖĞ»§ÂòÈëÊıÁ¿
-		TTORATstpLongVolumeType	MiddleBuyVolume;
-	
-		///ÖĞ»§ÂòÈë±ÊÊı
-		TTORATstpLongVolumeType	MiddleBuyAmount;
-	
-		///ÖĞ»§Âô³ö½ğ¶î
-		TTORATstpMoneyType	MiddleSellTurnover;
-	
-		///ÖĞ»§Âô³öÊıÁ¿
-		TTORATstpLongVolumeType	MiddleSellVolume;
-	
-		///ÖĞ»§Âô³ö±ÊÊı
-		TTORATstpLongVolumeType	MiddleSellAmount;
-	
-		///´ó»§ÂòÈë½ğ¶î
-		TTORATstpMoneyType	LargeBuyTurnover;
-	
-		///´ó»§ÂòÈëÊıÁ¿
-		TTORATstpLongVolumeType	LargeBuyVolume;
-	
-		///´ó»§ÂòÈë±ÊÊı
-		TTORATstpLongVolumeType	LargeBuyAmount;
-	
-		///´ó»§Âô³ö½ğ¶î
-		TTORATstpMoneyType	LargeSellTurnover;
-	
-		///´ó»§Âô³öÊıÁ¿
-		TTORATstpLongVolumeType	LargeSellVolume;
-	
-		///´ó»§Âô³ö±ÊÊı
-		TTORATstpLongVolumeType	LargeSellAmount;
-	
-		///»ú¹¹ÂòÈë½ğ¶î
-		TTORATstpMoneyType	InstitutionBuyTurnover;
-	
-		///»ú¹¹ÂòÈëÊıÁ¿
-		TTORATstpLongVolumeType	InstitutionBuyVolume;
-	
-		///»ú¹¹ÂòÈë±ÊÊı
-		TTORATstpLongVolumeType	InstitutionBuyAmount;
-	
-		///»ú¹¹Âô³ö½ğ¶î
-		TTORATstpMoneyType	InstitutionSellTurnover;
-	
-		///»ú¹¹Âô³öÊıÁ¿
-		TTORATstpLongVolumeType	InstitutionSellVolume;
-	
-		///»ú¹¹Âô³ö±ÊÊı
-		TTORATstpLongVolumeType	InstitutionSellAmount;
+		/// äº¤æ˜“æ‰€ä»£ç 
+		TTORATstpExchangeIDType ExchangeID;
+
+		/// è¯åˆ¸ä»£ç 
+		TTORATstpSecurityIDType SecurityID;
+
+		/// æœ€åä¿®æ”¹æ—¶é—´
+		TTORATstpTimeType UpdateTime;
+
+		/// æœ€åä¿®æ”¹æ¯«ç§’
+		TTORATstpMillisecType UpdateMillisec;
+
+		/// æ•£æˆ·ä¹°å…¥é‡‘é¢
+		TTORATstpMoneyType RetailBuyTurnover;
+
+		/// æ•£æˆ·ä¹°å…¥æ•°é‡
+		TTORATstpLongVolumeType RetailBuyVolume;
+
+		/// æ•£æˆ·ä¹°å…¥ç¬”æ•°
+		TTORATstpLongVolumeType RetailBuyAmount;
+
+		/// æ•£æˆ·å–å‡ºé‡‘é¢
+		TTORATstpMoneyType RetailSellTurnover;
+
+		/// æ•£æˆ·å–å‡ºæ•°é‡
+		TTORATstpLongVolumeType RetailSellVolume;
+
+		/// æ•£æˆ·å–å‡ºç¬”æ•°
+		TTORATstpLongVolumeType RetailSellAmount;
+
+		/// ä¸­æˆ·ä¹°å…¥é‡‘é¢
+		TTORATstpMoneyType MiddleBuyTurnover;
+
+		/// ä¸­æˆ·ä¹°å…¥æ•°é‡
+		TTORATstpLongVolumeType MiddleBuyVolume;
+
+		/// ä¸­æˆ·ä¹°å…¥ç¬”æ•°
+		TTORATstpLongVolumeType MiddleBuyAmount;
+
+		/// ä¸­æˆ·å–å‡ºé‡‘é¢
+		TTORATstpMoneyType MiddleSellTurnover;
+
+		/// ä¸­æˆ·å–å‡ºæ•°é‡
+		TTORATstpLongVolumeType MiddleSellVolume;
+
+		/// ä¸­æˆ·å–å‡ºç¬”æ•°
+		TTORATstpLongVolumeType MiddleSellAmount;
+
+		/// å¤§æˆ·ä¹°å…¥é‡‘é¢
+		TTORATstpMoneyType LargeBuyTurnover;
+
+		/// å¤§æˆ·ä¹°å…¥æ•°é‡
+		TTORATstpLongVolumeType LargeBuyVolume;
+
+		/// å¤§æˆ·ä¹°å…¥ç¬”æ•°
+		TTORATstpLongVolumeType LargeBuyAmount;
+
+		/// å¤§æˆ·å–å‡ºé‡‘é¢
+		TTORATstpMoneyType LargeSellTurnover;
+
+		/// å¤§æˆ·å–å‡ºæ•°é‡
+		TTORATstpLongVolumeType LargeSellVolume;
+
+		/// å¤§æˆ·å–å‡ºç¬”æ•°
+		TTORATstpLongVolumeType LargeSellAmount;
+
+		/// æœºæ„ä¹°å…¥é‡‘é¢
+		TTORATstpMoneyType InstitutionBuyTurnover;
+
+		/// æœºæ„ä¹°å…¥æ•°é‡
+		TTORATstpLongVolumeType InstitutionBuyVolume;
+
+		/// æœºæ„ä¹°å…¥ç¬”æ•°
+		TTORATstpLongVolumeType InstitutionBuyAmount;
+
+		/// æœºæ„å–å‡ºé‡‘é¢
+		TTORATstpMoneyType InstitutionSellTurnover;
+
+		/// æœºæ„å–å‡ºæ•°é‡
+		TTORATstpLongVolumeType InstitutionSellVolume;
+
+		/// æœºæ„å–å‡ºç¬”æ•°
+		TTORATstpLongVolumeType InstitutionSellAmount;
 	};
-	
-	/// fensÓÃ»§ĞÅÏ¢
+
+	/// fensç”¨æˆ·ä¿¡æ¯
 	struct CTORATstpFensUserInfoField
 	{
-		///°æ±¾ĞÅÏ¢
-		TTORATstpFensVerType	FensVer;
-	
-		///»·¾³±àºÅ
-		TTORATstpFensEnvIDType	FensEnvID;
-	
-		///½Úµã±àºÅ
-		TTORATstpFensNodeIDType	FensNodeID;
-	
-		///FensÓÃ»§´úÂë
-		TTORATstpFensUserIDType	FensUserID;
-	
-		///ÓÃ»§´úÂë
-		TTORATstpUserIDType	UserID;
-	
-		///ÖÕ¶ËĞÅÏ¢
-		TTORATstpClientInfoType	ClientInfo;
+		/// ç‰ˆæœ¬ä¿¡æ¯
+		TTORATstpFensVerType FensVer;
+
+		/// ç¯å¢ƒç¼–å·
+		TTORATstpFensEnvIDType FensEnvID;
+
+		/// èŠ‚ç‚¹ç¼–å·
+		TTORATstpFensNodeIDType FensNodeID;
+
+		/// Fensç”¨æˆ·ä»£ç 
+		TTORATstpFensUserIDType FensUserID;
+
+		/// ç”¨æˆ·ä»£ç 
+		TTORATstpUserIDType UserID;
+
+		/// ç»ˆç«¯ä¿¡æ¯
+		TTORATstpClientInfoType ClientInfo;
 	};
-	
-	/// Á¬½ÓĞÅÏ¢
+
+	/// è¿æ¥ä¿¡æ¯
 	struct CTORATstpConnectionInfoField
 	{
-		///ÄÚÍøIPµØÖ·
-		TTORATstpIPAddressType	InnerIPAddress;
-	
-		///ÄÚÍø¶Ë¿ÚºÅ
-		TTORATstpPortType	InnerPort;
-	
-		///ÍâÍøIPµØÖ·
-		TTORATstpIPAddressType	OuterIPAddress;
-	
-		///ÍâÍø¶Ë¿ÚºÅ
-		TTORATstpPortType	OuterPort;
-	
-		///MACµØÖ·
-		TTORATstpMacAddressType	MacAddress;
+		/// å†…ç½‘IPåœ°å€
+		TTORATstpIPAddressType InnerIPAddress;
+
+		/// å†…ç½‘ç«¯å£å·
+		TTORATstpPortType InnerPort;
+
+		/// å¤–ç½‘IPåœ°å€
+		TTORATstpIPAddressType OuterIPAddress;
+
+		/// å¤–ç½‘ç«¯å£å·
+		TTORATstpPortType OuterPort;
+
+		/// MACåœ°å€
+		TTORATstpMacAddressType MacAddress;
 	};
-	
+
 }
 #endif // TORATSTPXMDAPISTRUCT_H__

@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////
-///@company ÉÏº£Ì©çüĞÅÏ¢¿Æ¼¼ÓĞÏŞ¹«Ë¾
+///@company ä¸Šæµ·æ³°ç°ä¿¡æ¯ç§‘æŠ€æœ‰é™å…¬å¸
 ///@file TORATstpXMdApi.h
-///@brief ¶¨ÒåÁË¿Í»§¶Ë½Ó¿Ú
-///@history 
+///@brief å®šä¹‰äº†å®¢æˆ·ç«¯æ¥å£
+///@history
 /////////////////////////////////////////////////////////////////////////
 
 #ifndef TORATSTPXMDAPI_H__
@@ -10,343 +10,339 @@
 
 #include "TORATstpXMdApiStruct.h"
 
-
 #ifdef XMD_API_EXPORT
-	#ifdef WINDOWS
-		#define XMD_API_DLL_EXPORT __declspec(dllexport)
-	#else
-		#define XMD_API_DLL_EXPORT __attribute__ ((visibility("default")))
-	#endif
+#ifdef WINDOWS
+#define XMD_API_DLL_EXPORT __declspec(dllexport)
 #else
-	#define XMD_API_DLL_EXPORT
+#define XMD_API_DLL_EXPORT __attribute__((visibility("default")))
 #endif
-
+#else
+#define XMD_API_DLL_EXPORT
+#endif
 
 namespace TORALEV1API
 {
 	class CTORATstpXMdSpi
 	{
 	public:
-		///µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨½¨Á¢ÆğÍ¨ĞÅÁ¬½ÓÊ±£¨»¹Î´µÇÂ¼Ç°£©£¬¸Ã·½·¨±»µ÷ÓÃ¡£
-		virtual void OnFrontConnected(){};
+		/// å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°å»ºç«‹èµ·é€šä¿¡è¿æ¥æ—¶ï¼ˆè¿˜æœªç™»å½•å‰ï¼‰ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚
+		virtual void OnFrontConnected() {};
 
-		///µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨Í¨ĞÅÁ¬½Ó¶Ï¿ªÊ±£¬¸Ã·½·¨±»µ÷ÓÃ¡£µ±·¢ÉúÕâ¸öÇé¿öºó£¬API»á×Ô¶¯ÖØĞÂÁ¬½Ó£¬¿Í»§¶Ë¿É²»×ö´¦Àí¡£
-		///        -3 Á¬½ÓÒÑ¶Ï¿ª
-		///        -4 ÍøÂç¶ÁÊ§°Ü
-		///        -5 ÍøÂçĞ´Ê§°Ü
-		///        -6 ¶©ÔÄÁ÷´íÎó
-		///        -7 Á÷ĞòºÅ´íÎó
-		///        -8 ´íÎóµÄĞÄÌø±¨ÎÄ
-		///        -9 ´íÎóµÄ±¨ÎÄ
-		virtual void OnFrontDisconnected(int nReason){};
+		/// å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°é€šä¿¡è¿æ¥æ–­å¼€æ—¶ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚å½“å‘ç”Ÿè¿™ä¸ªæƒ…å†µåï¼ŒAPIä¼šè‡ªåŠ¨é‡æ–°è¿æ¥ï¼Œå®¢æˆ·ç«¯å¯ä¸åšå¤„ç†ã€‚
+		///         -3 è¿æ¥å·²æ–­å¼€
+		///         -4 ç½‘ç»œè¯»å¤±è´¥
+		///         -5 ç½‘ç»œå†™å¤±è´¥
+		///         -6 è®¢é˜…æµé”™è¯¯
+		///         -7 æµåºå·é”™è¯¯
+		///         -8 é”™è¯¯çš„å¿ƒè·³æŠ¥æ–‡
+		///         -9 é”™è¯¯çš„æŠ¥æ–‡
+		virtual void OnFrontDisconnected(int nReason) {};
 
-		///»ñÈ¡Á¬½ÓĞÅÏ¢Ó¦´ğ
+		/// è·å–è¿æ¥ä¿¡æ¯åº”ç­”
 		virtual void OnRspGetConnectionInfo(CTORATstpConnectionInfoField *pConnectionInfoField, CTORATstpRspInfoField *pRspInfoField, int nRequestID) {};
 
-		///µÇÂ¼Ó¦´ğ
+		/// ç™»å½•åº”ç­”
 		virtual void OnRspUserLogin(CTORATstpRspUserLoginField *pRspUserLoginField, CTORATstpRspInfoField *pRspInfoField, int nRequestID) {};
 
-		///µÇ³öÓ¦´ğ
+		/// ç™»å‡ºåº”ç­”
 		virtual void OnRspUserLogout(CTORATstpUserLogoutField *pUserLogoutField, CTORATstpRspInfoField *pRspInfoField, int nRequestID) {};
 
-		///¶©ÔÄĞĞÇéÓ¦´ğ
+		/// è®¢é˜…è¡Œæƒ…åº”ç­”
 		virtual void OnRspSubMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©ĞĞÇéÓ¦´ğ
+		/// é€€è®¢è¡Œæƒ…åº”ç­”
 		virtual void OnRspUnSubMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///¶©ÔÄÅÌºóĞĞÇéÓ¦´ğ
+		/// è®¢é˜…ç›˜åè¡Œæƒ…åº”ç­”
 		virtual void OnRspSubPHMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©ÅÌºóĞĞÇéÓ¦´ğ
+		/// é€€è®¢ç›˜åè¡Œæƒ…åº”ç­”
 		virtual void OnRspUnSubPHMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///¶©ÔÄÌØ¶¨ĞĞÇéÓ¦´ğ
+		/// è®¢é˜…ç‰¹å®šè¡Œæƒ…åº”ç­”
 		virtual void OnRspSubSpecialMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©ÌØ¶¨ĞĞÇéÓ¦´ğ
+		/// é€€è®¢ç‰¹å®šè¡Œæƒ…åº”ç­”
 		virtual void OnRspUnSubSpecialMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///¶©ÔÄ¼òÒ×ĞĞÇéÓ¦´ğ
+		/// è®¢é˜…ç®€æ˜“è¡Œæƒ…åº”ç­”
 		virtual void OnRspSubSimplifyMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©¼òÒ×ĞĞÇéÓ¦´ğ
+		/// é€€è®¢ç®€æ˜“è¡Œæƒ…åº”ç­”
 		virtual void OnRspUnSubSimplifyMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///¶©ÔÄºÏÔ¼×´Ì¬Ó¦´ğ
+		/// è®¢é˜…åˆçº¦çŠ¶æ€åº”ç­”
 		virtual void OnRspSubSecurityStatus(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©ºÏÔ¼×´Ì¬Ó¦´ğ
+		/// é€€è®¢åˆçº¦çŠ¶æ€åº”ç­”
 		virtual void OnRspUnSubSecurityStatus(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///¶©ÔÄÊĞ³¡×´Ì¬Ó¦´ğ
+		/// è®¢é˜…å¸‚åœºçŠ¶æ€åº”ç­”
 		virtual void OnRspSubMarketStatus(CTORATstpSpecificMarketField *pSpecificMarketField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©ÊĞ³¡×´Ì¬Ó¦´ğ
+		/// é€€è®¢å¸‚åœºçŠ¶æ€åº”ç­”
 		virtual void OnRspUnSubMarketStatus(CTORATstpSpecificMarketField *pSpecificMarketField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///¶©ÔÄ¹ú¼ÊÊĞ³¡»¥Áª×´Ì¬Ó¦´ğ
+		/// è®¢é˜…å›½é™…å¸‚åœºäº’è”çŠ¶æ€åº”ç­”
 		virtual void OnRspSubImcParams(CTORATstpSpecificMarketField *pSpecificMarketField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©¹ú¼ÊÊĞ³¡»¥Áª×´Ì¬Ó¦´ğ
+		/// é€€è®¢å›½é™…å¸‚åœºäº’è”çŠ¶æ€åº”ç­”
 		virtual void OnRspUnSubImcParams(CTORATstpSpecificMarketField *pSpecificMarketField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///²éÑ¯ĞĞÇé¿ìÕÕÓ¦´ğ
+		/// æŸ¥è¯¢è¡Œæƒ…å¿«ç…§åº”ç­”
 		virtual void OnRspInquiryMarketDataMirror(CTORATstpMarketDataField *pMarketDataField, CTORATstpRspInfoField *pRspInfoField, int nRequestID, bool bIsLast) {};
 
-		///²éÑ¯ÅÌºóĞĞÇé¿ìÕÕÓ¦´ğ
+		/// æŸ¥è¯¢ç›˜åè¡Œæƒ…å¿«ç…§åº”ç­”
 		virtual void OnRspInquiryPHMarketDataMirror(CTORATstpPHMarketDataField *pPHMarketDataField, CTORATstpRspInfoField *pRspInfoField, int nRequestID, bool bIsLast) {};
 
-		///²éÑ¯ÌØ¶¨ĞĞÇé¿ìÕÕÓ¦´ğ
+		/// æŸ¥è¯¢ç‰¹å®šè¡Œæƒ…å¿«ç…§åº”ç­”
 		virtual void OnRspInquirySpecialMarketDataMirror(CTORATstpSpecialMarketDataField *pMarketDataField, CTORATstpRspInfoField *pRspInfoField, int nRequestID, bool bIsLast) {};
 
-		///¶©ÔÄÆÚÈ¨ĞĞÇéÓ¦´ğ
+		/// è®¢é˜…æœŸæƒè¡Œæƒ…åº”ç­”
 		virtual void OnRspSubSPMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©ÆÚÈ¨ĞĞÇéÓ¦´ğ
+		/// é€€è®¢æœŸæƒè¡Œæƒ…åº”ç­”
 		virtual void OnRspUnSubSPMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///¶©ÔÄÆÚÈ¨¼òÒ×ĞĞÇéÓ¦´ğ
+		/// è®¢é˜…æœŸæƒç®€æ˜“è¡Œæƒ…åº”ç­”
 		virtual void OnRspSubSPSimplifyMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©ÆÚÈ¨¼òÒ×ĞĞÇéÓ¦´ğ
+		/// é€€è®¢æœŸæƒç®€æ˜“è¡Œæƒ…åº”ç­”
 		virtual void OnRspUnSubSPSimplifyMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///¶©ÔÄÆÚÈ¨ºÏÔ¼×´Ì¬Ó¦´ğ
+		/// è®¢é˜…æœŸæƒåˆçº¦çŠ¶æ€åº”ç­”
 		virtual void OnRspSubSPSecurityStatus(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©ÆÚÈ¨ºÏÔ¼×´Ì¬Ó¦´ğ
+		/// é€€è®¢æœŸæƒåˆçº¦çŠ¶æ€åº”ç­”
 		virtual void OnRspUnSubSPSecurityStatus(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///¶©ÔÄÆÚÈ¨ÊĞ³¡×´Ì¬Ó¦´ğ
+		/// è®¢é˜…æœŸæƒå¸‚åœºçŠ¶æ€åº”ç­”
 		virtual void OnRspSubSPMarketStatus(CTORATstpSpecificMarketField *pSpecificMarketField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©ÆÚÈ¨ÊĞ³¡×´Ì¬Ó¦´ğ
+		/// é€€è®¢æœŸæƒå¸‚åœºçŠ¶æ€åº”ç­”
 		virtual void OnRspUnSubSPMarketStatus(CTORATstpSpecificMarketField *pSpecificMarketField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///²éÑ¯ÆÚÈ¨ĞĞÇé¿ìÕÕÓ¦´ğ
+		/// æŸ¥è¯¢æœŸæƒè¡Œæƒ…å¿«ç…§åº”ç­”
 		virtual void OnRspInquirySPMarketDataMirror(CTORATstpMarketDataField *pMarketDataField, CTORATstpRspInfoField *pRspInfoField, int nRequestID, bool bIsLast) {};
 
-		///ĞĞÇéÍ¨Öª
+		/// è¡Œæƒ…é€šçŸ¥
 		virtual void OnRtnMarketData(CTORATstpMarketDataField *pMarketDataField) {};
 
-		///ÅÌºóĞĞÇéÍ¨Öª
+		/// ç›˜åè¡Œæƒ…é€šçŸ¥
 		virtual void OnRtnPHMarketData(CTORATstpPHMarketDataField *pPHMarketDataField) {};
 
-		///ÌØ¶¨ĞĞÇéÍ¨Öª
+		/// ç‰¹å®šè¡Œæƒ…é€šçŸ¥
 		virtual void OnRtnSpecialMarketData(CTORATstpSpecialMarketDataField *pSpecialMarketDataField) {};
 
-		///¼òÒ×ĞĞÇéÍ¨Öª
+		/// ç®€æ˜“è¡Œæƒ…é€šçŸ¥
 		virtual void OnRtnSimplifyMarketData(CTORATstpSimplifyMarketDataField *pSimplifyMarketDataField) {};
 
-		///ºÏÔ¼×´Ì¬
+		/// åˆçº¦çŠ¶æ€
 		virtual void OnRtnSecurityStatus(CTORATstpSecurityStatusField *pSecurityStatusField) {};
 
-		///ÊĞ³¡×´Ì¬
+		/// å¸‚åœºçŠ¶æ€
 		virtual void OnRtnMarketStatus(CTORATstpMarketStatusField *pMarketStatusField) {};
 
-		///¹ú¼ÊÊĞ³¡»¥Áª×´Ì¬
+		/// å›½é™…å¸‚åœºäº’è”çŠ¶æ€
 		virtual void OnRtnImcParams(CTORATstpImcParamsField *pImcParamsField) {};
 
-		///ÆÚÈ¨ĞĞÇéÍ¨Öª
+		/// æœŸæƒè¡Œæƒ…é€šçŸ¥
 		virtual void OnRtnSPMarketData(CTORATstpMarketDataField *pMarketDataField) {};
 
-		///ÆÚÈ¨¼òÒ×ĞĞÇéÍ¨Öª
+		/// æœŸæƒç®€æ˜“è¡Œæƒ…é€šçŸ¥
 		virtual void OnRtnSPSimplifyMarketData(CTORATstpSimplifyMarketDataField *pSimplifyMarketDataField) {};
 
-		///ÆÚÈ¨ºÏÔ¼×´Ì¬Í¨Öª
+		/// æœŸæƒåˆçº¦çŠ¶æ€é€šçŸ¥
 		virtual void OnRtnSPSecurityStatus(CTORATstpSecurityStatusField *pSecurityStatusField) {};
 
-		///ÆÚÈ¨ÊĞ³¡×´Ì¬Í¨Öª
+		/// æœŸæƒå¸‚åœºçŠ¶æ€é€šçŸ¥
 		virtual void OnRtnSPMarketStatus(CTORATstpMarketStatusField *pMarketStatusField) {};
 
-
-		///¶©ÔÄºÏ³É¿ìÕÕÓ¦´ğ(ÑÜÉú·şÎñ)
+		/// è®¢é˜…åˆæˆå¿«ç…§åº”ç­”(è¡ç”ŸæœåŠ¡)
 		virtual void OnRspSubRapidMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©ºÏ³É¿ìÕÕÓ¦´ğ(ÑÜÉú·şÎñ)
+		/// é€€è®¢åˆæˆå¿«ç…§åº”ç­”(è¡ç”ŸæœåŠ¡)
 		virtual void OnRspUnSubRapidMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ºÏ³É¿ìÕÕÍ¨Öª(ÑÜÉú·şÎñ)
+		/// åˆæˆå¿«ç…§é€šçŸ¥(è¡ç”ŸæœåŠ¡)
 		virtual void OnRtnRapidMarketData(CTORATstpRapidMarketDataField *pRapidMarketDataField) {};
 
-		///¶©ÔÄ×Ê½ğÁ÷ÏòĞĞÇéÓ¦´ğ(ÑÜÉú·şÎñ)
+		/// è®¢é˜…èµ„é‡‘æµå‘è¡Œæƒ…åº”ç­”(è¡ç”ŸæœåŠ¡)
 		virtual void OnRspSubFundsFlowMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///ÍË¶©×Ê½ğÁ÷ÏòĞĞÇéÓ¦´ğ(ÑÜÉú·şÎñ)
+		/// é€€è®¢èµ„é‡‘æµå‘è¡Œæƒ…åº”ç­”(è¡ç”ŸæœåŠ¡)
 		virtual void OnRspUnSubFundsFlowMarketData(CTORATstpSpecificSecurityField *pSpecificSecurityField, CTORATstpRspInfoField *pRspInfoField) {};
 
-		///×Ê½ğÁ÷ÏòĞĞÇéÍ¨Öª(ÑÜÉú·şÎñ)
+		/// èµ„é‡‘æµå‘è¡Œæƒ…é€šçŸ¥(è¡ç”ŸæœåŠ¡)
 		virtual void OnRtnFundsFlowMarketData(CTORATstpFundsFlowMarketDataField *pFundsFlowMarketDataField) {};
 	};
 
 	class XMD_API_DLL_EXPORT CTORATstpXMdApi
 	{
 	public:
-		///´´½¨XMdApi
-		///@return ´´½¨³öµÄXMdApi
-		///@param eMDSubMode:ĞĞÇé¶©ÔÄÄ£Ê½£¬Ä¿Ç°Ö§³ÖTCPºÍUDP×é²¥Á½ÖÖ·½Ê½
-		///@param eDeriveMDSubMode:ÑÜÉú·şÎñºÏ³É¿ìÕÕĞĞÇé¶©ÔÄÄ£Ê½£¬Ä¿Ç°Ö§³ÖTCPºÍUDP×é²¥Á½ÖÖ·½Ê½
+		/// åˆ›å»ºXMdApi
+		///@return åˆ›å»ºå‡ºçš„XMdApi
+		///@param eMDSubMode:è¡Œæƒ…è®¢é˜…æ¨¡å¼ï¼Œç›®å‰æ”¯æŒTCPå’ŒUDPç»„æ’­ä¸¤ç§æ–¹å¼
+		///@param eDeriveMDSubMode:è¡ç”ŸæœåŠ¡åˆæˆå¿«ç…§è¡Œæƒ…è®¢é˜…æ¨¡å¼ï¼Œç›®å‰æ”¯æŒTCPå’ŒUDPç»„æ’­ä¸¤ç§æ–¹å¼
 		static CTORATstpXMdApi *CreateTstpXMdApi(const TTORATstpMDSubModeType &eMDSubMode = TORA_TSTP_MST_TCP, const TTORATstpMDSubModeType &eDeriveMDSubMode = TORA_TSTP_MST_TCP);
 
-		///»ñÈ¡API°æ±¾ºÅ
-		///@return °æ±¾ºÅ
-		static const char* GetApiVersion();
+		/// è·å–APIç‰ˆæœ¬å·
+		///@return ç‰ˆæœ¬å·
+		static const char *GetApiVersion();
 
-		///É¾³ı½Ó¿Ú¶ÔÏó±¾Éí
-		///@remark ²»ÔÙÊ¹ÓÃ±¾½Ó¿Ú¶ÔÏóÊ±,µ÷ÓÃ¸Ãº¯ÊıÉ¾³ı½Ó¿Ú¶ÔÏó
+		/// åˆ é™¤æ¥å£å¯¹è±¡æœ¬èº«
+		///@remark ä¸å†ä½¿ç”¨æœ¬æ¥å£å¯¹è±¡æ—¶,è°ƒç”¨è¯¥å‡½æ•°åˆ é™¤æ¥å£å¯¹è±¡
 		virtual void Release() = 0;
 
-		///³õÊ¼»¯
-		///@remark ³õÊ¼»¯ÔËĞĞ»·¾³,Ö»ÓĞµ÷ÓÃºó,½Ó¿Ú²Å¿ªÊ¼¹¤×÷
+		/// åˆå§‹åŒ–
+		///@remark åˆå§‹åŒ–è¿è¡Œç¯å¢ƒ,åªæœ‰è°ƒç”¨å,æ¥å£æ‰å¼€å§‹å·¥ä½œ
 		virtual void Init() = 0;
 
-		///µÈ´ı½Ó¿ÚÏß³Ì½áÊøÔËĞĞ
-		///@return Ïß³ÌÍË³ö´úÂë
+		/// ç­‰å¾…æ¥å£çº¿ç¨‹ç»“æŸè¿è¡Œ
+		///@return çº¿ç¨‹é€€å‡ºä»£ç 
 		virtual int Join() = 0;
 
-		///×¢²áÇ°ÖÃ»úÍøÂçµØÖ·
-		///@param pszFrontAddress£ºÇ°ÖÃ»úÍøÂçµØÖ·¡£
-		///@remark ÍøÂçµØÖ·µÄ¸ñÊ½Îª£º¡°protocol://ipaddress:port¡±£¬Èç£º¡±tcp://127.0.0.1:17001¡±¡£ 
-		///@remark ¡°tcp¡±´ú±í´«ÊäĞ­Òé£¬¡°127.0.0.1¡±´ú±í·şÎñÆ÷µØÖ·¡£¡±17001¡±´ú±í·şÎñÆ÷¶Ë¿ÚºÅ¡£
+		/// æ³¨å†Œå‰ç½®æœºç½‘ç»œåœ°å€
+		///@param pszFrontAddressï¼šå‰ç½®æœºç½‘ç»œåœ°å€ã€‚
+		///@remark ç½‘ç»œåœ°å€çš„æ ¼å¼ä¸ºï¼šâ€œprotocol://ipaddress:portâ€ï¼Œå¦‚ï¼šâ€tcp://127.0.0.1:17001â€ã€‚
+		///@remark â€œtcpâ€ä»£è¡¨ä¼ è¾“åè®®ï¼Œâ€œ127.0.0.1â€ä»£è¡¨æœåŠ¡å™¨åœ°å€ã€‚â€17001â€ä»£è¡¨æœåŠ¡å™¨ç«¯å£å·ã€‚
 		virtual void RegisterFront(char *pszFrontAddress) = 0;
 
-		///×¢²áÃû×Ö·şÎñÆ÷ÍøÂçµØÖ·
-		///@param pszNsAddress£ºÃû×Ö·şÎñÆ÷ÍøÂçµØÖ·¡£
-		///@remark ÍøÂçµØÖ·µÄ¸ñÊ½Îª£º¡°protocol://ipaddress:port¡±£¬Èç£º¡±tcp://127.0.0.1:12001¡±¡£ 
-		///@remark ¡°tcp¡±´ú±í´«ÊäĞ­Òé£¬¡°127.0.0.1¡±´ú±í·şÎñÆ÷µØÖ·¡£¡±12001¡±´ú±í·şÎñÆ÷¶Ë¿ÚºÅ¡£
-		///@remark RegisterNameServerÓÅÏÈÓÚRegisterFront
+		/// æ³¨å†Œåå­—æœåŠ¡å™¨ç½‘ç»œåœ°å€
+		///@param pszNsAddressï¼šåå­—æœåŠ¡å™¨ç½‘ç»œåœ°å€ã€‚
+		///@remark ç½‘ç»œåœ°å€çš„æ ¼å¼ä¸ºï¼šâ€œprotocol://ipaddress:portâ€ï¼Œå¦‚ï¼šâ€tcp://127.0.0.1:12001â€ã€‚
+		///@remark â€œtcpâ€ä»£è¡¨ä¼ è¾“åè®®ï¼Œâ€œ127.0.0.1â€ä»£è¡¨æœåŠ¡å™¨åœ°å€ã€‚â€12001â€ä»£è¡¨æœåŠ¡å™¨ç«¯å£å·ã€‚
+		///@remark RegisterNameServerä¼˜å…ˆäºRegisterFront
 		virtual void RegisterNameServer(char *pszNsAddress) = 0;
 
-		///×¢²áÃû×Ö·şÎñÆ÷ÓÃ»§ĞÅÏ¢
-		///@param pFensUserInfoField£ºÓÃ»§ĞÅÏ¢¡£
+		/// æ³¨å†Œåå­—æœåŠ¡å™¨ç”¨æˆ·ä¿¡æ¯
+		///@param pFensUserInfoFieldï¼šç”¨æˆ·ä¿¡æ¯ã€‚
 		virtual void RegisterFensUserInfo(CTORATstpFensUserInfoField *pFensUserInfoField) = 0;
-	
-		///×¢²á×é²¥µØÖ·
-		///@param pszMulticastAddress:×é²¥ÍøÂçµØÖ·,Èç:"udp://224.3.9.110:34567"¡£
-		///@param pszInterfaceIP:½ÓÊÕÍø¿¨µØÖ·,Èç:"127.0.0.1",ÌîNULLÔòÒÀ´ÎÂÖÑ¯³¢ÊÔ±¾»úËùÓĞÍø¿¨¼ÓÈë×é²¥×é¡£
-		///@param pszSourceIp:×é²¥Êı¾İ°üÔ´µØÖ·,Èç:"127.0.0.1",ÌîNULL±íÊ¾²»Ğ£ÑéÊı¾İ°üÔ´¡£
-		///@remark ½öÔÚÊ¹ÓÃUDP×é²¥·½Ê½¹¤×÷Ê±ÓĞĞ§
+
+		/// æ³¨å†Œç»„æ’­åœ°å€
+		///@param pszMulticastAddress:ç»„æ’­ç½‘ç»œåœ°å€,å¦‚:"udp://224.3.9.110:34567"ã€‚
+		///@param pszInterfaceIP:æ¥æ”¶ç½‘å¡åœ°å€,å¦‚:"127.0.0.1",å¡«NULLåˆ™ä¾æ¬¡è½®è¯¢å°è¯•æœ¬æœºæ‰€æœ‰ç½‘å¡åŠ å…¥ç»„æ’­ç»„ã€‚
+		///@param pszSourceIp:ç»„æ’­æ•°æ®åŒ…æºåœ°å€,å¦‚:"127.0.0.1",å¡«NULLè¡¨ç¤ºä¸æ ¡éªŒæ•°æ®åŒ…æºã€‚
+		///@remark ä»…åœ¨ä½¿ç”¨UDPç»„æ’­æ–¹å¼å·¥ä½œæ—¶æœ‰æ•ˆ
 		virtual void RegisterMulticast(char *pszMulticastAddress, char *pszInterfaceIP, char *pszSourceIp) = 0;
 
-		///×¢²áÑÜÉú·şÎñ·şÎñÆ÷ÍøÂçµØÖ·
-		///@param pszNsAddress£ºÑÜÉú·şÎñ·şÎñÆ÷ÍøÂçµØÖ·¡£
-		///@remark ÍøÂçµØÖ·µÄ¸ñÊ½Îª£º¡°protocol://ipaddress:port¡±£¬Èç£º¡±tcp://127.0.0.1:15001¡±¡£ 
-		///@remark ¡°tcp¡±´ú±í´«ÊäĞ­Òé£¬¡°127.0.0.1¡±´ú±í·şÎñÆ÷µØÖ·¡£¡±15001¡±´ú±í·şÎñÆ÷¶Ë¿ÚºÅ¡£
+		/// æ³¨å†Œè¡ç”ŸæœåŠ¡æœåŠ¡å™¨ç½‘ç»œåœ°å€
+		///@param pszNsAddressï¼šè¡ç”ŸæœåŠ¡æœåŠ¡å™¨ç½‘ç»œåœ°å€ã€‚
+		///@remark ç½‘ç»œåœ°å€çš„æ ¼å¼ä¸ºï¼šâ€œprotocol://ipaddress:portâ€ï¼Œå¦‚ï¼šâ€tcp://127.0.0.1:15001â€ã€‚
+		///@remark â€œtcpâ€ä»£è¡¨ä¼ è¾“åè®®ï¼Œâ€œ127.0.0.1â€ä»£è¡¨æœåŠ¡å™¨åœ°å€ã€‚â€15001â€ä»£è¡¨æœåŠ¡å™¨ç«¯å£å·ã€‚
 		virtual void RegisterDeriveServer(char *pszDeriveAddress) = 0;
 
-		///×¢²áÑÜÉú·şÎñ·şÎñÆ÷×é²¥µØÖ·
-		///@param pszMulticastAddress:×é²¥ÍøÂçµØÖ·,Èç:"udp://224.3.9.110:34567"¡£
-		///@param pszInterfaceIP:½ÓÊÕÍø¿¨µØÖ·,Èç:"127.0.0.1",ÌîNULLÔòÒÀ´ÎÂÖÑ¯³¢ÊÔ±¾»úËùÓĞÍø¿¨¼ÓÈë×é²¥×é¡£
-		///@param pszSourceIp:×é²¥Êı¾İ°üÔ´µØÖ·,Èç:"127.0.0.1",ÌîNULL±íÊ¾²»Ğ£ÑéÊı¾İ°üÔ´¡£
-		///@remark ½öÔÚÊ¹ÓÃUDP×é²¥·½Ê½¹¤×÷Ê±ÓĞĞ§
-		virtual void RegisterDeriveMulticast(char * pszMulticastAddress, char * pszInterfaceIP, char * pszSourceIp) = 0;
+		/// æ³¨å†Œè¡ç”ŸæœåŠ¡æœåŠ¡å™¨ç»„æ’­åœ°å€
+		///@param pszMulticastAddress:ç»„æ’­ç½‘ç»œåœ°å€,å¦‚:"udp://224.3.9.110:34567"ã€‚
+		///@param pszInterfaceIP:æ¥æ”¶ç½‘å¡åœ°å€,å¦‚:"127.0.0.1",å¡«NULLåˆ™ä¾æ¬¡è½®è¯¢å°è¯•æœ¬æœºæ‰€æœ‰ç½‘å¡åŠ å…¥ç»„æ’­ç»„ã€‚
+		///@param pszSourceIp:ç»„æ’­æ•°æ®åŒ…æºåœ°å€,å¦‚:"127.0.0.1",å¡«NULLè¡¨ç¤ºä¸æ ¡éªŒæ•°æ®åŒ…æºã€‚
+		///@remark ä»…åœ¨ä½¿ç”¨UDPç»„æ’­æ–¹å¼å·¥ä½œæ—¶æœ‰æ•ˆ
+		virtual void RegisterDeriveMulticast(char *pszMulticastAddress, char *pszInterfaceIP, char *pszSourceIp) = 0;
 
-		///×¢²á»Øµ÷½Ó¿Ú
+		/// æ³¨å†Œå›è°ƒæ¥å£
 		virtual void RegisterSpi(CTORATstpXMdSpi *pSpi) = 0;
 
-		///»ñÈ¡Á¬½ÓĞÅÏ¢
+		/// è·å–è¿æ¥ä¿¡æ¯
 		virtual int ReqGetConnectionInfo(int nRequestID) = 0;
 
-		///ÓÃ»§µÇÂ¼ÇëÇó
+		/// ç”¨æˆ·ç™»å½•è¯·æ±‚
 		virtual int ReqUserLogin(CTORATstpReqUserLoginField *pReqUserLoginField, int nRequestID) = 0;
 
-		///µÇ³öÇëÇó
+		/// ç™»å‡ºè¯·æ±‚
 		virtual int ReqUserLogout(CTORATstpUserLogoutField *pUserLogoutField, int nRequestID) = 0;
 
-		///¶©ÔÄĞĞÇé
+		/// è®¢é˜…è¡Œæƒ…
 		virtual int SubscribeMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///ÍË¶©ĞĞÇé
+		/// é€€è®¢è¡Œæƒ…
 		virtual int UnSubscribeMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///¶©ÔÄÅÌºóĞĞÇé
+		/// è®¢é˜…ç›˜åè¡Œæƒ…
 		virtual int SubscribePHMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///ÍË¶©ÅÌºóĞĞÇé
+		/// é€€è®¢ç›˜åè¡Œæƒ…
 		virtual int UnSubscribePHMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///¶©ÔÄÌØ¶¨ĞĞÇé
+		/// è®¢é˜…ç‰¹å®šè¡Œæƒ…
 		virtual int SubscribeSpecialMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///ÍË¶©ÌØ¶¨ĞĞÇé
+		/// é€€è®¢ç‰¹å®šè¡Œæƒ…
 		virtual int UnSubscribeSpecialMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///¶©ÔÄ¼òÒ×ĞĞÇé
+		/// è®¢é˜…ç®€æ˜“è¡Œæƒ…
 		virtual int SubscribeSimplifyMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///ÍË¶©¼òÒ×ĞĞÇé
+		/// é€€è®¢ç®€æ˜“è¡Œæƒ…
 		virtual int UnSubscribeSimplifyMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///¶©ÔÄºÏÔ¼×´Ì¬
+		/// è®¢é˜…åˆçº¦çŠ¶æ€
 		virtual int SubscribeSecurityStatus(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///ÍË¶©ºÏÔ¼×´Ì¬
+		/// é€€è®¢åˆçº¦çŠ¶æ€
 		virtual int UnSubscribeSecurityStatus(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///¶©ÔÄÊĞ³¡×´Ì¬
+		/// è®¢é˜…å¸‚åœºçŠ¶æ€
 		virtual int SubscribeMarketStatus(TTORATstpMarketIDType MarketID) = 0;
 
-		///ÍË¶©ÊĞ³¡×´Ì¬
+		/// é€€è®¢å¸‚åœºçŠ¶æ€
 		virtual int UnSubscribeMarketStatus(TTORATstpMarketIDType MarketID) = 0;
 
-		///¶©ÔÄ¹ú¼ÊÊĞ³¡»¥Áª×´Ì¬
+		/// è®¢é˜…å›½é™…å¸‚åœºäº’è”çŠ¶æ€
 		virtual int SubscribeImcParams(TTORATstpMarketIDType MarketID) = 0;
 
-		///ÍË¶©¹ú¼ÊÊĞ³¡»¥Áª×´Ì¬
+		/// é€€è®¢å›½é™…å¸‚åœºäº’è”çŠ¶æ€
 		virtual int UnSubscribeImcParams(TTORATstpMarketIDType MarketID) = 0;
 
-		///²éÑ¯ĞĞÇé¿ìÕÕ
+		/// æŸ¥è¯¢è¡Œæƒ…å¿«ç…§
 		virtual int ReqInquiryMarketDataMirror(CTORATstpInquiryMarketDataField *pInquiryMarketDataField, int nRequestID) = 0;
 
-		///²éÑ¯ÅÌºóĞĞÇé¿ìÕÕ
+		/// æŸ¥è¯¢ç›˜åè¡Œæƒ…å¿«ç…§
 		virtual int ReqInquiryPHMarketDataMirror(CTORATstpInquiryMarketDataField *pInquiryMarketDataField, int nRequestID) = 0;
 
-		///²éÑ¯ÌØ¶¨ĞĞÇé¿ìÕÕ
+		/// æŸ¥è¯¢ç‰¹å®šè¡Œæƒ…å¿«ç…§
 		virtual int ReqInquirySpecialMarketDataMirror(CTORATstpInquirySpecialMarketDataField *pInquirySpecialMarketDataField, int nRequestID) = 0;
 
-		///¶©ÔÄÆÚÈ¨ĞĞÇé
+		/// è®¢é˜…æœŸæƒè¡Œæƒ…
 		virtual int SubscribeSPMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///ÍË¶©ÆÚÈ¨ĞĞÇé
+		/// é€€è®¢æœŸæƒè¡Œæƒ…
 		virtual int UnSubscribeSPMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///¶©ÔÄÆÚÈ¨¼òÒ×ĞĞÇé
+		/// è®¢é˜…æœŸæƒç®€æ˜“è¡Œæƒ…
 		virtual int SubscribeSPSimplifyMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///ÍË¶©ÆÚÈ¨¼òÒ×ĞĞÇé
+		/// é€€è®¢æœŸæƒç®€æ˜“è¡Œæƒ…
 		virtual int UnSubscribeSPSimplifyMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///¶©ÔÄÆÚÈ¨ºÏÔ¼×´Ì¬
+		/// è®¢é˜…æœŸæƒåˆçº¦çŠ¶æ€
 		virtual int SubscribeSPSecurityStatus(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///ÍË¶©ÆÚÈ¨ºÏÔ¼×´Ì¬
+		/// é€€è®¢æœŸæƒåˆçº¦çŠ¶æ€
 		virtual int UnSubscribeSPSecurityStatus(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///¶©ÔÄÆÚÈ¨ÊĞ³¡×´Ì¬
+		/// è®¢é˜…æœŸæƒå¸‚åœºçŠ¶æ€
 		virtual int SubscribeSPMarketStatus(TTORATstpMarketIDType MarketID) = 0;
 
-		///ÍË¶©ÆÚÈ¨ÊĞ³¡×´Ì¬
+		/// é€€è®¢æœŸæƒå¸‚åœºçŠ¶æ€
 		virtual int UnSubscribeSPMarketStatus(TTORATstpMarketIDType MarketID) = 0;
 
-		///²éÑ¯ÆÚÈ¨ĞĞÇé¿ìÕÕ
+		/// æŸ¥è¯¢æœŸæƒè¡Œæƒ…å¿«ç…§
 		virtual int ReqInquirySPMarketDataMirror(CTORATstpInquiryMarketDataField *pInquiryMarketDataField, int nRequestID) = 0;
 
-
-		///¶©ÔÄºÏ³É¿ìÕÕ(ÑÜÉú·şÎñ)
+		/// è®¢é˜…åˆæˆå¿«ç…§(è¡ç”ŸæœåŠ¡)
 		virtual int SubscribeRapidMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///ÍË¶©ºÏ³É¿ìÕÕ(ÑÜÉú·şÎñ)
+		/// é€€è®¢åˆæˆå¿«ç…§(è¡ç”ŸæœåŠ¡)
 		virtual int UnSubscribeRapidMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///¶©ÔÄ×Ê½ğÁ÷ÏòĞĞÇé(ÑÜÉú·şÎñ)
+		/// è®¢é˜…èµ„é‡‘æµå‘è¡Œæƒ…(è¡ç”ŸæœåŠ¡)
 		virtual int SubscribeFundsFlowMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
-		///ÍË¶©×Ê½ğÁ÷ÏòĞĞÇé(ÑÜÉú·şÎñ)
+		/// é€€è®¢èµ„é‡‘æµå‘è¡Œæƒ…(è¡ç”ŸæœåŠ¡)
 		virtual int UnSubscribeFundsFlowMarketData(char **ppSecurityID, int nCount, TTORATstpExchangeIDType ExchangeID) = 0;
 
 	protected:
-		~CTORATstpXMdApi(){};
+		~CTORATstpXMdApi() {};
 	};
 }
 
