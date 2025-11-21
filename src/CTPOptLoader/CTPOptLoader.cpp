@@ -1,23 +1,24 @@
 ﻿#include <string>
 #include <map>
+#include <set>
+#include <iostream>
 
-#include "../API/CTPOpt3.5.8/ThostFtdcTraderApi.h"
+#include "../API/CTPOpt3.7.0/ThostFtdcTraderApi.h"
 #include "TraderSpi.h"
 
 #include "../Share/IniHelper.hpp"
 #include "../Share/ModuleHelper.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
-#include "../Share/fmtlib.h"
+#include "../Share/StdUtils.hpp"
 
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
+#include "../Share/charconv.hpp"
+#include "../Share/fmtlib.h"
 
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
 USING_NS_WTP;
 
-#include "../Share/charconv.hpp"
+#include <boost/filesystem.hpp>
 
 // UserApi对象
 CThostFtdcTraderApi* pUserApi;
@@ -33,15 +34,20 @@ std::string AUTHCODE;
 uint32_t	CLASSMASK;	//期权
 bool		ONLYINCFG;	//只落地配置文件有的
 bool		INCREMENTAL;//是否增量拉取，默认false
+bool		QRYFEES;	//查询费率
 
 std::string COMM_FILE;		//输出的品种文件名
 std::string CONT_FILE;		//输出的合约文件名
+std::string FEES_FILE;		//输出的费率文件名
 
 std::string MODULE_NAME;	//外部模块名
 
 typedef std::map<std::string, std::string>	SymbolMap;
 SymbolMap	MAP_NAME;
 SymbolMap	MAP_SESSION;
+
+std::string FEE_FILTERS;
+std::set<std::string>	SET_FILTERS;
 
 typedef CThostFtdcTraderApi* (*CTPCreator)(const char *);
 CTPCreator		g_ctpCreator = NULL;
@@ -90,19 +96,17 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		SAVEPATH = cfg->getCString("path");
 		CLASSMASK = cfg->getUInt32("mask"); //1-期货,2-期权,4-股票
 
-		COMM_FILE = cfg->getCString("commfile");
-		if (COMM_FILE.empty())
-			COMM_FILE = "commodities.json";
-
-		CONT_FILE = cfg->getCString("contfile");
-		if (CONT_FILE.empty())
-			CONT_FILE = "contracts.json";
+		COMM_FILE = cfg->getCString("commfile", "commodities.json");
+		CONT_FILE = cfg->getCString("contfile", "contracts.json");
+		FEES_FILE = cfg->getCString("feesfile", "fees.json");
 
 		map_files = cfg->getCString("mapfiles");
-		ONLYINCFG = ctp->getBoolean("onlyincfg");
-		INCREMENTAL = ctp->getBoolean("incremental");
+		ONLYINCFG = cfg->getBoolean("onlyincfg");
+		INCREMENTAL = cfg->getBoolean("incremental");
+		QRYFEES = cfg->getBoolean("qryfees");
+		FEE_FILTERS = cfg->getCString("feefilter");
 
-		MODULE_NAME = cfg->getCString("module");
+		MODULE_NAME = ctp->getCString("module");
 		if (MODULE_NAME.empty())
 		{
 #ifdef _WIN32
@@ -129,18 +133,21 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		SAVEPATH = ini.readString("config", "path", "");
 		CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-期货,2-期权,4-股票
+		ONLYINCFG = wt_stricmp(ini.readString("config", "onlyincfg", "false").c_str(), "true") == 0;
+		INCREMENTAL = wt_stricmp(ini.readString("config", "incremental", "false").c_str(), "true") == 0;
+		QRYFEES = wt_stricmp(ini.readString("config", "qryfees", "false").c_str(), "true") == 0;
+		FEE_FILTERS = ini.readString("config", "feefilter", "");
 
 		COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 		CONT_FILE = ini.readString("config", "contfile", "contracts.json");
+		FEES_FILE = ini.readString("config", "feesfile", "fees.json");
 
 		map_files = ini.readString("config", "mapfiles", "");
-		ONLYINCFG = wt_stricmp(ini.readString("config", "onlyincfg", "false").c_str(), "true") == 0;
-		INCREMENTAL = wt_stricmp(ini.readString("config", "incremental", "false").c_str(), "true") == 0;
 
 #ifdef _WIN32
-		MODULE_NAME = ini.readString("config", "module", "./soptthosttraderapi_se.dll");
+		MODULE_NAME = ini.readString("ctp", "module", "./soptthosttraderapi_se.dll");
 #else
-		MODULE_NAME = ini.readString("config", "module", "./soptthosttraderapi_se.so");
+		MODULE_NAME = ini.readString("ctp", "module", "./soptthosttraderapi_se.so");
 #endif
 	}
 	else
@@ -161,20 +168,18 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		SAVEPATH = cfg->getCString("path");
 		CLASSMASK = cfg->getUInt32("mask"); //1-期货,2-期权,4-股票
 
-		COMM_FILE = cfg->getCString("commfile");
-		if (COMM_FILE.empty())
-			COMM_FILE = "commodities.json";
-
-		CONT_FILE = cfg->getCString("contfile");
-		if (CONT_FILE.empty())
-			CONT_FILE = "contracts.json";
+		COMM_FILE = cfg->getCString("commfile", "commodities.json");
+		CONT_FILE = cfg->getCString("contfile", "contracts.json");
+		FEES_FILE = cfg->getCString("feesfile", "fees.json");
 
 		map_files = cfg->getCString("mapfiles");
-		ONLYINCFG = ctp->getBoolean("onlyincfg");
-		INCREMENTAL = ctp->getBoolean("incremental");
+		ONLYINCFG = cfg->getBoolean("onlyincfg");
+		INCREMENTAL = cfg->getBoolean("incremental");
+		QRYFEES = cfg->getBoolean("qryfees");
+		FEE_FILTERS = cfg->getCString("feefilter");
 
-		MODULE_NAME = cfg->getCString("module");
-		if (MODULE_NAME.empty())
+		MODULE_NAME = ctp->getCString("module");
+		if(MODULE_NAME.empty())
 		{
 #ifdef _WIN32
 			MODULE_NAME = "./soptthosttraderapi_se.dll";
@@ -184,25 +189,40 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		}
 		root->release();
 	}
-
+	
 	if(!StdFile::exists(MODULE_NAME.c_str()))
 	{
-		MODULE_NAME = getBinDir();
-#ifdef _WIN32
-		MODULE_NAME += "traders/soptthosttraderapi_se.dll";
-#else
-		MODULE_NAME += "traders/soptthosttraderapi_se.so";
-#endif
+		MODULE_NAME = fmtutil::format("{}traders/{}", getBinDir(), MODULE_NAME.c_str());
 	}
 
-	if(FRONT_ADDR.empty() || BROKER_ID.empty() || INVESTOR_ID.empty() || PASSWORD.empty() || SAVEPATH.empty())
+	if(FRONT_ADDR.empty() || BROKER_ID.empty() || INVESTOR_ID.empty() || PASSWORD.empty() || SAVEPATH.empty() || APPID.empty() || AUTHCODE.empty())
 	{
+		std::cerr << "Error: Missing required parameters for authentication" << std::endl;
+		std::cerr << "FRONT_ADDR: " << (FRONT_ADDR.empty() ? "EMPTY" : FRONT_ADDR) << std::endl;
+		std::cerr << "BROKER_ID: " << (BROKER_ID.empty() ? "EMPTY" : BROKER_ID) << std::endl;
+		std::cerr << "INVESTOR_ID: " << (INVESTOR_ID.empty() ? "EMPTY" : INVESTOR_ID) << std::endl;
+		std::cerr << "PASSWORD: " << (PASSWORD.empty() ? "EMPTY" : "***") << std::endl;
+		std::cerr << "APPID: " << (APPID.empty() ? "EMPTY" : APPID) << std::endl;
+		std::cerr << "AUTHCODE: " << (AUTHCODE.empty() ? "EMPTY" : AUTHCODE) << std::endl;
+		std::cerr << "SAVEPATH: " << (SAVEPATH.empty() ? "EMPTY" : SAVEPATH) << std::endl;
 		return 0;
 	}
 
 	SAVEPATH = StrUtil::standardisePath(SAVEPATH);
 
-	if (!map_files.empty())
+	if(!FEE_FILTERS.empty())
+	{
+		auto ay = StrUtil::split(FEE_FILTERS, ",");
+		for (auto& s : ay)
+		{
+			if (s.empty())
+				continue;
+
+			SET_FILTERS.insert(s);
+		}
+	}
+	
+	if(!map_files.empty())
 	{
 		StringVector ayFiles = StrUtil::split(map_files, ",");
 		for (const std::string& fName : ayFiles)
@@ -218,6 +238,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			for (int i = 0; i < cout; i++)
 			{
 				std::string pName = ayVals[i];
+				bool isUTF8 = EncodingHelper::isUtf8((unsigned char*)pName.c_str(), pName.size());
+				if (!isUTF8)
+					pName = ChartoUTF8(ayVals[i]);
 				//保存的时候全部转成UTF8
 				MAP_NAME[ayKeys[i]] = pName;
 				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
@@ -251,7 +274,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		printf("Loading CreateFtdcTraderApi failed\r\n");
 
 	std::string flowPath = fmtutil::format("./CTPFlow/{}/{}/", BROKER_ID, INVESTOR_ID);
-	fs::create_directories(flowPath.c_str());
+	boost::filesystem::create_directories(flowPath.c_str());
 	pUserApi = g_ctpCreator(flowPath.c_str());
 	CTraderSpi* pUserSpi = new CTraderSpi();
 	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// 注册事件类

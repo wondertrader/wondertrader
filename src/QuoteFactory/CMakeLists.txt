@@ -42,6 +42,9 @@ ENDIF()
 ADD_EXECUTABLE(QuoteFactory ${SRCS})
 TARGET_LINK_LIBRARIES(QuoteFactory ${LIBS})
 
+# Ensure WtDataStorage is built before QuoteFactory tries to copy it
+ADD_DEPENDENCIES(QuoteFactory WtDataStorage)
+
 IF (MSVC)
 ELSE (GNUCC)
 	SET_TARGET_PROPERTIES(QuoteFactory PROPERTIES

@@ -17,7 +17,7 @@
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
 
-#include "../API/CTPMini1.5.8/ThostFtdcTraderApi.h"
+#include "../API/CTPMini1.7.3/ThostFtdcTraderApi.h"
 
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
@@ -83,6 +83,8 @@ public:
 
 	virtual int queryTrades() override;
 
+	virtual int querySettlement(uint32_t uDate) override;
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//CTP交易接口实现
@@ -121,6 +123,13 @@ public:
 	virtual void OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo) override;
 
 	virtual void OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField *pInstrumentStatus) override;
+
+	// CTPMini 1.7.3 新增的虚方法
+	virtual void OnRspSubscribeFlowCtrlWarning(CThostFtdcSpecificTraderField *pRspSubscribeTraderField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override {};
+
+	virtual void OnRspUnSubscribeFlowCtrlWarning(CThostFtdcSpecificTraderField *pRspSubscribeTraderField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override {};
+
+	virtual void OnRtnFlowCtrlWarning(CThostFtdcFlowCtrlWarningField *pFlowCtrlWarning) override {};
 
 protected:
 	/*

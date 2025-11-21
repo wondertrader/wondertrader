@@ -609,7 +609,10 @@ int TraderCTPOpt::orderInsert(WTSEntrust* entrust)
 
 	WTSContractInfo* ct = entrust->getContractInfo();
 	if (ct == NULL)
+	{
+		write_log(m_bscSink, LL_ERROR, "[TraderCTPOpt] orderInsert失败: 合约信息为空");
 		return -1;
+	}
 
 	CThostFtdcInputOrderField req;
 	memset(&req, 0, sizeof(req));
@@ -1373,7 +1376,8 @@ void TraderCTPOpt::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfo
 
 void TraderCTPOpt::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	int x = 0;
+	write_log(m_bscSink, LL_INFO, "[TraderCTPOpt] OnRspError回调: ErrorID={}, ErrorMsg={}, RequestID={}",
+		pRspInfo ? pRspInfo->ErrorID : -1, pRspInfo ? pRspInfo->ErrorMsg : "null", nRequestID);
 }
 
 void TraderCTPOpt::OnRtnOrder(CThostFtdcOrderField *pOrder)
@@ -1716,8 +1720,8 @@ void TraderCTPOpt::OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField *pInstr
 {
 	if (m_bscSink)
 	{
-		write_log(m_bscSink, LL_INFO, "NewStatus, exchg: {}, code: {}, status: {}, reason: {}, entertime: {}",
-			pInstrumentStatus->ExchangeID, pInstrumentStatus->InstrumentID, (int)pInstrumentStatus->InstrumentStatus, (int)pInstrumentStatus->EnterReason, pInstrumentStatus->EnterTime);
+		// write_log(m_bscSink, LL_INFO, "NewStatus, exchg: {}, code: {}, status: {}, reason: {}, entertime: {}",
+		// 	pInstrumentStatus->ExchangeID, pInstrumentStatus->InstrumentID, (int)pInstrumentStatus->InstrumentStatus, (int)pInstrumentStatus->EnterReason, pInstrumentStatus->EnterTime);
 		m_bscSink->onPushInstrumentStatus(pInstrumentStatus->ExchangeID, pInstrumentStatus->InstrumentID, (WTSTradeStatus)pInstrumentStatus->InstrumentStatus);			
 	}
 }
@@ -1824,3 +1828,29 @@ void TraderCTPOpt::triggerQuery()
 	});
 }
 */
+
+// 新增虚函数实现，CTP 3.6.0+版本
+void TraderCTPOpt::OnRspInternalTransfer(CThostFtdcInputInternalTransferField *pInputInternalTransfer, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+	// 默认空实现，保持兼容性
+}
+
+void TraderCTPOpt::OnRspQryInternalTransfer(CThostFtdcInternalTransferField *pInternalTransfer, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+	// 默认空实现，保持兼容性
+}
+
+void TraderCTPOpt::OnRspQryLimitAmount(CThostFtdcLimitAmountField *pLimitAmount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+	// 默认空实现，保持兼容性
+}
+
+void TraderCTPOpt::OnRspQryLimitPosi(CThostFtdcLimitPosiField *pLimitPosi, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+	// 默认空实现，保持兼容性
+}
+
+void TraderCTPOpt::OnRspQryFutureTradingAccount(CThostFtdcNtfQryFutureTradingAccountField *pNtfQryFutureTradingAccount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+	// 默认空实现，保持兼容性
+}

@@ -18,10 +18,13 @@ SET(SRC
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 
-SET(LIBS	
-	boost_filesystem
+SET(LIBS
+    boost_thread
+    pthread
+    boost_filesystem
+    dl
     WTSUtils
-	dl
+    stdc++fs
 )
 
 IF(WIN32)

@@ -1,2 +1,8 @@
-dist/*
+dist/**/config.yaml
+dist/**/*Flow/
+
 .xmake
+
+.vscode
+
+*.log

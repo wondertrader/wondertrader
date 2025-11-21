@@ -10,7 +10,7 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
-#include "../API/CTPOpt3.5.8/ThostFtdcMdApi.h"
+#include "../API/CTPOpt3.7.0/ThostFtdcMdApi.h"
 #include <map>
 
 NS_WTP_BEGIN

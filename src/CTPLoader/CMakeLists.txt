@@ -24,6 +24,7 @@ SET(LIBS
     boost_filesystem
     dl
     WTSUtils
+    stdc++fs
 )
 
 IF(WIN32)

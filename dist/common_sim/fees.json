@@ -1,0 +1,262 @@
+{
+    "CFFEX.IF":
+    {
+        "open":0.000023,
+        "close":0.000023,
+        "closetoday":0.000345,
+        "byvolume":false
+    },
+    "CFFEX.IC":
+    {
+        "open":0.000023,
+        "close":0.000023,
+        "closetoday":0.000345,
+        "byvolume":false
+    },
+	"CFFEX.IH":
+    {
+        "open":0.000023,
+        "close":0.000023,
+        "closetoday":0.000345,
+        "byvolume":false
+    },
+	"DCE.a":
+    {
+        "open":2.01,
+        "close":2.01,
+        "closetoday":2.01,
+        "byvolume":true
+    },
+	"DCE.cs":
+    {
+        "open":1.51,
+        "close":1.51,
+        "closetoday":1.51,
+        "byvolume":true
+    },
+	"DCE.i":
+    {
+        "open":0.0001,
+        "close":0.0001,
+        "closetoday":0.0001,
+        "byvolume":false
+    },
+	"DCE.j":
+    {
+        "open":0.0001,
+        "close":0.0001,
+        "closetoday":0.0001,
+        "byvolume":false
+    },
+	"DCE.jd":
+    {
+        "open":0.00015,
+        "close":0.00015,
+        "closetoday":0.00015,
+        "byvolume":false
+    },
+	"DCE.l":
+    {
+        "open":1.01,
+        "close":1.01,
+        "closetoday":1.01,
+        "byvolume":true
+    },
+	"DCE.m":
+    {
+        "open":1.51,
+        "close":1.51,
+        "closetoday":1.51,
+        "byvolume":true
+    },
+	"DCE.p":
+    {
+        "open":2.5,
+        "close":2.5,
+        "closetoday":0.0,
+        "byvolume":true
+    },
+	"DCE.pp":
+    {
+        "open":1.01,
+        "close":1.01,
+        "closetoday":1.01,
+        "byvolume":true
+    },
+    "DCE.y": {
+        "open": 2.5,
+        "close": 2.5,
+        "closetoday": 2.51,
+        "byvolume":true
+    },
+    "DCE.c": {
+        "open": 1.21,
+        "close": 1.21,
+        "closetoday": 1.21,
+        "byvolume":true
+    },
+    "DCE.eg": {
+        "open": 3.01,
+        "close": 3.01,
+        "closetoday": 3.01,
+        "byvolume":true
+    },
+    "DCE.v": {
+        "open": 1.01,
+        "close": 1.01,
+        "closetoday": 1.01,
+        "byvolume":true
+    },
+    "DCE.eb": {
+        "open": 3.01,
+        "close": 3.01,
+        "closetoday": 3.01,
+        "byvolume":true
+    },
+    "DCE.pg": {
+        "open": 6.01,
+        "close": 6.01,
+        "closetoday": 6.01,
+        "byvolume":true
+    },
+    "DCE.pg": {
+        "open": 0.0002,
+        "close": 0.0002,
+        "closetoday": 0.0004,
+        "byvolume":false
+    },
+	"SHFE.ag":
+    {
+        "open":0.00005,
+        "close":0.00005,
+        "closetoday":0.00005,
+        "byvolume":false
+    },
+    "SHFE.al": {
+        "open": 3.0,
+        "close": 3.0,
+        "closetoday": 3.0,
+        "byvolume":true
+    },
+	"SHFE.au":
+    {
+        "open":10.0,
+        "close":10.0,
+        "closetoday":0.0,
+        "byvolume":true
+    },
+	"SHFE.bu":
+    {
+        "open":0.0001,
+        "close":0.0001,
+        "closetoday":0.0001,
+        "byvolume":false
+    },
+	"SHFE.cu":
+    {
+        "open":0.0001,
+        "close":0.0001,
+        "closetoday":0.0001,
+        "byvolume":false
+    },
+	"SHFE.hc":
+    {
+        "open":0.00005,
+        "close":0.00005,
+        "closetoday":0.0,
+        "byvolume":false
+    },
+	"SHFE.ni":
+    {
+        "open":3.01,
+        "close":3.01,
+        "closetoday":3.01,
+        "byvolume":true
+    },
+	"SHFE.rb":
+    {
+        "open":0.0001,
+        "close":0.0001,
+        "closetoday":0.0001,
+        "byvolume":false
+    },
+	"SHFE.ru":
+    {
+        "open":0.000045,
+        "close":0.000045,
+        "closetoday":0.000045,
+        "byvolume":false
+    },
+    "SHFE.sp": {
+        "open": 0.00005,
+        "close": 0.00005,
+        "closetoday": 0.0,
+        "byvolume":false
+    },
+	"SHFE.pb": {
+        "open": 0.00004,
+        "close": 0.00004,
+        "closetoday": 0.0,
+        "byvolume":false
+    },
+	"CZCE.AP":
+    {
+        "open":5.0,
+        "close":5.0,
+        "closetoday":0.0,
+        "byvolume":true
+    },
+	"CZCE.CF":
+    {
+        "open":4.31,
+        "close":4.31,
+        "closetoday":0.0,
+        "byvolume":true
+    },
+	"CZCE.MA":
+    {
+        "open":3.01,
+        "close":3.01,
+        "closetoday":0,
+        "byvolume":true
+    },
+	"CZCE.TA":
+    {
+        "open":3.01,
+        "close":3.01,
+        "closetoday":0,
+        "byvolume":true
+    },
+	"CZCE.SR":
+    {
+        "open":3.01,
+        "close":3.01,
+        "closetoday":0.0,
+        "byvolume":true
+    },
+	"CZCE.ZC":
+    {
+        "open":4.01,
+        "close":4.01,
+        "closetoday":0.0,
+        "byvolume":true
+    },
+    "CZCE.OI": {
+        "open": 2.01,
+        "close": 2.01,
+        "closetoday": 0.0,
+        "byvolume":true
+    },
+    "CZCE.FG": {
+        "open": 6.01,
+        "close": 6.01,
+        "closetoday": 6.01,
+        "byvolume":true
+    },
+    "CZCE.RM": {
+        "open": 1.51,
+        "close": 1.51,
+        "closetoday": 1.51,
+        "byvolume":true
+    }
+}

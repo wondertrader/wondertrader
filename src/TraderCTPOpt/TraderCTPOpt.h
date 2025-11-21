@@ -17,7 +17,7 @@
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
 
-#include "../API/CTPOpt3.5.8/ThostFtdcTraderApi.h"
+#include "../API/CTPOpt3.7.0/ThostFtdcTraderApi.h"
 
 #include "../Share/IniHelper.hpp"
 #include "../Share/StdUtils.hpp"
@@ -157,6 +157,21 @@ public:
 	virtual void OnErrRtnExecOrderInsert(CThostFtdcInputExecOrderField *pInputExecOrder, CThostFtdcRspInfoField *pRspInfo) override;
 
 	virtual void OnRspQryExecOrder(CThostFtdcExecOrderField *pExecOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
+	/// 新增的虚函数，CTP 3.6.0+版本
+	virtual void OnRspInternalTransfer(CThostFtdcInputInternalTransferField *pInputInternalTransfer, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
+	/// 新增的虚函数，CTP 3.6.0+版本
+	virtual void OnRspQryInternalTransfer(CThostFtdcInternalTransferField *pInternalTransfer, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
+	/// 新增的虚函数，CTP 3.6.0+版本
+	virtual void OnRspQryLimitAmount(CThostFtdcLimitAmountField *pLimitAmount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
+	/// 新增的虚函数，CTP 3.6.0+版本
+	virtual void OnRspQryLimitPosi(CThostFtdcLimitPosiField *pLimitPosi, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
+	/// 新增的虚函数，CTP 3.6.2+版本
+	virtual void OnRspQryFutureTradingAccount(CThostFtdcNtfQryFutureTradingAccountField *pNtfQryFutureTradingAccount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
 protected:
 	/*

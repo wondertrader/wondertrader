@@ -31,7 +31,7 @@ NS_WTP_END
 
 USING_NS_WTP;
 
-#define MAX_LOG_BUF_SIZE 2048
+#define MAX_LOG_BUF_SIZE 8192
 
 
 class WTSLogger

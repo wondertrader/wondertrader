@@ -1,0 +1,47 @@
+#1. 确定CMake的最低版本需求
+cmake_minimum_required(VERSION 3.0.0)
+
+#2. 确定工程名
+project(CTPMiniLoader LANGUAGES CXX)
+SET(CMAKE_CXX_STANDARD 17)
+
+SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/build_${PLATFORM}/${CMAKE_BUILD_TYPE}/bin/Loader)
+
+#7. 添加源码
+SET(SRC
+    ${PROJECT_SOURCE_DIR}/CTPMiniLoader.cpp
+    ${PROJECT_SOURCE_DIR}/TraderSpi.cpp
+    ${PROJECT_SOURCE_DIR}/TraderSpi.h
+)
+
+INCLUDE_DIRECTORIES(${INCS})
+LINK_DIRECTORIES(${LNKS})
+
+SET(LIBS
+    boost_thread
+    pthread
+    boost_filesystem
+    dl
+    WTSUtils
+    stdc++fs
+)
+
+IF(WIN32)
+LIST(APPEND LIBS iconv)
+ENDIF()
+
+#9. 生成可执行文件
+ADD_LIBRARY(CTPMiniLoader SHARED ${SRC})
+IF (MSVC)
+ELSE (GNUCC)
+    TARGET_LINK_LIBRARIES(CTPMiniLoader ${LIBS})
+ENDIF ()
+
+IF (MSVC)
+ELSE (GNUCC)
+    SET_TARGET_PROPERTIES(CTPMiniLoader PROPERTIES
+        CXX_VISIBILITY_PRESET hidden
+        C_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN 1
+        LINK_FLAGS_RELEASE -s)
+ENDIF ()

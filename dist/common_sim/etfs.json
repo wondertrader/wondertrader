@@ -1,0 +1,62 @@
+{
+    "SSE": {
+        "510050": {
+            "name": "上证50ETF",
+            "code": "510050",
+            "exchg": "SSE",
+            "product": "ETF",
+            "maxlimitqty": 50,
+            "maxmarketqty": 10
+        },
+        "510300": {
+            "name": "沪深300ETF",
+            "code": "510300",
+            "exchg": "SSE",
+            "product": "ETF",
+            "maxlimitqty": 50,
+            "maxmarketqty": 10
+        },
+        "510500": {
+            "name": "中证500ETF",
+            "code": "510500",
+            "exchg": "SSE",
+            "product": "ETF",
+            "maxlimitqty": 50,
+            "maxmarketqty": 10
+        }
+    },
+    "SZSE": {
+        "159901": {
+            "name": "深证1000ETF",
+            "code": "159901",
+            "exchg": "SZSE",
+            "product": "ETF",
+            "maxlimitqty": 50,
+            "maxmarketqty": 10
+        },
+        "159915": {
+            "name": "创业板ETF",
+            "code": "159915",
+            "exchg": "SZSE",
+            "product": "ETF",
+            "maxlimitqty": 50,
+            "maxmarketqty": 10
+        },
+        "159919": {
+            "name": "沪深300ETF",
+            "code": "159919",
+            "exchg": "SZSE",
+            "product": "ETF",
+            "maxlimitqty": 50,
+            "maxmarketqty": 10
+        },
+        "159922": {
+            "name": "中证500ETF",
+            "code": "159922",
+            "exchg": "SZSE",
+            "product": "ETF",
+            "maxlimitqty": 50,
+            "maxmarketqty": 10
+        }
+    }
+}

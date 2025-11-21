@@ -142,7 +142,13 @@ public:
 	{
 		uint32_t uDate = TimeUtils::getNextDate(TimeUtils::getCurDate(), -1);
 		WTSLogger::info(u8"正在查询日期为{}的结算信息...", uDate);
-		m_pTraderApi->querySettlement(uDate);
+
+		int result = m_pTraderApi->querySettlement(uDate);
+		if (result != 0)
+		{
+			WTSLogger::error(u8"查询结算单失败，错误代码: {}", result);
+			return false;
+		}
 
 		return true;
 	}
@@ -238,7 +244,11 @@ public:
 
 		entrust->setContractInfo(g_bdMgr.getContract(code, exchg));
 		entrust->setUserTag("test_user_tag");
-		m_pTraderApi->orderInsert(entrust);
+
+		WTSLogger::info(u8"[TestTrader] 准备调用orderInsert, 合约: {}.{}", exchg, code);
+		int retCode = m_pTraderApi->orderInsert(entrust);
+		WTSLogger::info(u8"[TestTrader] orderInsert返回: {}", retCode);
+
 		entrust->release();
 
 		return true;
@@ -391,11 +401,21 @@ public:
 	{
 		if(err)
 		{
-			WTSLogger::info(u8"[{}] 下单失败: {}", m_strUniUser, err->getMessage());
+			WTSLogger::info(u8"[{}] 下单失败: {}, ErrorID: {}", m_strUniUser, err->getMessage(), err->getErrorCode());
 			StdUniqueLock lock(g_mtxOpt);
 			g_condOpt.notify_all();
 		}
-		
+		else
+		{
+			WTSLogger::info(u8"[{}] 下单成功: 委托ID={}, 合约={}.{}",
+				m_strUniUser,
+				entrust ? entrust->getEntrustID() : "null",
+				entrust ? entrust->getExchg() : "null",
+				entrust ? entrust->getCode() : "null");
+			StdUniqueLock lock(g_mtxOpt);
+			g_condOpt.notify_all();
+		}
+
 	}
 
 	virtual void onRspAccount(WTSArray* ayAccounts)
@@ -478,7 +498,22 @@ public:
 	virtual void onRspSettlementInfo(uint32_t uDate, const char* content)
 	{
 		WTSLogger::info(u8"[{}]{} 收到结算信息", m_strUniUser, uDate);
-		WTSLogger::info(content);
+
+		// 将GBK编码转换为UTF-8编码以解决中文乱码问题
+		ChartoUTF8 utf8_converter(content);
+		const char* utf8_content = utf8_converter;
+
+		// 检查内容长度并防止缓冲区溢出
+		size_t content_len = strlen(utf8_content);
+		if (content_len >= MAX_LOG_BUF_SIZE - 100) {
+			WTSLogger::info(u8"[WARN] 结算单内容过长: {} 字节, 超过缓冲区限制 {} 字节", content_len, MAX_LOG_BUF_SIZE);
+			WTSLogger::info(u8"[INFO] 结算单前500字符预览: {:.500}", utf8_content);
+			WTSLogger::info(u8"[INFO] 结算单后500字符预览: {:.500}", utf8_content + content_len - 500);
+			WTSLogger::info(u8"[INFO] 完整结算单已省略，如需查看请检查交易系统");
+		} else {
+			WTSLogger::info(utf8_content);
+		}
+
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
 	}

@@ -1,8 +1,8 @@
 ﻿#include <string>
 #include <map>
 #include <set>
-//v6.3.15
-#include "../API/CTP6.3.15/ThostFtdcTraderApi.h"
+
+#include "../API/CTP6.7.11/ThostFtdcTraderApi.h"
 #include "TraderSpi.h"
 
 #include "../Share/IniHelper.hpp"
@@ -48,7 +48,7 @@ SymbolMap	MAP_SESSION;
 std::string FEE_FILTERS;
 std::set<std::string>	SET_FILTERS;
 
-typedef CThostFtdcTraderApi* (*CTPCreator)(const char *);
+typedef CThostFtdcTraderApi* (*CTPCreator)(const char *, bool);
 CTPCreator		g_ctpCreator = NULL;
 
 // 请求编号
@@ -255,19 +255,19 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		printf("Loading module %s failed\r\n", MODULE_NAME.c_str());
 #ifdef _WIN32
 #	ifdef _WIN64
-	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD@Z");
+	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD_N@Z");
 #	else
-	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPAV1@PBD@Z");
+	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPAV1@PBD_N@Z");
 #	endif
 #else
-	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc");
+	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKcb");
 #endif
 	if (g_ctpCreator == NULL)
 		printf("Loading CreateFtdcTraderApi failed\r\n");
 
 	std::string flowPath = fmtutil::format("./CTPFlow/{}/{}/", BROKER_ID, INVESTOR_ID);
 	boost::filesystem::create_directories(flowPath.c_str());
-	pUserApi = g_ctpCreator(flowPath.c_str());
+	pUserApi = g_ctpCreator(flowPath.c_str(), true);
 	CTraderSpi* pUserSpi = new CTraderSpi();
 	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// 注册事件类
 	pUserApi->SubscribePublicTopic(THOST_TERT_QUICK);					// 注册公有流

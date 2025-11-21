@@ -19,6 +19,9 @@ ELSE(GNUCC)
 		dl)
 	if(WIN32)
 		LIST(APPEND LIBS iconv)
+	else()
+		# Add stdc++fs for GCC < 9.0 to support std::filesystem
+		LIST(APPEND LIBS stdc++fs)
 	ENDIF()
 ENDIF()
 

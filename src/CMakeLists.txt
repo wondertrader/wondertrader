@@ -60,6 +60,7 @@ ADD_SUBDIRECTORY(WTSTools)
 #contract Loade through ctp channel
 ADD_SUBDIRECTORY(CTPLoader)
 ADD_SUBDIRECTORY(CTPOptLoader)
+ADD_SUBDIRECTORY(CTPMiniLoader)
 ADD_SUBDIRECTORY(LoaderRunner)
 
 #parser for quote date from ctp channel

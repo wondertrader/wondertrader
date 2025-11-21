@@ -4,6 +4,8 @@
 #include <fstream>
 #include <exception>
 #include <filesystem>
+#include <thread>
+#include <chrono>
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/fmtlib.h"
@@ -187,6 +189,7 @@ void CTraderSpi::ReqQryInstrument()
 
 void CTraderSpi::ReqQryCommission(const Contract& cInfo)
 {
+	std::cerr << "--->>> ReqQryCommission called for instrument: " << cInfo.m_strCode << std::endl;
 	AppendQuery([this, &cInfo]() {
 		//auto it = _fees.find(cInfo.m_strProduct);
 		//if (it != _fees.end())
@@ -196,7 +199,6 @@ void CTraderSpi::ReqQryCommission(const Contract& cInfo)
 		memset(&req, 0, sizeof(req));
 		strcpy(req.BrokerID, BROKER_ID.c_str());
 		strcpy(req.InvestorID, INVESTOR_ID.c_str());
-		if(cInfo.m_strAltCode.empty())
 		strcpy(req.InstrumentID, cInfo.m_strAltCode.empty()? cInfo.m_strCode.c_str() :cInfo.m_strAltCode.c_str());
 		strcpy(req.ExchangeID, cInfo.m_strExchg.c_str());
 		int iResult = pUserApi->ReqQryInstrumentCommissionRate(&req, ++iRequestID);
@@ -207,6 +209,7 @@ void CTraderSpi::ReqQryCommission(const Contract& cInfo)
 
 void CTraderSpi::ReqQryMargin(const Contract& cInfo)
 {
+	std::cerr << "--->>> ReqQryMargin called for instrument: " << cInfo.m_strCode << std::endl;
 	AppendQuery([this, &cInfo]() {
 		//auto it = _margins.find(cInfo.m_strProduct);
 		//if (it != _margins.end())
@@ -529,7 +532,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 			for (auto& v : _contracts)
 			{
 				const Contract& cInfo = v.second;
-				if(!SET_FILTERS.empty() && SET_FILTERS.find(cInfo.m_strCode) == SET_FILTERS.end() 
+				if(!SET_FILTERS.empty() && SET_FILTERS.find(cInfo.m_strCode) == SET_FILTERS.end()
 					&& SET_FILTERS.find(cInfo.m_strProduct) == SET_FILTERS.end() && SET_FILTERS.find(cInfo.m_strAltCode) == SET_FILTERS.end())
 					continue;
 
@@ -541,7 +544,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 		{
 			DumpToJson();
 			exit(0);
-		}		
+		}
 	}
 }
 
@@ -549,19 +552,27 @@ void CTraderSpi::OnRspQryInstrumentCommissionRate(CThostFtdcInstrumentCommission
 {
 	if(!IsErrorRspInfo(pRspInfo))
 	{
-		FeeInfo& fInfo = _fees[pInstrumentCommissionRate->InstrumentID];
-		fInfo._byvol = decimal::eq(pInstrumentCommissionRate->OpenRatioByMoney, 0);
-		if(fInfo._byvol)
+		if(pInstrumentCommissionRate != nullptr)
 		{
-			fInfo._open = pInstrumentCommissionRate->OpenRatioByVolume;
-			fInfo._close = pInstrumentCommissionRate->CloseRatioByVolume;
-			fInfo._closet = pInstrumentCommissionRate->CloseTodayRatioByVolume;
+			std::cerr << "--->>> Received commission data for " << pInstrumentCommissionRate->InstrumentID << std::endl;
+			FeeInfo& fInfo = _fees[pInstrumentCommissionRate->InstrumentID];
+			fInfo._byvol = decimal::eq(pInstrumentCommissionRate->OpenRatioByMoney, 0);
+			if(fInfo._byvol)
+			{
+				fInfo._open = pInstrumentCommissionRate->OpenRatioByVolume;
+				fInfo._close = pInstrumentCommissionRate->CloseRatioByVolume;
+				fInfo._closet = pInstrumentCommissionRate->CloseTodayRatioByVolume;
+			}
+			else
+			{
+				fInfo._open = pInstrumentCommissionRate->OpenRatioByMoney;
+				fInfo._close = pInstrumentCommissionRate->CloseRatioByMoney;
+				fInfo._closet = pInstrumentCommissionRate->CloseTodayRatioByMoney;
+			}
 		}
 		else
 		{
-			fInfo._open = pInstrumentCommissionRate->OpenRatioByMoney;
-			fInfo._close = pInstrumentCommissionRate->CloseRatioByMoney;
-			fInfo._closet = pInstrumentCommissionRate->CloseTodayRatioByMoney;
+			std::cerr << "--->>> Warning: pInstrumentCommissionRate is nullptr" << std::endl;
 		}
 	}
 
@@ -577,9 +588,17 @@ void CTraderSpi::OnRspQryInstrumentMarginRate(CThostFtdcInstrumentMarginRateFiel
 {
 	if (!IsErrorRspInfo(pRspInfo))
 	{
-		MarginInfo& mInfo = _margins[pInstrumentMarginRate->InstrumentID];
-		mInfo._long = pInstrumentMarginRate->LongMarginRatioByMoney;
-		mInfo._short = pInstrumentMarginRate->ShortMarginRatioByMoney;
+		if(pInstrumentMarginRate != nullptr)
+		{
+			std::cerr << "--->>> Received margin data for " << pInstrumentMarginRate->InstrumentID << std::endl;
+			MarginInfo& mInfo = _margins[pInstrumentMarginRate->InstrumentID];
+			mInfo._long = pInstrumentMarginRate->LongMarginRatioByMoney;
+			mInfo._short = pInstrumentMarginRate->ShortMarginRatioByMoney;
+		}
+		else
+		{
+			std::cerr << "--->>> Warning: pInstrumentMarginRate is nullptr" << std::endl;
+		}
 	}
 
 	if (_queries.empty() && QRYFEES)
@@ -851,7 +870,16 @@ void CTraderSpi::OnFrontDisconnected(int nReason)
 
 void CTraderSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	std::cerr << "--->>> " << "OnRspError" << std::endl;
+	std::cerr << "--->>> OnRspError: RequestID=" << nRequestID << ", bIsLast=" << bIsLast;
+	if(pRspInfo != nullptr)
+	{
+		std::cerr << ", ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << encode_text(pRspInfo->ErrorMsg);
+	}
+	else
+	{
+		std::cerr << ", pRspInfo=nullptr";
+	}
+	std::cerr << std::endl;
 	IsErrorRspInfo(pRspInfo);
 }
 
