@@ -436,6 +436,15 @@ public:
 	uint32_t get_trading_date() const{ return _cur_tdate; }
 
 	double calc_fee(const char* stdCode, double price, double qty, uint32_t offset);
+
+	/* Apply an optional per-fill minimum to the native fee calculation. */
+	static inline double apply_fee_minimum(double base_fee, double qty,
+		double rate, double minimum_fee)
+	{
+		if (qty > 0.0 && rate > 0.0 && minimum_fee > 0.0 && base_fee < minimum_fee)
+			return minimum_fee;
+		return base_fee;
+	}
 	WTSSessionInfo*		get_session_info(const char* sid, bool isCode = false);
 	WTSCommodityInfo*	get_commodity_info(const char* stdCode);
 	double get_cur_price(const char* stdCode);
@@ -527,6 +536,7 @@ private:
 		double	_open;
 		double	_close;
 		double	_close_today;
+		double	_min_fee;
 		bool	_by_volume;
 
 		_FeeItem()

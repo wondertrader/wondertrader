@@ -1,0 +1,29 @@
+{
+    "SSE.STK": {
+        "open": 0.001,
+        "close": 0.0012,
+        "closetoday": 0.0,
+        "minfee": 5.0,
+        "byvolume": false
+    },
+    "SZSE.STK": {
+        "open": -0.001,
+        "close": -0.0012,
+        "closetoday": 0.0,
+        "minfee": 5.0,
+        "byvolume": false
+    },
+    "SSE.IDX": {
+        "open": 0.001,
+        "close": 0.0012,
+        "closetoday": 0.0,
+        "byvolume": false
+    },
+    "DCE.a": {
+        "open": 1.0,
+        "close": 7.0,
+        "closetoday": 0.0,
+        "minfee": 5.0,
+        "byvolume": true
+    }
+}
