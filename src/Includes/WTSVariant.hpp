@@ -14,6 +14,7 @@
 #include "WTSCollection.hpp"
 
 #include <string>
+#include <cstdio>
 #include <string.h>
 #include <vector>
 #include <map>
@@ -104,9 +105,23 @@ private:
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Real;
-		char s[32] = { 0 };
-		sprintf(s, "%.10f", _real);
-		ret->_value._string = new std::string(s);
+		int length = std::snprintf(nullptr, 0, "%.10f", _real);
+		if (length < 0)
+		{
+			ret->_value._string = new std::string();
+			return ret;
+		}
+
+		std::string value(static_cast<size_t>(length) + 1, '\0');
+		int written = std::snprintf(value.data(), value.size(), "%.10f", _real);
+		if (written < 0 || written > length)
+		{
+			ret->_value._string = new std::string();
+			return ret;
+		}
+
+		value.resize(static_cast<size_t>(written));
+		ret->_value._string = new std::string(value);
 		return ret;
 	}
 
