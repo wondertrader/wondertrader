@@ -491,15 +491,24 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 	{
 		const PosInfo& pInfo = v.second;
 		const char* code = v.first.c_str();
-		if(_sig_map.find(code) == _sig_map.end() && !decimal::eq(pInfo._volume, 0.0))
+		//持仓为0的不处理
+		if (decimal::eq(pInfo._volume, 0.0))
+			continue;
+
+		//autoexit 判断依据应为"策略申明的目标仓位", 而不是"本轮是否有信号"
+		//因为 stra_set_position 在目标=当前持仓时会幂等跳过(不产生信号),
+		//若按信号判断, 持仓=目标时会被误清仓, 导致每轮买卖循环
+		auto it = _target_map.find(code);
+		if (it == _target_map.end() || decimal::eq(it->second, 0.0))
 		{
-			//新的信号中没有该持仓,则要清空
+			//策略未申明目标, 或目标为0, 则清仓
 			to_clear.insert(code);
 		}
 	}
 
 	for(const std::string& code : to_clear)
 	{
+		_target_map[code] = 0.0;
 		append_signal(code.c_str(), 0, "autoexit");
 	}
 
@@ -602,6 +611,10 @@ void SelMocker::stra_set_position(const char* stdCode, double qty, const char* u
 		log_error("Cannot short on {}", stdCode);
 		return;
 	}
+
+	//记录目标仓位(autoexit 判断依据), 幂等跳过时也要记录
+	//否则当"目标=当前持仓"直接返回时, 后续调度会因本轮无信号被 autoexit 误清仓
+	_target_map[stdCode] = qty;
 
 	double total = stra_get_position(stdCode, false);
 	//如果目标仓位和当前仓位是一致的，直接退出
