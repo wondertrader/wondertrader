@@ -1173,6 +1173,13 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 						_cur_date = _cur_tdate;
 					}
 				}
+				else
+				{
+					//白盘会话(时间偏移为0), 夜盘算作当天, 这里必须整体推进交易日
+					//否则 _cur_date 会停留在旧交易日, 导致 nextTime 永不前进, 回测死循环
+					_cur_date = nextTDate;
+					_cur_tdate = nextTDate;
+				}
 
 				_cur_time = sInfo->minuteToTime(mins);
 
