@@ -16,7 +16,7 @@ public:
 
     explicit FxMacroDataUrlBuilder(
         const std::string& apiKey,
-        const std::string& baseUrl = "https://fxmacrodata.com/api/v1/")
+        const std::string& baseUrl = "https://api.fxmacrodata.com/v1/")
         : _apiKey(apiKey), _baseUrl(normalizeBaseUrl(baseUrl))
     {
     }
