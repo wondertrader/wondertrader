@@ -39,6 +39,21 @@ WtSelEngine::WtSelEngine()
 
 WtSelEngine::~WtSelEngine()
 {
+	release();
+}
+
+void WtSelEngine::release()
+{
+	_terminated = true;
+
+	if (_tm_ticker)
+	{
+		_tm_ticker->stop();
+		delete _tm_ticker;
+		_tm_ticker = NULL;
+	}
+
+	WtEngine::release();
 }
 
 void WtSelEngine::on_session_end()
