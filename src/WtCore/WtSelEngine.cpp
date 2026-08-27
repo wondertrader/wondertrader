@@ -19,16 +19,7 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
-#include <atomic>
-
 USING_NS_WTP;
-
-inline uint32_t makeTaskId()
-{
-	static std::atomic<uint32_t> _auto_task_id{ 1 };
-	return _auto_task_id.fetch_add(1);
-}
-
 
 WtSelEngine::WtSelEngine()
 	: _terminated(false)
@@ -405,7 +396,10 @@ void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, Ta
 	tInfo->_time = time;
 	tInfo->_period = period;
 	tInfo->_strict_time = bStrict;
-	tInfo->_id = makeTaskId();
+
+	//任务记录所属上下文的真实ID: 分发时经getContext(_id)取回上下文,
+	//_tasks/_ctx_map均以ctx->id()为键, 不能使用独立的自增序号
+	tInfo->_id = ctx->id();
 
 	_tasks[ctx->id()] = tInfo;
 
