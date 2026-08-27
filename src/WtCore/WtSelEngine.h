@@ -53,6 +53,8 @@ public:
 
 	virtual void run() override;
 
+	virtual void release() override;
+
 	virtual void on_tick(const char* stdCode, WTSTickData* curTick) override;
 
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;

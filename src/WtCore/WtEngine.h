@@ -157,6 +157,9 @@ public:
 
 	virtual void run() = 0;
 
+	//停止引擎内部线程并释放资源, 子类先停自有ticker再调用基类版本
+	virtual void release();
+
 	virtual void on_tick(const char* stdCode, WTSTickData* curTick);
 
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;

@@ -1129,6 +1129,17 @@ void WtEngine::task_loop()
 	}
 }
 
+void WtEngine::release()
+{
+	_terminated = true;
+	_cond_task.notify_all();
+	if (_thrd_task)
+	{
+		_thrd_task->join();
+		_thrd_task.reset();
+	}
+}
+
 bool WtEngine::init_riskmon(WTSVariant* cfg)
 {
 	if (cfg == NULL)

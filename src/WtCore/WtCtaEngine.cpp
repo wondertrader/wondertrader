@@ -40,14 +40,22 @@ WtCtaEngine::WtCtaEngine()
 
 WtCtaEngine::~WtCtaEngine()
 {
+	release();
+
+	if (_cfg)
+		_cfg->release();
+}
+
+void WtCtaEngine::release()
+{
 	if (_tm_ticker)
 	{
+		_tm_ticker->stop();
 		delete _tm_ticker;
 		_tm_ticker = NULL;
 	}
 
-	if (_cfg)
-		_cfg->release();
+	WtEngine::release();
 }
 
 void WtCtaEngine::run()
