@@ -143,9 +143,7 @@ void SelStraBaseCtx::log_signal(const char* stdCode, double target, double price
 {
 	if (_sig_logs)
 	{
-		std::stringstream ss;
-		ss << stdCode << "," << target << "," << price << "," << gentime << "," << usertag << "\n";
-		_sig_logs->write_file(ss.str());
+		_sig_logs->write_file(fmt::format("{},{},{},{},{}\n", stdCode, target, price, gentime, usertag));
 	}
 }
 
@@ -153,9 +151,8 @@ void SelStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, ui
 {
 	if (_trade_logs)
 	{
-		std::stringstream ss;
-		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
-		_trade_logs->write_file(ss.str());
+		_trade_logs->write_file(fmt::format("{},{},{},{},{},{},{},{:.2f}\n", stdCode, curTime,
+			(isLong ? "LONG" : "SHORT"), (isOpen ? "OPEN" : "CLOSE"), price, qty, userTag, fee));
 	}
 }
 
@@ -164,11 +161,9 @@ void SelStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTi
 {
 	if (_close_logs)
 	{
-		std::stringstream ss;
-		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
-			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
-		_trade_logs->write_file(ss.str());
+		_trade_logs->write_file(fmt::format("{},{},{},{},{},{},{},{:.2f},{:.2f},{},{}\n", stdCode,
+			(isLong ? "LONG" : "SHORT"), openTime, openpx, closeTime, closepx, qty, profit,
+			totalprofit, enterTag, exitTag));
 	}
 }
 

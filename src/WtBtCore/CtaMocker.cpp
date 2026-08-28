@@ -395,21 +395,21 @@ void CtaMocker::dump_outputs()
 
 void CtaMocker::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
 {
-	_sig_logs << stdCode << "," << target << "," << price << "," << gentime << "," << usertag << "\n";
+	_sig_logs << fmt::format("{},{},{},{},{}\n", stdCode, target, price, gentime, usertag);
 }
 
 void CtaMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee, uint32_t barNo)
 {
-	_trade_logs << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") 
-		<< "," << price << "," << qty << "," << userTag << "," << fee << "," << barNo << "\n";
+	_trade_logs << fmt::format("{},{},{},{},{},{},{},{:.2f},{}\n", stdCode, curTime,
+		(isLong ? "LONG" : "SHORT"), (isOpen ? "OPEN" : "CLOSE"), price, qty, userTag, fee, barNo);
 }
 
-void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss, 
+void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss,
 	double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */, uint32_t openBarNo /* = 0 */, uint32_t closeBarNo /* = 0 */)
 {
-	_close_logs << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," << maxprofit << "," << maxloss << ","
-		<< totalprofit << "," << enterTag << "," << exitTag << "," << openBarNo << "," << closeBarNo << "\n";
+	_close_logs << fmt::format("{},{},{},{},{},{},{},{:.2f},{:.2f},{:.2f},{:.2f},{},{},{},{}\n", stdCode,
+		(isLong ? "LONG" : "SHORT"), openTime, openpx, closeTime, closepx, qty, profit, maxprofit, maxloss,
+		totalprofit, enterTag, exitTag, openBarNo, closeBarNo);
 }
 
 bool CtaMocker::init_cta_factory(WTSVariant* cfg)

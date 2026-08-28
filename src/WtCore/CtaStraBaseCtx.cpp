@@ -191,9 +191,7 @@ void CtaStraBaseCtx::log_signal(const char* stdCode, double target, double price
 {
 	if (_sig_logs)
 	{
-		std::stringstream ss;
-		ss << stdCode << "," << target << "," << price << "," << gentime << "," << usertag << "\n";
-		_sig_logs->write_file(ss.str());
+		_sig_logs->write_file(fmt::format("{},{},{},{},{}\n", stdCode, target, price, gentime, usertag));
 	}
 }
 
@@ -201,24 +199,21 @@ void CtaStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, ui
 {
 	if (_trade_logs)
 	{
-		std::stringstream ss;
-		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "," << barNo << "\n";
-		_trade_logs->write_file(ss.str());
+		_trade_logs->write_file(fmt::format("{},{},{},{},{},{},{},{:.2f},{}\n", stdCode, curTime,
+			(isLong ? "LONG" : "SHORT"), (isOpen ? "OPEN" : "CLOSE"), price, qty, userTag, fee, barNo));
 	}
 
 	_engine->notify_trade(this->name(),stdCode, isLong, isOpen, curTime, price, userTag);
 }
 
-void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double totalprofit /* = 0 */, 
+void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double totalprofit /* = 0 */,
 	const char* enterTag /* = "" */, const char* exitTag /* = "" */, uint32_t openBarNo /* = 0 */, uint32_t closeBarNo /* = 0 */)
 {
 	if (_close_logs)
 	{
-		std::stringstream ss;
-		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," 
-			<< totalprofit << "," << enterTag << "," << exitTag << "," << openBarNo << "," << closeBarNo << "\n";
-		_close_logs->write_file(ss.str());
+		_close_logs->write_file(fmt::format("{},{},{},{},{},{},{},{:.2f},{:.2f},{},{},{},{}\n", stdCode,
+			(isLong ? "LONG" : "SHORT"), openTime, openpx, closeTime, closepx, qty, profit,
+			totalprofit, enterTag, exitTag, openBarNo, closeBarNo));
 	}
 }
 void CtaStraBaseCtx::save_userdata()
@@ -1987,9 +1982,7 @@ void CtaStraBaseCtx::add_chart_mark(double price, const char* icon, const char* 
 
 	if (_mark_logs)
 	{
-		std::stringstream ss;
-		ss << curTime << "," << price << "," << icon << "," << tag << std::endl;;
-		_mark_logs->write_file(ss.str());
+		_mark_logs->write_file(fmt::format("{},{},{},{}\n", curTime, price, icon, tag));
 	}
 
 	_engine->notify_chart_marker(curTime, _name.c_str(), price, icon, tag);
@@ -2060,9 +2053,7 @@ bool CtaStraBaseCtx::set_index_value(const char* idxName, const char* lineName, 
 
 	if (_idx_logs)
 	{
-		std::stringstream ss;
-		ss << curTime << "," << idxName << "," << lineName << "," << val << std::endl;;
-		_idx_logs->write_file(ss.str());
+		_idx_logs->write_file(fmt::format("{},{},{},{}\n", curTime, idxName, lineName, val));
 	}
 
 	_engine->notify_chart_index(curTime, _name.c_str(), idxName, lineName, val);
