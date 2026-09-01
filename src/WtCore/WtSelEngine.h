@@ -21,7 +21,7 @@ typedef enum tagTaskPeriodType
 
 typedef struct _TaskInfo
 {
-	uint32_t	_id;
+	uint32_t	_id;			//所属上下文ID(ctx->id()), 分发时据此取回上下文
 	char		_name[16];		//任务名
 	char		_trdtpl[16];	//交易日模板
 	char		_session[16];	//交易时间模板
