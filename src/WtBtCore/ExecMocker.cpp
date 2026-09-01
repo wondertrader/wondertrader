@@ -300,19 +300,9 @@ void ExecMocker::handle_order(uint32_t localid, const char* stdCode, bool isBuy,
 		if (_sig_px == DBL_MAX)
 			_sig_px = _last_tick->preclose();
 
-		_trade_logs << localid << ","
-			<< _sig_time << ","
-			<< ordTime << ","
-			<< (isBuy ? "B" : "S") << ","
-			<< _sig_px << ","
-			<< 0 << ","
-			<< price << ","
-			<< curTime << ","
-			<< price << ","
-			<< 0 << ","
-			<< curUnixTime - sigUnixTime << ","
-			<< curUnixTime - ordUnixTime << ","
-			<< "true" << std::endl;
+		_trade_logs << fmt::format("{},{},{},{},{},{},{},{},{},{},{},{},true\n", localid, _sig_time,
+			ordTime, (isBuy ? "B" : "S"), _sig_px, 0, price, curTime, price, 0,
+			curUnixTime - sigUnixTime, curUnixTime - ordUnixTime);
 
 		_undone -= leftover * (isBuy ? 1 : -1);
 		WTSLogger::info("{}, undone orders updated: {}", __FUNCTION__, _undone);
@@ -332,19 +322,9 @@ void ExecMocker::handle_trade(uint32_t localid, const char* stdCode, bool isBuy,
 	if (_sig_px == DBL_MAX)
 		_sig_px = _last_tick->preclose();
 
-	_trade_logs << localid << ","
-		<< _sig_time << ","
-		<< ordTime << ","
-		<< (isBuy?"B":"S") << ","
-		<< _sig_px << ","
-		<< fireprice << ","
-		<< price << ","
-		<< curTime << ","
-		<< price << ","
-		<< vol << ","
-		<< curUnixTime - sigUnixTime << ","
-		<< curUnixTime - ordUnixTime << ","
-		<< "false" << std::endl;
+	_trade_logs << fmt::format("{},{},{},{},{},{},{},{},{},{},{},{},false\n", localid, _sig_time,
+		ordTime, (isBuy ? "B" : "S"), _sig_px, fireprice, price, curTime, price, vol,
+		curUnixTime - sigUnixTime, curUnixTime - ordUnixTime);
 
 	_position += vol* (isBuy?1:-1);
 	_undone -= vol * (isBuy ? 1 : -1);

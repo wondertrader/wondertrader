@@ -773,8 +773,8 @@ bool HftMocker::procOrder(uint32_t localid)
 
 		double curPos = stra_get_position(ordInfo->_code);
 
-		_sig_logs << _replayer->get_date() << "." << _replayer->get_raw_time() << "." << _replayer->get_secs() << ","
-			<< (ordInfo->_isBuy ? "+" : "-") << curQty << "," << curPos << "," << curPx << std::endl;
+		_sig_logs << fmt::format("{}.{}.{},{}{},{},{}\n", _replayer->get_date(), _replayer->get_raw_time(),
+			_replayer->get_secs(), (ordInfo->_isBuy ? "+" : "-"), curQty, curPos, curPx);
 	}
 
 	//if(ordInfo->_left == 0)
@@ -1077,16 +1077,16 @@ void HftMocker::dump_outputs()
 
 void HftMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee, const char* userTag/* = ""*/)
 {
-	_trade_logs << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE")
-		<< "," << price << "," << qty << "," << fee << "," << userTag << "\n";
+	_trade_logs << fmt::format("{},{},{},{},{},{},{:.2f},{}\n", stdCode, curTime,
+		(isLong ? "LONG" : "SHORT"), (isOpen ? "OPEN" : "CLOSE"), price, qty, fee, userTag);
 }
 
 void HftMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss,
 	double totalprofit /* = 0 */, const char* enterTag/* = ""*/, const char* exitTag/* = ""*/)
 {
-	_close_logs << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," << maxprofit << "," << maxloss << ","
-		<< totalprofit << "," << enterTag << "," << exitTag << "\n";
+	_close_logs << fmt::format("{},{},{},{},{},{},{},{:.2f},{:.2f},{:.2f},{:.2f},{},{}\n", stdCode,
+		(isLong ? "LONG" : "SHORT"), openTime, openpx, closeTime, closepx, qty, profit, maxprofit, maxloss,
+		totalprofit, enterTag, exitTag);
 }
 
 void HftMocker::do_set_position(const char* stdCode, double qty, double price /* = 0.0 */, const char* userTag /*= ""*/)

@@ -970,10 +970,8 @@ void HftStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, ui
 {
 	if(_trade_logs && _data_agent)
 	{
-		std::stringstream ss;
-		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE")
-			<< "," << price << "," << qty << "," << userTag << "," << fee << "\n";
-		_trade_logs->write_file(ss.str());
+		_trade_logs->write_file(fmt::format("{},{},{},{},{},{},{},{:.2f}\n", stdCode, curTime,
+			(isLong ? "LONG" : "SHORT"), (isOpen ? "OPEN" : "CLOSE"), price, qty, userTag, fee));
 	}
 }
 
@@ -982,10 +980,8 @@ void HftStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTi
 {
 	if (_close_logs && _data_agent)
 	{
-		std::stringstream ss;
-		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," << maxprofit << "," << maxloss << ","
-			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
-		_close_logs->write_file(ss.str());
+		_close_logs->write_file(fmt::format("{},{},{},{},{},{},{},{:.2f},{:.2f},{:.2f},{:.2f},{},{}\n", stdCode,
+			(isLong ? "LONG" : "SHORT"), openTime, openpx, closeTime, closepx, qty, profit, maxprofit, maxloss,
+			totalprofit, enterTag, exitTag));
 	}
 }

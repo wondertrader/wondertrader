@@ -1140,16 +1140,16 @@ void UftMocker::dump_outputs()
 
 void UftMocker::log_trade(const char* stdCode, bool isLong, uint32_t offset, uint64_t curTime, double price, double qty, double fee)
 {
-	_trade_logs << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << OFFSET_NAMES[offset]
-		<< "," << price << "," << qty << "," << fee  << "\n";
+	_trade_logs << fmt::format("{},{},{},{},{},{},{:.2f}\n", stdCode, curTime,
+		(isLong ? "LONG" : "SHORT"), OFFSET_NAMES[offset], price, qty, fee);
 }
 
 void UftMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss,
 	double totalprofit /* = 0 */)
 {
-	_close_logs << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," << maxprofit << "," << maxloss << ","
-		<< totalprofit << "\n";
+	_close_logs << fmt::format("{},{},{},{},{},{},{},{:.2f},{:.2f},{:.2f},{:.2f}\n", stdCode,
+		(isLong ? "LONG" : "SHORT"), openTime, openpx, closeTime, closepx, qty, profit, maxprofit, maxloss,
+		totalprofit);
 }
 
 void UftMocker::update_position(const char* stdCode, bool isLong, uint32_t offset, double qty, double price /* = 0.0 */)
