@@ -347,7 +347,7 @@ public:
 				i++;
 				continue;
 			}
-			else if ((num = preNUm(data[i])) > 2) 
+			else if ((num = preNUm(data[i])) >= 2) 
 			{
 				// 110X_XXXX 10XX_XXXX
 				// 1110_XXXX 10XX_XXXX 10XX_XXXX
