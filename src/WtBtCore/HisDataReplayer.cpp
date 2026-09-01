@@ -1064,6 +1064,16 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 				if (_listener)
 					_listener->handle_session_begin(_cur_tdate);
 				check_cache_days();
+
+				/*
+				 *	日频及以上周期任务(TPT_Daily/Monthly/Weekly/Yearly)触发时, 也按开高低收同步模拟tick
+				 *	否则撮合器拿不到任何价格, 策略信号将永不成交
+				 *	与下方 TPT_Minute 分支的 tick 模拟机制保持一致
+				 */
+				for (int i = 0; i < 4; i++)
+				{
+					simTicks(curDate, curTime, (bEndSession ? _cur_tdate : preTDate), i);
+				}
 				onMinuteEnd(curDate, curTime, bEndSession ? _cur_tdate : preTDate);
 				if (_listener)
 					_listener->handle_session_end(_cur_tdate);
