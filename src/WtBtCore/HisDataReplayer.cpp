@@ -2911,6 +2911,8 @@ void HisDataReplayer::loadFees(const char* filename)
 		fItem._open = cfgItem->getDouble("open");
 		fItem._close = cfgItem->getDouble("close");
 		fItem._close_today = cfgItem->getDouble("closetoday");
+		// Optional for backward-compatible fee templates.  A missing field is 0.
+		fItem._min_fee = cfgItem->getDouble("minfee");
 	}
 
 	cfg->release();
@@ -2928,15 +2930,16 @@ double HisDataReplayer::calc_fee(const char* stdCode, double price, double qty, 
 		return 0.0;
 
 	double ret = 0.0;
+	double rate = 0.0;
 	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(stdPID);
 	const FeeItem& fItem = it->second;
 	if (fItem._by_volume)
 	{
 		switch (offset)
 		{
-		case 0: ret = fItem._open*qty; break;
-		case 1: ret = fItem._close*qty; break;
-		case 2: ret = fItem._close_today*qty; break;
+		case 0: rate = fItem._open; ret = rate*qty; break;
+		case 1: rate = fItem._close; ret = rate*qty; break;
+		case 2: rate = fItem._close_today; ret = rate*qty; break;
 		default: ret = 0.0; break;
 		}
 	}
@@ -2945,13 +2948,14 @@ double HisDataReplayer::calc_fee(const char* stdCode, double price, double qty, 
 		double amount = price*qty*commInfo->getVolScale();
 		switch (offset)
 		{
-		case 0: ret = fItem._open*amount; break;
-		case 1: ret = fItem._close*amount; break;
-		case 2: ret = fItem._close_today*amount; break;
+		case 0: rate = fItem._open; ret = rate*amount; break;
+		case 1: rate = fItem._close; ret = rate*amount; break;
+		case 2: rate = fItem._close_today; ret = rate*amount; break;
 		default: ret = 0.0; break;
 		}
 	}
 
+	ret = apply_fee_minimum(ret, qty, rate, fItem._min_fee);
 	return (int32_t)(ret * 100 + 0.5) / 100.0;
 }
 
