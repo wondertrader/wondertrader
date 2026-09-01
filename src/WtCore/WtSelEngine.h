@@ -29,7 +29,7 @@ typedef struct _TaskInfo
 	uint32_t	_time;			//时间,精确到分钟
 	bool		_strict_time;	//是否是严格时间,严格时间即只有时间相等才会执行,不是严格时间,则大于等于触发时间都会执行
 
-	uint64_t	_last_exe_time;	//上次执行时间,主要为了防止重复执行
+	uint64_t	_last_exe_time = 0;	//上次执行时间,主要为了防止重复执行; POD结构体new时不初始化, 堆残留值可能令调度被永久跳过
 
 	TaskPeriodType	_period;	//任务周期
 } TaskInfo;
