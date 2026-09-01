@@ -15,7 +15,9 @@
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Share/decimal.h"
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
+
+using namespace boost::placeholders;
 
  //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"

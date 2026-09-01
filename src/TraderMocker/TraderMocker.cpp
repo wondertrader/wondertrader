@@ -11,12 +11,13 @@
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/filesystem.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
+using namespace boost::placeholders;
 
 //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"

@@ -9,7 +9,6 @@
  */
 #pragma once
 #include <stdint.h>
-#include <sys/timeb.h>
 #ifdef _MSC_VER
 #include <time.h>
 #else
@@ -56,9 +55,9 @@ class TimeUtils
 public:
 	static inline int64_t getLocalTimeNowOld(void)
 	{
-		thread_local static timeb now;
-		ftime(&now);
-		return now.time * 1000 + now.millitm;
+		thread_local static timeval now;
+		gettimeofday(&now, nullptr);
+		return static_cast<int64_t>(now.tv_sec) * 1000 + now.tv_usec / 1000;
 	}
 
 	/*

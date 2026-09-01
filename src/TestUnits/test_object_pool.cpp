@@ -1,8 +1,10 @@
 ﻿#include <boost/pool/pool.hpp>
 #include <boost/smart_ptr.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/thread.hpp>
 #include <boost/thread/null_mutex.hpp>
+
+using namespace boost::placeholders;
 
 //线程安全 boost::mutex
 //非线程使用 boost::null_mutex

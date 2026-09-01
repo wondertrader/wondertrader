@@ -3,7 +3,7 @@
 #ifndef FMT_HEADER_ONLY
 #define FMT_HEADER_ONLY
 #endif
-#include <spdlog/fmt/bundled/format.h>
+#include <fmt/format.h>
 
 namespace fmtutil
 {

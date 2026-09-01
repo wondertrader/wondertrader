@@ -35,12 +35,13 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 #include <boost/smart_ptr.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 
 #include <vector>
 
+using namespace boost::placeholders;
 
 /// The namespace threadpool contains a thread pool and related utility classes.
 namespace boost { namespace threadpool { namespace detail 
