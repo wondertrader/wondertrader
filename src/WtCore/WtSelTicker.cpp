@@ -189,7 +189,9 @@ void WtSelRtTicker::run()
 					_last_emit_pos = _cur_pos;
 
 					uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
-					_time = thisMin;
+					//_time全链路约定为HHMMSSmmm格式(on_tick/getDateTime写入, isInTradingTime(_time/100000)读取),
+					//此处必须换算, 直接写HHMM会使后续判定误入盘外分支并将交易日误滚动到次日
+					_time = thisMin * 100000;
 
 					//如果thisMin是0, 说明换日了
 					//这里是本地计时导致的换日, 说明日期其实还是老日期, 要自动+1
@@ -222,10 +224,11 @@ void WtSelRtTicker::run()
 			else
 			{//如果不在交易时间,则每隔10毫秒检查一次,如果分钟发生变化则触发
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
-				uint32_t curTime = TimeUtils::getCurMin();
+				//getCurMin返回HHMMSS, 与_time的HHMMSSmmm约定差一个毫秒位, 不换算会导致跨日误判
+				uint32_t curTime = TimeUtils::getCurMin() * 1000;
 				if (_time != UINT_MAX && curTime != _time)
 				{
-					_engine->on_minute_end(_date, _time);
+					_engine->on_minute_end(_date, _time / 100000);
 					if (curTime < _time)
 						_date = TimeUtils::getNextDate(_date);
 					_time = curTime;
