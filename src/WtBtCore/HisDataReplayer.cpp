@@ -2402,7 +2402,9 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		uint32_t curMin = (_cur_date - 19900000) * 10000 + _cur_time;
 		if (isDay)
 		{
-			if (kBlkPair->_cursor <= kBlkPair->_count)
+			//首次定位时若目标bar晚于当前交易日(如标的尚未上市), _cursor会被置为0
+			//此时必须跳过本分支, 否则 _bars[_cursor-1] 会越界访问 _bars[-1]
+			if (kBlkPair->_cursor > 0 && kBlkPair->_cursor <= kBlkPair->_count)
 			{
 				if(!isClosed)
 				{
@@ -2426,7 +2428,8 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		}
 		else
 		{
-			if (kBlkPair->_cursor <= kBlkPair->_count)
+			//同上, 分钟线首次定位为未上市/未来标的时 _cursor 也可能为0, 避免 _bars[-1] 越界
+			if (kBlkPair->_cursor > 0 && kBlkPair->_cursor <= kBlkPair->_count)
 			{
 				while (kBlkPair->_bars[kBlkPair->_cursor-1].time < curMin && kBlkPair->_cursor < kBlkPair->_count)
 				{
