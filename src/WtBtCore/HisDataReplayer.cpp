@@ -663,6 +663,31 @@ bool HisDataReplayer::prepare()
 	_cur_secs = 0;
 	_cur_tdate = _bd_mgr.calcTradingDate(DEFAULT_SESSIONID, _cur_date, _cur_time, true);
 
+	/*
+	 *	By xukanshan @ 2026.09.01
+	 *	定时任务回放模式下(_task非空), 若回测起始日为非交易日(周末/节假日, isHoliday已含周末判定),
+	 *	将回放起点顺延到首个交易日. 否则时钟会先在非交易日上空转一整个会话,
+	 *	触发一次无行情的幽灵 session begin/end, 且首个交易日顺延后标签与交易日历对齐
+	 */
+	if (_task != NULL && _bd_mgr.isHoliday(_task->_trdtpl, _cur_date, true))
+	{
+		uint32_t firstTDate = _bd_mgr.getNextTDate(_task->_trdtpl, _cur_date, 1, true);
+		const char* sid = strlen(_task->_session) > 0 ? _task->_session : DEFAULT_SESSIONID;
+		WTSSessionInfo* sInfo = _bd_mgr.getSession(sid);
+		if (sInfo != NULL)
+		{
+			uint64_t beginTime = _bd_mgr.getBoundaryTime(sInfo->id(), firstTDate, true, true);
+			_cur_date = (uint32_t)(beginTime / 10000);
+			_cur_time = (uint32_t)(beginTime % 10000);
+		}
+		else
+		{
+			_cur_date = firstTDate;
+		}
+		WTSLogger::info("Backtest start date {} is not a trading day, replaying starts from trading day {} instead", _begin_time, firstTDate);
+		_cur_tdate = firstTDate;
+	}
+
 	if (_notifier)
 		_notifier->notifyEvent("BT_START");
 
@@ -1086,10 +1111,15 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
 			if (nextTime > _end_time)
 			{
+				/*
+				 *	By xukanshan @ 2026.09.01
+				 *	此处不再触发 handle_session_end: 日级及以上任务的触发路径与跳过路径
+				 *	都会内联闭合当日会话, 而 _cur_tdate 此刻已指向下一交易日(从未开启会话),
+				 *	原实现会多出一次无 begin 配对的孤儿 session end
+				 */
 				WTSLogger::log_raw(LL_INFO, "Backtesting with task frequency is done");
 				if (_listener)
 				{
-					_listener->handle_session_end(_cur_tdate);
 					_listener->handle_replay_done();
 					if (_notifier)
 						_notifier->notifyEvent("BT_END");
@@ -1192,6 +1222,24 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 				}
 
 				_cur_time = sInfo->minuteToTime(mins);
+
+				/*
+				 *	By xukanshan @ 2026.09.01
+				 *	下一交易日已越过回测结束时间时, 不再开启新会话, 直接结束回放
+				 *	修复点: 原实现先触发 handle_session_begin 再在循环尾部做结束判断,
+				 *	导致结束日之后多出一次成对的 session begin/end 幽灵会话
+				 */
+				if ((uint64_t)_cur_date * 10000 + _cur_time > _end_time)
+				{
+					WTSLogger::log_raw(LL_INFO, "Backtesting with task frequency is done");
+					if (_listener)
+					{
+						_listener->handle_replay_done();
+						if (_notifier)
+							_notifier->notifyEvent("BT_END");
+					}
+					break;
+				}
 
 				if (_listener)
 					_listener->handle_session_begin(nextTDate);
