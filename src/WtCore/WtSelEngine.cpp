@@ -233,8 +233,6 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 	for (auto& v : _tasks)
 	{
 		TaskInfoPtr& tInfo = (TaskInfoPtr&)v.second;
-		if (tInfo->_time != nextTime)
-			continue;
 
 		uint64_t now = (uint64_t)curDate * 10000 + nextTime;
 		if (tInfo->_last_exe_time >= now)
@@ -258,15 +256,24 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 		WTSSessionInfo* sInfo = get_session_info(tInfo->_session, false);
 
 		bool bIgnore = true;
+
+		/*
+		 *	触发条件按周期分别判定: D/W/M/Y为时刻(_time, HHMM)与nextTime精确匹配后叠加原有日历条件;
+		 *	Minute周期以下一分钟(nextTime)换算的会话内分钟序号对_time取模.
+		 *	原实现将时刻匹配作为所有周期的公共前置门, 与Minute的间隔语义矛盾导致该分支永不可达;
+		 *	盘外时间timeToMinutes返回INVALID_UINT32, 此处天然不触发.
+		 */
 		switch (tInfo->_period)
 		{
 		case TPT_Daily:
+			if (tInfo->_time != nextTime)
+				break;
 			bIgnore = false;
 			break;
 		case TPT_Minute:
 			{
-				uint32_t minutes = sInfo->timeToMinutes(curTime);	//先将时间转换成分钟数
-				if(minutes != 0 && (minutes%tInfo->_time == 0))		//如果分钟数能被整除,且不为0,则可以触发
+				uint32_t minutes = (sInfo == NULL) ? INVALID_UINT32 : sInfo->timeToMinutes(nextTime);	//先将下一分钟的触发时刻转换成会话内分钟数
+				if(minutes != INVALID_UINT32 && minutes != 0 && (minutes%tInfo->_time == 0))			//如果分钟数能被整除,且不为0,则可以触发
 				{
 					bIgnore = false;
 				}
@@ -275,6 +282,8 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 		case TPT_Monthly:
 			//if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 >= _task->_day)
 			//	fired = true;
+			if (tInfo->_time != nextTime)
+				break;
 			if (_cur_date % 1000000 == tInfo->_day)
 				bIgnore = false;
 			else if (bHasHoliday)
@@ -295,6 +304,8 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 		case TPT_Weekly:
 			//if (preWD < _task->_day && weekDay >= _task->_day)
 			//	fired = true;
+			if (tInfo->_time != nextTime)
+				break;
 			if (weekDay == tInfo->_day)
 				bIgnore = false;
 			else if (bHasHoliday)
@@ -315,8 +326,10 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 			}
 			break;
 		case TPT_Yearly:
-			if (preTDate % 10000 < tInfo->_day && _cur_date % 10000 >= tInfo->_day)
+			if (tInfo->_time == nextTime && preTDate % 10000 < tInfo->_day && _cur_date % 10000 >= tInfo->_day)
 				bIgnore = false;
+			break;
+		default:
 			break;
 		}
 
