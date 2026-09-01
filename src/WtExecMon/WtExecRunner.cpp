@@ -35,9 +35,6 @@ const char* getModuleName()
 
 WtExecRunner::WtExecRunner()
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
 }
 
 bool WtExecRunner::init(const char* logCfg /* = "logcfgexec.json" */, bool isFile /* = true */)

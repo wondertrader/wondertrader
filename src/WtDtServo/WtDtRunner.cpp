@@ -15,7 +15,6 @@
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 
-#include "../WTSUtils/SignalHook.hpp"
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSTools/WTSLogger.h"
 
@@ -30,9 +29,6 @@ WtDtRunner::WtDtRunner()
 	: _data_store(NULL)
 	, _is_inited(false)
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
 }
 
 

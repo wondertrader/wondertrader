@@ -23,7 +23,6 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
-#include "../WTSUtils/SignalHook.hpp"
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
@@ -87,9 +86,6 @@ WtBtRunner::WtBtRunner()
 	, _running(false)
 	, _async(false)
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
 }
 
 
