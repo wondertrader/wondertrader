@@ -40,6 +40,8 @@ public:
 
 	virtual void run() override;
 
+	virtual void release() override;
+
 	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier) override;
 
 	virtual bool isInTrading() override;

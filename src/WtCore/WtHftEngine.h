@@ -33,6 +33,8 @@ public:
 
 	virtual void run() override;
 
+	virtual void release() override;
+
 	virtual void handle_push_quote(WTSTickData* newTick) override;
 	virtual void handle_push_order_detail(WTSOrdDtlData* curOrdDtl) override;
 	virtual void handle_push_order_queue(WTSOrdQueData* curOrdQue) override;
