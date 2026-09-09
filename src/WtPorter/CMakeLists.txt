@@ -18,6 +18,7 @@ ENDIF()
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtPorter SHARED ${SRCS} ${HDRS})
+TARGET_LINK_LIBRARIES(WtPorter  ParserUDP TraderCTP TraderXTP TraderMocker TraderCTPMini TraderCTPOpt TraderFemas WtExeFact WtDataStorage WtDataStorageAD WtRiskMonFact WtMsgQue)  
 
 SET(LIBS WtCore WTSTools WTSUtils)
 
