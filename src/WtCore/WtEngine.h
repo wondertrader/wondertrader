@@ -294,7 +294,11 @@ protected:
 	} PosInfo;
 	typedef std::shared_ptr<PosInfo> PosInfoPtr;
 	typedef wt_hashmap<std::string, PosInfoPtr> PositionMap;
+	// Lock order: portfolio mutex, then PosInfo::_mtx. Recursive because
+	// strategy updates call append_signal/do_set_position/save_datas.
+	StdRecurMutex   _mtx_positions;
 	PositionMap		_pos_map;
+	PosInfoPtr      get_or_create_position(const char* stdCode);
 
 	//////////////////////////////////////////////////////////////////////////
 	//

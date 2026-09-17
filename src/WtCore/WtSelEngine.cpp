@@ -438,9 +438,10 @@ void WtSelEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	//}
 
-	PosInfoPtr& pInfo = _pos_map[realCode];
-	if (pInfo == NULL)
-		pInfo.reset(new PosInfo);
+	std::unique_lock<StdRecurMutex> positionsLock(_mtx_positions);
+	PosInfoPtr pInfo = get_or_create_position(realCode.c_str());
+	if (!pInfo)
+		return;
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
@@ -456,6 +457,8 @@ void WtSelEngine::handle_pos_change(const char* straName, const char* stdCode, d
 
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
+	// Never hold the portfolio lock while invoking trading executers.
+	positionsLock.unlock();
 
 	const auto& exec_ids = _exec_mgr.get_route(straName);
 	for (auto& execid : exec_ids)
