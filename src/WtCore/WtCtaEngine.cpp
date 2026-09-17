@@ -370,25 +370,33 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		append_signal(stdCode.c_str(), pos, true);
 	}
 
-	for(auto& m : _pos_map)
 	{
-		const auto& stdCode = m.first;
-		if (target_pos.find(stdCode) == target_pos.end())
+		std::unique_lock<StdRecurMutex> positionsLock(_mtx_positions);
+		for(auto& m : _pos_map)
 		{
-			if(!decimal::eq(m.second->_volume, 0))
+			const auto& stdCode = m.first;
+			if (!m.second)
 			{
-				//这里是通知WtEngine去更新组合持仓数据
-				append_signal(stdCode.c_str(), 0, true);
-
-				WTSLogger::error("Instrument {} not in target positions, setup to 0 automatically", stdCode.c_str());
+				WTSLogger::error("Null portfolio position {}, scheduled position update aborted", stdCode);
+				return;
 			}
-
-			//因为组合持仓里会有过期的合约代码存在，所以这里在丢给执行以前要做一个检查
-			auto cInfo = get_contract_info(stdCode.c_str());
-			if (cInfo != NULL)
+			if (target_pos.find(stdCode) == target_pos.end())
 			{
-				//target_pos[stdCode] = 0;
-				_exec_mgr.add_target_to_cache(stdCode.c_str(), 0);
+				if(!decimal::eq(m.second->_volume, 0))
+				{
+					//这里是通知WtEngine去更新组合持仓数据
+					append_signal(stdCode.c_str(), 0, true);
+
+					WTSLogger::error("Instrument {} not in target positions, setup to 0 automatically", stdCode.c_str());
+				}
+
+				//因为组合持仓里会有过期的合约代码存在，所以这里在丢给执行以前要做一个检查
+				auto cInfo = get_contract_info(stdCode.c_str());
+				if (cInfo != NULL)
+				{
+					//target_pos[stdCode] = 0;
+					_exec_mgr.add_target_to_cache(stdCode.c_str(), 0);
+				}
 			}
 		}
 	}
@@ -440,9 +448,10 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	/*
 	 *	这里必须要算一个总的目标仓位
 	 */
-	PosInfoPtr& pInfo = _pos_map[realCode];	
-	if (pInfo == NULL)
-		pInfo.reset(new PosInfo);
+	std::unique_lock<StdRecurMutex> positionsLock(_mtx_positions);
+	PosInfoPtr pInfo = get_or_create_position(realCode.c_str());
+	if (!pInfo)
+		return;
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
@@ -461,6 +470,8 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
+	// Never hold the portfolio lock while invoking trading executers.
+	positionsLock.unlock();
 
 	/*
 	 *	如果策略绑定了执行通道

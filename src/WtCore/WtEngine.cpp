@@ -149,11 +149,17 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	std::string code = stdCode;
 	double price = curTick->price();
 	push_task([this, code, price]{
+		std::unique_lock<StdRecurMutex> positionsLock(_mtx_positions);
 		auto it = _pos_map.find(code);
 		if (it == _pos_map.end())
 			return;
 
-		PosInfoPtr& pInfo = it->second;
+		PosInfoPtr pInfo = it->second;
+		if (!pInfo)
+		{
+			WTSLogger::error("Null portfolio position {}, tick profit update aborted", code);
+			return;
+		}
 		SpinLock lock(pInfo->_mtx);
 		if (pInfo->_volume == 0)
 		{
@@ -181,6 +187,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 void WtEngine::update_fund_dynprofit()
 {
+	std::unique_lock<StdRecurMutex> positionsLock(_mtx_positions);
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 	if (fundInfo._last_date == _cur_tdate)
 	{
@@ -199,6 +206,11 @@ void WtEngine::update_fund_dynprofit()
 	for(const auto& v : _pos_map)
 	{
 		const PosInfoPtr& pItem = v.second;
+		if (!pItem)
+		{
+			WTSLogger::error("Null portfolio position {}, fund profit update aborted", v.first);
+			return;
+		}
 		profit += pItem->_dynprofit;
 	}
 
@@ -362,6 +374,7 @@ void WtEngine::on_session_begin()
 
 void WtEngine::save_datas()
 {
+	std::unique_lock<StdRecurMutex> positionsLock(_mtx_positions);
 	rj::Document root(rj::kObjectType);
 	rj::Document::AllocatorType &allocator = root.GetAllocator();
 
@@ -407,6 +420,11 @@ void WtEngine::save_datas()
 		{
 			const char* stdCode = it->first.c_str();
 			const PosInfoPtr& pInfo = it->second;
+			if (!pInfo)
+			{
+				WTSLogger::error("Null portfolio position {}, portfolio save aborted", stdCode);
+				return;
+			}
 
 			rj::Value pItem(rj::kObjectType);
 			pItem.AddMember("code", rj::Value(stdCode, allocator), allocator);
@@ -468,6 +486,7 @@ void WtEngine::save_datas()
 
 void WtEngine::load_datas()
 {
+	std::unique_lock<StdRecurMutex> positionsLock(_mtx_positions);
 	_port_fund = WTSPortFundInfo::create();
 
 	std::string filename = WtHelper::getPortifolioDir();
@@ -531,9 +550,9 @@ void WtEngine::load_datas()
 			for (const rj::Value& pItem : jPos.GetArray())
 			{
 				const char* stdCode = pItem["code"].GetString();
-				PosInfoPtr& pInfo = _pos_map[stdCode];
-				if (pInfo == NULL)
-					pInfo.reset(new PosInfo);
+				PosInfoPtr pInfo = get_or_create_position(stdCode);
+				if (!pInfo)
+					return;
 				pInfo->_closeprofit = pItem["closeprofit"].GetDouble();
 				pInfo->_volume = pItem["volume"].GetDouble();
 				if (pInfo->_volume == 0)
@@ -948,11 +967,30 @@ void WtEngine::append_signal(const char* stdCode, double qty, bool bStandBy /* =
 	*/
 }
 
+WtEngine::PosInfoPtr WtEngine::get_or_create_position(const char* stdCode)
+{
+	std::unique_lock<StdRecurMutex> positionsLock(_mtx_positions);
+	auto it = _pos_map.find(stdCode);
+	if (it != _pos_map.end())
+	{
+		if (!it->second)
+			WTSLogger::error("Null portfolio position {}, position update aborted", stdCode);
+		return it->second;
+	}
+
+	// Publish only a fully constructed object; return a copy, not a reference
+	// into the dense map, whose storage can move on subsequent insertions.
+	PosInfoPtr pInfo = std::make_shared<PosInfo>();
+	_pos_map.emplace(stdCode, pInfo);
+	return pInfo;
+}
+
 void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* = -1 */)
 {
-	PosInfoPtr& pInfo = _pos_map[stdCode];
-	if (pInfo == NULL)
-		pInfo.reset(new PosInfo);
+	std::unique_lock<StdRecurMutex> positionsLock(_mtx_positions);
+	PosInfoPtr pInfo = get_or_create_position(stdCode);
+	if (!pInfo)
+		return;
 
 	SpinLock lock(pInfo->_mtx);
 
