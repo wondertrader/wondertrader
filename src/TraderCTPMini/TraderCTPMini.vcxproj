@@ -175,9 +175,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcTraderApi.h" />
-    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiDataType.h" />
-    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiStruct.h" />
+    <ClInclude Include="..\API\CTPMini1.7.3\ThostFtdcTraderApi.h" />
+    <ClInclude Include="..\API\CTPMini1.7.3\ThostFtdcUserApiDataType.h" />
+    <ClInclude Include="..\API\CTPMini1.7.3\ThostFtdcUserApiStruct.h" />
     <ClInclude Include="TraderCTPMini.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,16 @@
+{
+    "SSE.STK":
+    {
+        "open":0.001,
+        "close":0.0012,
+        "closetoday":0.0,
+        "byvolume":false
+    },
+    "SZSE.STK":
+    {
+        "open":0.001,
+        "close":0.0012,
+        "closetoday":0.0,
+        "byvolume":false
+    }
+}

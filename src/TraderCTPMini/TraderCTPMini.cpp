@@ -549,6 +549,24 @@ int TraderCTPMini::queryTrades()
 	return 0;
 }
 
+int TraderCTPMini::querySettlement(uint32_t uDate)
+{
+	// CTPMini API不支持结算单查询功能，给出明确的错误提示
+	write_log(m_sink, LL_ERROR, u8"[TraderCTPMini] CTPMini接口不支持查询结算单功能");
+	write_log(m_sink, LL_INFO, u8"[TraderCTPMini] 如需查询结算单功能，请使用标准CTP接口");
+	write_log(m_sink, LL_INFO, u8"[TraderCTPMini] 可以在配置文件中将trader模块从CTPMini改为CTP");
+
+	// 如果有回调接口，也发送错误通知
+	if (m_sink)
+	{
+		WTSError* err = WTSError::create(WEC_UNKNOWN, u8"CTPMini不支持结算单查询，请使用标准CTP接口");
+		m_sink->onTraderError(err);
+		err->release();
+	}
+
+	return -1;
+}
+
 void TraderCTPMini::OnFrontConnected()
 {
 	if (m_sink)

@@ -60,6 +60,11 @@ namespace loader {
 		double	_close;
 		double	_closet;
 		bool	_byvol;
+
+		// 期权特有字段
+		double	_strike_by_money;		// 执行费率（按资金）
+		double	_strike_by_volume;		// 执行费率（按手数）
+		bool	_has_strike_fee;		// 是否有执行费
 	} FeeInfo;
 	typedef std::map<std::string, FeeInfo> FeeMap;
 

@@ -10,7 +10,7 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
-#include "../API/CTP6.3.15/ThostFtdcMdApi.h"
+#include "../API/CTP6.7.11/ThostFtdcMdApi.h"
 #include <map>
 
 NS_WTP_BEGIN
@@ -72,6 +72,8 @@ public:
 
 	virtual void OnHeartBeatWarning( int nTimeLapse );
 
+	virtual void OnRspQryMulticastInstrument(CThostFtdcMulticastInstrumentField *pMulticastInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {};
+
 private:
 	/*
 	 *	发送登录请求
@@ -106,7 +108,7 @@ private:
 	IBaseDataMgr*		m_pBaseDataMgr;
 
 	DllHandle		m_hInstCTP;
-	typedef CThostFtdcMdApi* (*CTPCreator)(const char *, const bool, const bool);
+	typedef CThostFtdcMdApi* (*CTPCreator)(const char *, const bool, const bool, bool);
 	CTPCreator		m_funcCreator;
 };
 

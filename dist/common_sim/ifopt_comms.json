@@ -1,0 +1,95 @@
+{
+    "CFFEX": {
+        "HO": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 6,
+            "trademode": 0,
+            "precision": 1,
+            "pricetick": 0.2,
+            "volscale": 100,
+            "name": "500期权",
+            "exchg": "CFFEX",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "IC": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 1,
+            "trademode": 0,
+            "precision": 1,
+            "pricetick": 0.2,
+            "volscale": 200,
+            "name": "中证",
+            "exchg": "CFFEX",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "IF": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 1,
+            "trademode": 0,
+            "precision": 1,
+            "pricetick": 0.2,
+            "volscale": 300,
+            "name": "沪深",
+            "exchg": "CFFEX",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "IH": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 1,
+            "trademode": 0,
+            "precision": 1,
+            "pricetick": 0.2,
+            "volscale": 300,
+            "name": "上证",
+            "exchg": "CFFEX",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "IM": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 1,
+            "trademode": 0,
+            "precision": 1,
+            "pricetick": 0.2,
+            "volscale": 200,
+            "name": "1000",
+            "exchg": "CFFEX",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "IO": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 6,
+            "trademode": 0,
+            "precision": 1,
+            "pricetick": 0.2,
+            "volscale": 100,
+            "name": "300期权",
+            "exchg": "CFFEX",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "MO": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 6,
+            "trademode": 0,
+            "precision": 1,
+            "pricetick": 0.2,
+            "volscale": 100,
+            "name": "1000期权",
+            "exchg": "CFFEX",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        }
+    }
+}

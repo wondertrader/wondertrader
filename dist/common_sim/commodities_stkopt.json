@@ -1,0 +1,110 @@
+{
+    "SSE": {
+        "ETF": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 0,
+            "trademode": 1,
+            "precision": 3,
+            "pricetick": 0.001,
+            "volscale": 1,
+            "name": "ETF基金",
+            "exchg": "SSE",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "ETFO": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 7,
+            "trademode": 0,
+            "precision": 4,
+            "pricetick": 0.0001,
+            "volscale": 10000,
+            "name": "ETF期权",
+            "exchg": "SSE",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "STK": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 0,
+            "trademode": 1,
+            "precision": 2,
+            "pricetick": 0.01,
+            "volscale": 1,
+            "name": "股票",
+            "exchg": "SSE",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "STKO": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 7,
+            "trademode": 0,
+            "precision": 3,
+            "pricetick": 0.001,
+            "volscale": 1000,
+            "name": "个股期权",
+            "exchg": "SSE",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        }
+    },
+    "SZSE": {
+        "ETF": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 0,
+            "trademode": 2,
+            "precision": 3,
+            "pricetick": 0.001,
+            "volscale": 1,
+            "name": "ETF基金",
+            "exchg": "SZSE",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "ETFO": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 7,
+            "trademode": 0,
+            "precision": 4,
+            "pricetick": 0.0001,
+            "volscale": 10000,
+            "name": "ETF期权",
+            "exchg": "SZSE",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "STK": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 0,
+            "trademode": 2,
+            "precision": 2,
+            "pricetick": 0.01,
+            "volscale": 1,
+            "name": "股票",
+            "exchg": "SZSE",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        },
+        "STKO": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 7,
+            "trademode": 0,
+            "precision": 3,
+            "pricetick": 0.001,
+            "volscale": 1000,
+            "name": "个股期权",
+            "exchg": "SZSE",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        }
+    }
+}

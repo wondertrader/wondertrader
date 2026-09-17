@@ -1,0 +1,30 @@
+{
+    "SSE": {
+        "ETFO": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 7,
+            "precision": 4,
+            "pricetick": 0.0001,
+            "volscale": 10000,
+            "name": "上证ETF期权",
+            "exchg": "SSE",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        }
+    },
+    "SZSE": {
+        "ETFO": {
+            "covermode": 0,
+            "pricemode": 0,
+            "category": 7,
+            "precision": 4,
+            "pricetick": 0.0001,
+            "volscale": 10000,
+            "name": "深证ETF期权",
+            "exchg": "SZSE",
+            "session": "SD0930",
+            "holiday": "CHINA"
+        }
+    }
+}

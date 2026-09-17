@@ -1,0 +1,43 @@
+# 这个dockerfile目的是使编译构建的wondertrader程序可以直接在WSL2最新的Ubuntu系统上运行，因为Ubuntu24.04默认安装的openssl是3.0.13，所以需要先安装openssl3
+# 基于该文件构建镜像可以使用命令： docker build -t ubt1804-gcc8-openssl3 -f Dockerfile_ubt_openssl3 .
+# 构建完成以后，要启动容器，可以使用命令（注意所有docker run的参数应该在镜像名之前）： docker run -it -v /mnt/d/code/wt/wondertrader:/home/wondertrader --name my-ubt-container ubt1804-gcc8-openssl3 /bin/bash
+# 退出后，用`docker start -i my-ubt-container` 重新进入
+
+FROM ubuntu:18.04
+LABEL maintainer="wondertrader@126.com"
+
+# 更新包列表并安装所有基础工具
+RUN apt-get update && \
+    apt-get install -y sudo git gcc-8 g++-8 cmake p7zip-full wget curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# 将gcc符号链接到gcc8
+RUN ln -sf /usr/bin/gcc-8 /usr/bin/gcc && \
+    ln -sf /usr/bin/g++-8 /usr/bin/g++
+
+# 升级openssl3
+RUN wget https://www.openssl.org/source/openssl-3.0.13.tar.gz && \
+    tar -xzf openssl-3.0.13.tar.gz && \
+    cd openssl-3.0.13 && \
+    ./config --prefix=/usr/local/openssl3 --openssldir=/usr/local/openssl3 && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf openssl-3.0.13 openssl-3.0.13.tar.gz && \
+    echo "/usr/local/openssl3/lib64" > /etc/ld.so.conf.d/openssl-3.conf && \
+    ldconfig && \
+    cp /usr/bin/openssl /usr/bin/openssl.bak && \
+    ln -sf /usr/local/openssl3/bin/openssl /usr/bin/openssl
+ENV LD_LIBRARY_PATH=/usr/local/openssl3/lib64:${LD_LIBRARY_PATH:-}
+
+# 添加预编译依赖库，并解压
+ADD mydeps_gcc8.4.0.7z /home
+RUN cd /home && 7za x mydeps_gcc8.4.0.7z
+
+# 拉取wondertrader代码
+# 如果在宿主机上已经拉取了wondertrader代码，可以注释掉下一行指令，并在启动容器的时候使用-v参数将宿主机上的代码目录挂载到容器中
+# docker run -it yourimagename -v /home/wondertrader:/home/wondertrader /bin/bash
+# RUN cd /home && git clone https://gitee.com/wondertrader/wondertrader.git
+
+# WORKDIR /home/wondertrader/

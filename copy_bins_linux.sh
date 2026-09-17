@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 despath=$1
 if test "$despath" = ""; then 
 	despath="../wtpy"
@@ -6,7 +7,8 @@ fi
 echo "wtpy path is $despath"
 
 root="./src/build_all/build_x64/Release/bin"
-folders=("Loader" "WtBtPorter" "WtDtPorter" "WtPorter")
+# folders=("Loader" "WtBtPorter" "WtDtPorter" "WtPorter")
+folders=("Loader")
 for folder in ${folders[@]}
 do
 	cp -rvf $root/$folder/*.so $despath/wtpy/wrapper/linux

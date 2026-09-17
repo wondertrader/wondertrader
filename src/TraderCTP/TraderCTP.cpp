@@ -259,12 +259,12 @@ bool TraderCTP::init(WTSVariant* params)
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
 #ifdef _WIN32
 #	ifdef _WIN64
-	const char* creatorName = "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD@Z";
+	const char* creatorName = "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD_N@Z";
 #	else
-	const char* creatorName = "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPAV1@PBD@Z";
+	const char* creatorName = "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPAV1@PBD_N@Z";
 #	endif
 #else
-	const char* creatorName = "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc";
+	const char* creatorName = "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKcb";
 #endif
 	m_funcCreator = (CTPCreator)DLLHelper::get_symbol(m_hInstCTP, creatorName);
 
@@ -302,7 +302,7 @@ void TraderCTP::connect()
 	std::stringstream ss;
 	ss << m_strFlowDir << "flows/" << m_strBroker << "/" << m_strUser << "/";
 	fs::create_directories(ss.str().c_str());
-	m_pUserAPI = m_funcCreator(ss.str().c_str());
+	m_pUserAPI = m_funcCreator(ss.str().c_str(), true);
 	m_pUserAPI->RegisterSpi(this);
 	if (m_bQuickStart)
 	{

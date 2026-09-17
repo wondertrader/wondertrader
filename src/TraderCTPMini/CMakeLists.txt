@@ -22,6 +22,7 @@ ELSE(GNUCC)
 		pthread
 		stdc++fs
 		dl
+		boost_filesystem
 		)
 	TARGET_LINK_LIBRARIES(TraderCTPMini ${LIBS})
 ENDIF()

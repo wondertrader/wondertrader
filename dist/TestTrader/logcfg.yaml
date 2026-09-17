@@ -1,0 +1,10 @@
+root:
+    async: false
+    level: debug
+    sinks:
+    -   filename: Logs/TestTrader.log
+        pattern: '[%Y.%m.%d %H:%M:%S - %-5l] %v'
+        truncate: true
+        type: daily_file_sink
+    -   pattern: '[%m.%d %H:%M:%S - %^%-5l%$] %v'
+        type: console_sink
