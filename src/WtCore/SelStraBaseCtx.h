@@ -223,6 +223,12 @@ protected:
 	typedef wt_hashmap<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
+	//策略最后申明的目标仓位(autoexit 判断依据)
+	//stra_set_position 在"目标=当前持仓"时会幂等跳过(不产生信号),
+	//若 autoexit 依据"本轮是否有信号"判断, 持仓=目标时会被误清仓, 造成每轮买卖循环
+	typedef wt_hashmap<std::string, double>		TargetMap;
+	TargetMap		_target_map;
+
 	BoostFilePtr	_trade_logs;
 	BoostFilePtr	_close_logs;
 	BoostFilePtr	_fund_logs;

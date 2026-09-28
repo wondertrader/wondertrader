@@ -8,6 +8,23 @@
 #include <rapidjson/document.h>
 namespace rj = rapidjson;
 
+//Win下窄字符文件接口(std::filesystem/ifstream等)按ANSI代码页解释char*,
+//而Python端经ctypes传入的配置内容(json的\uXXXX转义、yaml原文)最终解析出的是UTF-8编码
+//的字符串值, 含中文时必须转为本地ANSI编码, 否则下游所有以"文件路径"形态消费该值的
+//调用方(loadSessions/loadCommodities等的exists检查与打开文件)均会因乱码路径失败。
+//纯ASCII内容不受影响; 已是ANSI编码的字节序列不满足合法UTF-8特征, 同样跳过转换。
+static std::string to_local_str(const std::string& src)
+{
+#ifdef _WIN32
+	if (!src.empty())
+	{
+		UTF8toChar conv(src);
+		return std::string(conv.c_str());
+	}
+#endif
+	return src;
+}
+
 
 bool json_to_variant(const rj::Value& root, WTSVariant* params)
 {
@@ -52,8 +69,11 @@ bool json_to_variant(const rj::Value& root, WTSVariant* params)
 					params->append(key, item.GetDouble());
 				break;
 			case rj::kStringType:
-				params->append(key, item.GetString());
-				break;
+			{
+				std::string val = to_local_str(item.GetString());
+				params->append(key, val.c_str());
+			}
+			break;
 			case rj::kTrueType:
 			case rj::kFalseType:
 				params->append(key, item.GetBool());
@@ -95,8 +115,11 @@ bool json_to_variant(const rj::Value& root, WTSVariant* params)
 					params->append(item.GetDouble());
 				break;
 			case rj::kStringType:
-				params->append(item.GetString());
-				break;
+			{
+				std::string val = to_local_str(item.GetString());
+				params->append(val.c_str());
+			}
+			break;
 			case rj::kTrueType:
 			case rj::kFalseType:
 				params->append(item.GetBool());
@@ -167,9 +190,15 @@ bool yaml_to_variant(const YAML::Node& root, WTSVariant* params)
 		break;
 		case YAML::NodeType::Scalar:
 			if (isMap)
-				params->append(key.c_str(), item.as<std::string>().c_str());
+			{
+				std::string val = to_local_str(item.as<std::string>());
+				params->append(key.c_str(), val.c_str());
+			}
 			else
-				params->append(item.as<std::string>().c_str());
+			{
+				std::string val = to_local_str(item.as<std::string>());
+				params->append(val.c_str());
+			}
 			break;
 		}
 	}
@@ -221,11 +250,25 @@ WTSVariant* WTSCfgLoader::load_from_content(const std::string& content, bool isY
 
 WTSVariant* WTSCfgLoader::load_from_file(const char* filename)
 {
-	if (!StdFile::exists(filename))
+	//Win下窄字符文件接口按ANSI编码解释路径, 外部传入的配置文件路径常为UTF-8编码,
+	//含中文时需先转为本地ANSI; 纯ASCII或已是ANSI编码的路径不做转换
+	std::string raw_name;
+	UTF8toChar name_conv("");
+	const char* real_path = filename;
+#ifdef _WIN32
+	raw_name = filename;
+	if (EncodingHelper::isUtf8((unsigned char*)raw_name.data(), raw_name.size()))
+	{
+		name_conv.init(raw_name.c_str());
+		real_path = name_conv.c_str();
+	}
+#endif
+
+	if (!StdFile::exists(real_path))
 		return NULL;
 
 	std::string content;
-	StdFile::read_file_content(filename, content);
+	StdFile::read_file_content(real_path, content);
 	if (content.empty())
 		return NULL;
 

@@ -328,7 +328,10 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 		StdThreadPtr thrd(new StdThread([ctx, curDate, curTime, nextTime](){
 			if (ctx)
 				ctx->on_schedule(curDate, curTime, nextTime);
-		}));	
+		}));
+
+		//std::thread未join/detach即析构会触发std::terminate, 此处为fire-and-forget分发, 必须显式detach
+		thrd->detach();
 
 		tInfo->_last_exe_time = now;
 	}
