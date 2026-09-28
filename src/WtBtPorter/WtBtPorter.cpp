@@ -19,6 +19,10 @@
 
 #include "../Includes/WTSVersion.h"
 
+#ifdef _WIN32
+#include "../Share/charconv.hpp"
+#endif
+
 
 #ifdef _WIN32
 #ifdef _WIN64
@@ -83,6 +87,18 @@ void init_backtest(const char* logProfile, bool isFile, const char* outDir)
 	if (inited)
 		return;
 
+#ifdef _WIN32
+	//Python层传入的路径为UTF-8字节, 而Win下窄字符文件接口按ANSI编码解释,
+	//含非ASCII字符(如中文)的路径需先转为本地ANSI编码, 否则报文件不存在;
+	//与WtPorter的init_porter同规则
+	UTF8toChar log_conv(logProfile);
+	if (isFile)
+		logProfile = log_conv.c_str();
+
+	UTF8toChar out_conv(outDir);
+	outDir = out_conv.c_str();
+#endif
+
 	getRunner().init(logProfile, isFile, outDir);
 
 	inited = true;
@@ -98,7 +114,15 @@ void config_backtest(const char* cfgfile, bool isFile)
 	if (strlen(cfgfile) == 0)
 		getRunner().config("configbt.json", true);
 	else
+	{
+#ifdef _WIN32
+		//路径编码转换, 参见init_backtest注释; 内容模式下为配置文本, 不可转换
+		UTF8toChar cfg_conv(cfgfile);
+		if (isFile)
+			cfgfile = cfg_conv.c_str();
+#endif
 		getRunner().config(cfgfile, isFile);
+	}
 }
 
 void set_time_range(WtUInt64 stime, WtUInt64 etime)
