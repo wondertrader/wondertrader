@@ -3,6 +3,7 @@
 #include <cctype>
 #include <iomanip>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -139,11 +140,80 @@ public:
 private:
     static std::string normalizeBaseUrl(const std::string& baseUrl)
     {
-        if (baseUrl.empty() || baseUrl[baseUrl.size() - 1] == '/')
+        const auto invalid = []() {
+            throw std::invalid_argument("FXMacroData base URL must be an HTTP(S) URL with a host and no credentials, query or fragment");
+        };
+        const std::size_t schemeEnd = baseUrl.find("://");
+        if (schemeEnd == std::string::npos)
         {
-            return baseUrl;
+            invalid();
         }
-        return baseUrl + "/";
+        std::string scheme = baseUrl.substr(0, schemeEnd);
+        for (char& ch : scheme)
+        {
+            if (ch >= 'A' && ch <= 'Z') ch = static_cast<char>(ch + ('a' - 'A'));
+        }
+        if (scheme != "http" && scheme != "https") invalid();
+        for (std::size_t i = 0; i < baseUrl.size(); ++i)
+        {
+            const unsigned char ch = static_cast<unsigned char>(baseUrl[i]);
+            if (ch <= 0x20 || ch >= 0x7f || ch == '\\' || ch == '?' || ch == '#') invalid();
+            if (ch == '%')
+            {
+                const auto hex = [](char value) {
+                    return (value >= '0' && value <= '9') || (value >= 'a' && value <= 'f') || (value >= 'A' && value <= 'F');
+                };
+                if (i + 2 >= baseUrl.size() || !hex(baseUrl[i + 1]) || !hex(baseUrl[i + 2])) invalid();
+            }
+        }
+        const std::size_t hostStart = schemeEnd + 3;
+        const std::size_t pathStart = baseUrl.find('/', hostStart);
+        const std::string authority = baseUrl.substr(hostStart, pathStart - hostStart);
+        if (authority.empty() || authority.find('@') != std::string::npos) invalid();
+        std::string host;
+        std::string port;
+        bool hasPort = false;
+        if (authority[0] == '[')
+        {
+            const std::size_t close = authority.find(']');
+            if (close == std::string::npos || close == 1) invalid();
+            host = authority.substr(1, close - 1);
+            if (host.find(':') == std::string::npos) invalid();
+            for (char ch : host)
+            {
+                if (!((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F') || ch == ':' || ch == '.')) invalid();
+            }
+            if (close + 1 < authority.size())
+            {
+                if (authority[close + 1] != ':') invalid();
+                hasPort = true;
+                port = authority.substr(close + 2);
+            }
+        }
+        else
+        {
+            const std::size_t colon = authority.find(':');
+            host = authority.substr(0, colon);
+            hasPort = colon != std::string::npos;
+            if (hasPort) port = authority.substr(colon + 1);
+            if (host.empty()) invalid();
+            for (char ch : host)
+            {
+                if (!((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '.' || ch == '-' || ch == '_')) invalid();
+            }
+        }
+        if (hasPort)
+        {
+            if (port.empty() || port.size() > 5) invalid();
+            unsigned int number = 0;
+            for (char ch : port)
+            {
+                if (ch < '0' || ch > '9') invalid();
+                number = number * 10 + static_cast<unsigned int>(ch - '0');
+            }
+            if (number == 0 || number > 65535) invalid();
+        }
+        return baseUrl.back() == '/' ? baseUrl : baseUrl + "/";
     }
 
     static std::string trimLeadingSlash(const std::string& path)
