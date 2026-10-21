@@ -39,6 +39,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FxMacroData.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
     <ClInclude Include="StrUtil.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
