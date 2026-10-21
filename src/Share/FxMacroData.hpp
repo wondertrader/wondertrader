@@ -64,7 +64,7 @@ public:
         const Params& params = Params()) const
     {
         return requestUrl(
-            "announcements/" + normalizeCurrency(currency) + "/" + indicator,
+            "announcements/" + normalizeCurrency(currency) + "/" + urlEncode(indicator),
             params);
     }
 
@@ -90,7 +90,7 @@ public:
         const Params& params = Params()) const
     {
         return requestUrl(
-            "predictions/" + normalizeCurrency(currency) + "/" + indicator,
+            "predictions/" + normalizeCurrency(currency) + "/" + urlEncode(indicator),
             params);
     }
 
@@ -111,7 +111,7 @@ public:
 
     std::string commodity(const std::string& indicator, const Params& params = Params()) const
     {
-        return requestUrl("commodities/" + indicator, params);
+        return requestUrl("commodities/" + urlEncode(indicator), params);
     }
 
     std::string commoditiesLatest(const Params& params = Params()) const
@@ -167,7 +167,7 @@ private:
                 out.push_back(static_cast<char>(std::tolower(ch)));
             }
         }
-        return out;
+        return urlEncode(out);
     }
 
     static std::string urlEncode(const std::string& value)
