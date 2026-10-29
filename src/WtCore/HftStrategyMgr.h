@@ -72,6 +72,43 @@ private:
 			if (_fact)
 				_remover(_fact);
 		}
+
+		// wt_hashmap (robin_map) relocates entries on insert/rehash: the
+		// moved-from entry must not call _remover, or the factory registered
+		// first would be unloaded when a second factory is registered,
+		// leaving a dangling pointer that crashes on the next createStrategy.
+		_StraFactInfo(_StraFactInfo&& other) noexcept
+			: _module_path(std::move(other._module_path))
+			, _module_inst(other._module_inst)
+			, _fact(other._fact)
+			, _creator(other._creator)
+			, _remover(other._remover)
+		{
+			other._module_inst = NULL;
+			other._fact = NULL;
+			other._creator = NULL;
+			other._remover = NULL;
+		}
+
+		_StraFactInfo& operator=(_StraFactInfo&& other) noexcept
+		{
+			if (this != &other)
+			{
+				_module_path = std::move(other._module_path);
+				_module_inst = other._module_inst;
+				_fact = other._fact;
+				_creator = other._creator;
+				_remover = other._remover;
+				other._module_inst = NULL;
+				other._fact = NULL;
+				other._creator = NULL;
+				other._remover = NULL;
+			}
+			return *this;
+		}
+
+		_StraFactInfo(const _StraFactInfo&) = delete;
+		_StraFactInfo& operator=(const _StraFactInfo&) = delete;
 	} StraFactInfo;
 	typedef wt_hashmap<std::string, StraFactInfo> StraFactMap;
 
