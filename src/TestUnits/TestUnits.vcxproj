@@ -198,6 +198,7 @@
     <ClCompile Include="test_kvcache.cpp" />
     <ClCompile Include="test_shm.cpp" />
     <ClCompile Include="test_utils.cpp" />
+    <ClCompile Include="test_ticker_timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gtest\gtest-internal-inl.h" />

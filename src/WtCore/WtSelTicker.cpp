@@ -93,6 +93,16 @@ void WtSelRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 	uint32_t curMin = _time / 100000;
 	uint32_t curSec = _time % 100000;
 	uint32_t minutes = _s_info->timeToMinutes(curMin);
+	if (minutes == INVALID_UINT32)
+	{
+		//非交易时间的行情(如08:59、12:59), 只触发价格和原始时间, 不参与分钟线的闭合判断, 也不重置本地闭合定时器
+		//否则minutes++会回绕成0, 并把minuteToTime(0)得到的首节开盘时间当成引擎时间
+		trigger_price(curTick, hotFlag);
+		if (_engine)
+			_engine->set_date_time(_date, _engine->get_min_time(), curSec, curMin);
+		return;
+	}
+
 	bool isSecEnd = _s_info->isLastOfSection(curMin);
 	if (isSecEnd)
 	{
@@ -151,9 +161,12 @@ void WtSelRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 			_engine->set_date_time(_date, curMin, curSec, rawMin);
 	}
 
-	uint32_t sec = curSec / 1000;
-	uint32_t msec = curSec % 1000;
-	uint32_t left_ticks = (60 - sec) * 1000 - msec;
+	/*
+	 *	本地闭合定时器要定到当前K线的闭合时刻(curMin), 而不是行情时间的下一个整分钟
+	 *	两者在交易时段内是一样的, 但集合竞价的行情(如夜盘20:59)所属的K线是21:01
+	 *	如果按下一个整分钟来定时, 21:01这根K线会在21:00被提前闭合
+	 */
+	uint32_t left_ticks = TimeUtils::getMillisToMinute(rawMin, curSec, curMin);
 	_next_check_time = TimeUtils::getLocalTimeNow() + left_ticks;
 }
 
