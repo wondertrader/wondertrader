@@ -16,6 +16,8 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/SpinMutex.hpp"
 
+#include <atomic>
+
 NS_WTP_BEGIN
 class WTSVariant;
 class ActionPolicyMgr;
@@ -145,6 +147,7 @@ public:
 	OrderMap* getOrders(const char* stdCode);
 	double getUndoneQty(const char* stdCode)
 	{
+		SpinLock lock(_mtx_undone);
 		auto it = _undone_qty.find(stdCode);
 		if (it != _undone_qty.end())
 			return it->second;
@@ -177,6 +180,7 @@ public:
 		if (_ignore_sefmatch)
 			return false;
 
+		SpinLock lock(_mtx_selfmatch);
 		auto it = _self_matches.find(stdCode);
 		return it != _self_matches.end();
 	}
@@ -219,7 +223,7 @@ private:
 
 	ITraderApi*			_trader_api;
 	FuncDeleteTrader	_remover;
-	AdapterState		_state;
+	std::atomic<AdapterState>	_state;	//交易回调线程写、策略/执行线程读，用原子变量避免撕裂读
 
 	EventNotifier*		_notifier;
 
@@ -228,12 +232,33 @@ private:
 	IBaseDataMgr*		_bd_mgr;
 	ActionPolicyMgr*	_policy_mgr;
 
+	/*
+	 *	线程模型说明：
+	 *	1、onRspXxx、onPushXxx等ITraderSpi回调由交易接口的回调线程（如CTP的SPI线程）调用
+	 *	2、buy/sell/cancel/getPosition/getUndoneQty等由策略线程、执行器线程池线程调用，且可能同时有多个
+	 *	3、下面的容器都是wt_hashmap/wt_hashset（ankerl::unordered_dense），插入时会整体搬迁元素，
+	 *	   并发读写不只是脏读，还会导致引用/迭代器失效甚至越界访问，所以按数据分组用自旋锁保护
+	 *
+	 *	锁的分组（每把锁只保护紧跟其后注释里列出的成员）：
+	 *	_mtx_orders		-> _orders
+	 *	_mtx_pos		-> _positions、_stat_map（含其中WTSTradeStateInfo的统计字段）
+	 *	_mtx_undone		-> _undone_qty
+	 *	_mtx_risk		-> _order_time_cache、_cancel_time_cache、_exclude_codes
+	 *	_mtx_selfmatch	-> _trade_refs、_self_matches
+	 *
+	 *	使用约定：
+	 *	1、临界区内只做容器操作，不调用交易接口、不回调sink、不写日志，需要的数据先拷贝出来再用
+	 *	2、不要同时持有两把锁，上面的锁之间没有嵌套关系，也不允许新增嵌套
+	 *	3、_orderids只在回调线程里访问，_risk_params_map初始化后只读，_sinks只在启动时写入，这三个不加锁
+	 */
+	SpinMutex	_mtx_pos;
 	wt_hashmap<std::string, PosItem> _positions;
 
 	SpinMutex	_mtx_orders;
 	OrderMap*	_orders;
 	wt_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
 
+	SpinMutex	_mtx_selfmatch;
 	wt_hashmap<std::string, std::string>		_trade_refs;	//用于记录成交单和订单的匹配
 	wt_hashset<std::string>					_self_matches;	//自成交的合约
 
@@ -243,12 +268,14 @@ private:
 	 */
 	bool			_ignore_sefmatch;		//忽略自成交限制
 
+	SpinMutex	_mtx_undone;
 	wt_hashmap<std::string, double> _undone_qty;	//未完成数量
 
 	typedef WTSHashMap<std::string>	TradeStatMap;
-	TradeStatMap*	_stat_map;	//统计数据
+	TradeStatMap*	_stat_map;	//统计数据，由_mtx_pos保护
 
 	//这两个缓存时间内的容器,主要是为了控制瞬间流量而设置的
+	mutable SpinMutex	_mtx_risk;
 	typedef std::vector<uint64_t> TimeCacheList;
 	typedef wt_hashmap<std::string, TimeCacheList> CodeTimeCacheMap;
 	CodeTimeCacheMap	_order_time_cache;	//下单时间缓存
@@ -256,7 +283,7 @@ private:
 
 	//如果被风控了,就会进入到排除队列
 	wt_hashset<std::string>	_exclude_codes;
-	
+
 	typedef wt_hashmap<std::string, RiskParams>	RiskParamsMap;
 	RiskParamsMap	_risk_params_map;
 	bool			_risk_mon_enabled;
