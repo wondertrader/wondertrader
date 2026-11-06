@@ -1332,18 +1332,19 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 						const std::string& ticker = _ticker_keys[barsList->_code];
 						if (ticker == it->first)
 						{
-							CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList->_code.c_str(), &_hot_mgr);
-							WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
-
-							std::string realCode = barsList->_code;
-							if (cInfo.isExright())
-								realCode = realCode.substr(0, realCode.size() - 1);
-
-							WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
+							/*
+							 *	复权代码(如SSE.STK.600000-)的日线模拟tick，这里不能把复权后缀去掉
+							 *	策略订阅K线、stra_set_position下单、撮合器的信号表(_sig_map)和价格表(_price_map)
+							 *	用的都是带后缀的标准代码，上面非日线分支模拟的tick也是直接用barsList->_code回调的
+							 *	之前这里去掉后缀以后，handle_tick传入的代码和信号表的key对不上
+							 *	导致复权代码在日线周期回测下信号永远不成交
+							 *	get_session_info内部会通过extractStdCode解析复权标记，直接传带后缀的代码即可
+							 */
+							WTSSessionInfo* sInfo = get_session_info(barsList->_code.c_str(), true);
 							uint32_t curTime = sInfo->getCloseTime();
 							//开高低收
 							WTSTickStruct curTS;
-							strcpy(curTS.code, realCode.c_str());
+							strcpy(curTS.code, barsList->_code.c_str());
 							curTS.action_date = _cur_date;
 							curTS.action_time = curTime * 100000;
 
@@ -1361,7 +1362,7 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 							curTS.volume = nextBar.vol;
 							update_price(barsList->_code.c_str(), curTS.price);
 							WTSTickData* curTick = WTSTickData::create(curTS);
-							_listener->handle_tick(realCode.c_str(), curTick, pxType);
+							_listener->handle_tick(barsList->_code.c_str(), curTick, pxType);
 							curTick->release();
 						}
 
