@@ -310,6 +310,31 @@ namespace TimeUtils
 		return (uint32_t)ret;
 	}
 
+	/*
+	 *	计算从行情时间到目标分钟还需要等待的毫秒数, 主要用于Ticker的本地闭合定时
+	 *	@curMin		行情时间, 格式hhmm
+	 *	@curSecMs	行情的秒和毫秒, 格式ssmmm, 即actiontime % 100000
+	 *	@desMin		目标分钟, 格式hhmm, 一般传当前K线的闭合时间
+	 *	@return		还需要等待的毫秒数, desMin小于curMin视为跨零点, 结果为负则返回0
+	 *
+	 *	对于交易时段内的普通行情, desMin就是curMin的下一分钟, 结果等价于(60-sec)*1000-msec
+	 *	对于集合竞价时段的行情(如夜盘20:59), 所属K线是开盘后第一根(21:01), 结果为到21:01的毫秒数
+	 */
+	constexpr static inline uint32_t getMillisToMinute(uint32_t curMin, uint32_t curSecMs, uint32_t desMin) noexcept
+	{
+		int32_t curTotal = (int32_t)(curMin / 100) * 60 + (int32_t)(curMin % 100);
+		int32_t desTotal = (int32_t)(desMin / 100) * 60 + (int32_t)(desMin % 100);
+		int32_t diffMins = desTotal - curTotal;
+		if (diffMins < 0)
+			diffMins += 1440;
+
+		int64_t millis = (int64_t)diffMins * 60000 - (int64_t)curSecMs;
+		if (millis < 0)
+			return 0;
+
+		return (uint32_t)millis;
+	}
+
     /*
      * @curMonth: YYYYMM
      * @return: YYYYMM
