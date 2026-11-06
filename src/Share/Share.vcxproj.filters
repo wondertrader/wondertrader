@@ -66,6 +66,9 @@
     <ClInclude Include="DLLHelper.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="FreqLimiter.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
     <ClInclude Include="charconv.hpp">
       <Filter>Utils</Filter>
     </ClInclude>

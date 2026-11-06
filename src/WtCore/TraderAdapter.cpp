@@ -31,6 +31,7 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/CodeHelper.hpp"
 #include "../Share/Converter.hpp"
+#include "../Share/FreqLimiter.hpp"
 
 #include <exception>
 #include <rapidjson/document.h>
@@ -398,6 +399,9 @@ const TraderAdapter::RiskParams* TraderAdapter::getRiskParams(const char* stdCod
 		return &it->second;
 
 	it = _risk_params_map.find("default");
+	if (it == _risk_params_map.end())
+		return NULL;	//没有default规则时返回NULL，由调用方视为不监控，避免解引用end()
+
 	return &it->second;
 }
 
@@ -491,6 +495,10 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 	WTSContractInfo* cInfo = entrust->getContractInfo();
 	if (cInfo == NULL) cInfo = getContract(entrust->getCode());
 
+	//进入这里的时候code还是标准代码，流控统计要用标准代码做键，和checkOrderLimits的查询键保持一致
+	//下面setCode以后就变成交易所原始代码了，所以要先保存下来
+	std::string stdCode = entrust->getCode();
+
 	/*
 	 *	By Wesley @ 2024.04.12
 	 *	将AltCode设置为交易code，altcode为交易所原始合约代码
@@ -514,7 +522,7 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 	else
 	{
 		int64_t now = TimeUtils::getLocalTimeNow();
-		_order_time_cache[entrust->getCode()].emplace_back(now);
+		_order_time_cache[stdCode].emplace_back(now);
 	}
 	return localid;
 }
@@ -563,32 +571,19 @@ bool TraderAdapter::checkCancelLimits(const char* stdCode)
 	}
 
 	//撤单频率检查
+	//以当前时间为锚统计时间窗内的撤单次数，窗口外的旧时间戳顺手裁剪掉
+	//撤单时间在doCancel里按标准代码记录，这里也按标准代码查询，键要保持一致
 	auto it = _cancel_time_cache.find(stdCode);
 	if (it != _cancel_time_cache.end())
 	{
 		TimeCacheList& cache = (TimeCacheList&)it->second;
-		uint32_t cnt = cache.size();
-		if (cnt >= riskPara->_cancel_times_boundary)
+		uint32_t times = 0;
+		if (FreqLimiter::isExceeded(cache, TimeUtils::getLocalTimeNow(), riskPara->_cancel_stat_timespan, riskPara->_cancel_times_boundary, times))
 		{
-			uint64_t eTime = cache[cnt - 1];
-			uint64_t sTime = eTime - riskPara->_cancel_stat_timespan * 1000;
-			auto tit = std::lower_bound(cache.begin(), cache.end(), sTime);
-			auto sIdx = tit - cache.begin();
-			auto times = cnt - sIdx - 1;
-			if (times > riskPara->_cancel_times_boundary)
-			{
-				WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] {} cancel {} times within {} seconds, beyond boundary {} times, adding to excluding list",
-					_id.c_str(), stdCode, times, riskPara->_cancel_stat_timespan, riskPara->_cancel_times_boundary);
-				_exclude_codes.insert(stdCode);
-				return false;
-			}
-
-			//这里必须要清理一下, 没有特别好的办法
-			//不然随着时间推移, vector长度会越来越长
-			if(tit != cache.begin())
-			{
-				cache.erase(cache.begin(), tit);
-			}
+			WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] {} cancel {} times within {} seconds, beyond boundary {} times, adding to excluding list",
+				_id.c_str(), stdCode, times, riskPara->_cancel_stat_timespan, riskPara->_cancel_times_boundary);
+			_exclude_codes.insert(stdCode);
+			return false;
 		}
 	}
 
@@ -627,33 +622,20 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 		return false;
 	}
 
-	//撤单频率检查
+	//下单频率检查
+	//以当前时间为锚统计时间窗内的下单次数，窗口外的旧时间戳顺手裁剪掉
+	//下单时间在doEntrust里按标准代码记录，这里也按标准代码查询，键要保持一致
 	auto it = _order_time_cache.find(stdCode);
 	if (it != _order_time_cache.end())
 	{
 		TimeCacheList& cache = (TimeCacheList&)it->second;
-		uint32_t cnt = cache.size();
-		if (cnt >= riskPara->_order_times_boundary)
+		uint32_t times = 0;
+		if (FreqLimiter::isExceeded(cache, TimeUtils::getLocalTimeNow(), riskPara->_order_stat_timespan, riskPara->_order_times_boundary, times))
 		{
-			uint64_t eTime = cache[cnt - 1];
-			uint64_t sTime = eTime - riskPara->_order_stat_timespan * 1000;
-			auto tit = std::lower_bound(cache.begin(), cache.end(), sTime);
-			auto sIdx = tit - cache.begin();
-			auto times = cnt - sIdx - 1;
-			if (times > riskPara->_order_times_boundary)
-			{
-				WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] {} entrust {} times within {} seconds, beyond boundary {} times, adding to excluding list",
-					_id.c_str(), stdCode, times, riskPara->_order_stat_timespan, riskPara->_order_times_boundary);
-				_exclude_codes.insert(stdCode);
-				return false;
-			}
-
-			//这里必须要清理一下, 没有特别好的办法
-			//不然随着时间推移, vector长度会越来越长
-			if (tit != cache.begin())
-			{
-				cache.erase(cache.begin(), tit);
-			}
+			WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] {} entrust {} times within {} seconds, beyond boundary {} times, adding to excluding list",
+				_id.c_str(), stdCode, times, riskPara->_order_stat_timespan, riskPara->_order_times_boundary);
+			_exclude_codes.insert(stdCode);
+			return false;
 		}
 	}
 
@@ -1265,6 +1247,12 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	int ret = _trader_api->orderAction(action);
 	bool isSent = (ret >= 0);
 	action->release();
+
+	//撤单指令真正发出去以后才记录撤单时间，并且统一在这里按标准代码记录
+	//这样cancel(localid)和cancel(stdCode, isBuy, qty)两条路径都会计入频率统计
+	if (isSent)
+		_cancel_time_cache[stdCode].emplace_back(TimeUtils::getLocalTimeNow());
+
 	return isSent;
 }
 
@@ -1282,8 +1270,6 @@ bool TraderAdapter::cancel(uint32_t localid)
 	}
 	
 	bool bRet = doCancel(ordInfo);
-
-	_cancel_time_cache[ordInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
 
 	ordInfo->release();
 
@@ -1316,7 +1302,6 @@ OrderIDs TraderAdapter::cancel(const char* stdCode, bool isBuy, double qty /* = 
 				{
 					actQty += orderInfo->getVolLeft();
 					ret.emplace_back(it->first);
-					//_cancel_time_cache[orderInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
 				}
 			}
 
