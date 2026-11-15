@@ -182,28 +182,56 @@ private:
 public:
 	inline int round_hands(double hands, double min_hands)
 	{
+		// min_hands 为 0 会除零（未配置 min_order 时曾出现，表现为一张单都下不出）
+		if (min_hands <= 0)
+			return (int)hands;
 		return (int)((hands + min_hands / 2) / min_hands) * min_hands;
+	}
+
+	// 标准合约代码形如 EXCHG.CODE（如 SSE.600000），取最后一段数字。
+	// 原实现用 split(stdCode, ".")[2]，向量只有 2 个元素，越界读 → 未定义行为
+	static inline int extract_code_num(const std::string& stdCode)
+	{
+		size_t pos = stdCode.find_last_of('.');
+		std::string code = (pos == std::string::npos) ? stdCode : stdCode.substr(pos + 1);
+
+		int val = 0;
+		bool hasDigit = false;
+		for (char c : code)
+		{
+			if (c >= '0' && c <= '9')
+			{
+				val = val * 10 + (c - '0');
+				hasDigit = true;
+			}
+			else if (hasDigit)
+				break;
+		}
+		return hasDigit ? val : -1;
 	}
 
 	inline double get_minOrderQty(std::string stdCode)
 	{
-		int code = std::stoi(StrUtil::split(stdCode, ".")[2]);
-		bool is_KC = false;
-		if (code >= 688000)
-		{
-			is_KC = true;
-		}
+		int code = extract_code_num(stdCode);
+		bool is_KC = (code >= 688000 && code < 690000);
+
 		WTSCommodityInfo* comm_info = _ctx->getCommodityInfo(stdCode.c_str());
 		double min_order = 1.0;
+		if (comm_info == NULL)
+			return min_order;
+
 		if (strcmp(comm_info->getProduct(), cbondStr) == 0)
 			min_order = 10.0;
 		else if (strcmp(comm_info->getProduct(), stockStr) == 0)
+		{
 			if (is_KC)
 				min_order = 200.0;
 			else
 				min_order = 100.0;
-		if (comm_info)
-			comm_info->release();
+		}
+		else if (strcmp(comm_info->getProduct(), "ETF") == 0)
+			min_order = 100.0;	// ETF 100 份整数倍
+		comm_info->release();
 		return min_order;
 	}
 };
