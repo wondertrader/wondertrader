@@ -12,6 +12,7 @@
 #include "../WtCore/WtHelper.h"
 #include "../WtCore/CtaStraContext.h"
 #include "../WtCore/HftStraContext.h"
+#include "../WtCore/SelStraContext.h"
 #include "../WtCore/WtDiffExecuter.h"
 
 #include "../Includes/WTSVariant.hpp"
@@ -275,11 +276,15 @@ bool WtRunner::config(const std::string& filename)
 			_cta_engine.loadRouterRules(cfgRouter);
 	}
 
-	if (!_is_hft)
+	// SEL 引擎策略加载：官方 WtRunner 只加载 cta/hft，sel 引擎初始化了却没有策略来源；
+	// Porter 层有等价实现 WtRtRunner::initSelStrategies
+	if (_is_sel)
+		initSelStrategies();
+	else if (!_is_hft)
 		initCtaStrategies();
 	else
 		initHftStrategies();
-	
+
 	return true;
 }
 
@@ -310,6 +315,71 @@ bool WtRunner::initCtaStrategies()
 		CtaStraContext* ctx = new CtaStraContext(&_cta_engine, id, slippage);
 		ctx->set_strategy(stra->self());
 		_cta_engine.addContext(CtaContextPtr(ctx));
+	}
+
+	return true;
+}
+
+bool WtRunner::initSelStrategies()
+{
+	WTSVariant* cfg = _config->get("strategies");
+	if (cfg == NULL || cfg->type() != WTSVariant::VT_Object)
+		return false;
+
+	// SEL 策略数组：优先 strategies.sel；兼容回退 strategies.cta
+	// （Porter 层 WtRtRunner::initSelStrategies 历史上就是从 cta 数组读的）
+	cfg = cfg->get("sel");
+	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
+	{
+		cfg = _config->get("strategies");
+		cfg = cfg->get("cta");
+	}
+	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
+		return false;
+
+	std::string path = WtHelper::getCWD() + "sel/";
+	_sel_stra_mgr.loadFactories(path.c_str());
+
+	for (uint32_t idx = 0; idx < cfg->size(); idx++)
+	{
+		WTSVariant* cfgItem = cfg->get(idx);
+		if (!cfgItem->getBoolean("active"))
+			continue;
+
+		const char* id = cfgItem->getCString("id");
+		const char* name = cfgItem->getCString("name");
+		int32_t slippage = cfgItem->getInt32("slippage");
+
+		uint32_t date = cfgItem->getUInt32("date");
+		uint32_t time = cfgItem->getUInt32("time");
+		const char* period = cfgItem->getCString("period");
+
+		// period=min 时 time 是分钟间隔；d/w/m/y 时是触发时刻 HHMM
+		TaskPeriodType ptype = TPT_None;
+		if (period != NULL)
+		{
+			if (wt_stricmp(period, "d") == 0)
+				ptype = TPT_Daily;
+			else if (wt_stricmp(period, "w") == 0)
+				ptype = TPT_Weekly;
+			else if (wt_stricmp(period, "m") == 0)
+				ptype = TPT_Monthly;
+			else if (wt_stricmp(period, "y") == 0)
+				ptype = TPT_Yearly;
+			else if (wt_stricmp(period, "min") == 0)
+				ptype = TPT_Minute;
+		}
+
+		SelStrategyPtr stra = _sel_stra_mgr.createStrategy(name, id);
+		if (stra == NULL)
+		{
+			WTSLogger::error("SEL strategy {} not found, skipped", name);
+			continue;
+		}
+		stra->self()->init(cfgItem->get("params"));
+		SelStraContext* ctx = new SelStraContext(&_sel_engine, id, slippage);
+		ctx->set_strategy(stra->self());
+		_sel_engine.addContext(SelContextPtr(ctx), date, time, ptype);
 	}
 
 	return true;
@@ -469,6 +539,16 @@ bool WtRunner::initExecuters(WTSVariant* cfgExecuter)
 	std::string path = WtHelper::getCWD() + "executer/";
 	_exe_factory.loadFactories(path.c_str());
 
+	// 执行器必须挂到当前引擎：SEL 有独立的执行器管理器，WtEngine 基类没有
+	// addExecuter。官方 WtRunner 无条件挂 _cta_engine，SEL 模式下策略的
+	// set_position 到不了任何通道。
+	auto addExecuter = [this](ExecCmdPtr& exe) {
+		if (_is_sel)
+			_sel_engine.addExecuter(exe);
+		else
+			_cta_engine.addExecuter(exe);
+	};
+
 	uint32_t count = 0;
 	for (uint32_t idx = 0; idx < cfgExecuter->size(); idx++)
 	{
@@ -506,7 +586,10 @@ bool WtRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 			}
 
-			_cta_engine.addExecuter(ExecCmdPtr(executer));
+			{
+				ExecCmdPtr exePtr(executer);
+				addExecuter(exePtr);
+			}
 		}
 		else if (name == "diff")
 		{
@@ -533,7 +616,10 @@ bool WtRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 			}
 
-			_cta_engine.addExecuter(ExecCmdPtr(executer));
+			{
+				ExecCmdPtr exePtr(executer);
+				addExecuter(exePtr);
+			}
 		}
 		else
 		{
@@ -541,7 +627,10 @@ bool WtRunner::initExecuters(WTSVariant* cfgExecuter)
 			if (!executer->init(cfgItem))
 				return false;
 
-			_cta_engine.addExecuter(ExecCmdPtr(executer));
+			{
+				ExecCmdPtr exePtr(executer);
+				addExecuter(exePtr);
+			}
 		}
 		count++;
 	}
