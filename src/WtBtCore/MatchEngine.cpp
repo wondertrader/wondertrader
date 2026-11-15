@@ -207,7 +207,7 @@ void MatchEngine::update_lob(WTSTickData* curTick)
 		if (px != 0)
 		{
 			double& volume = curBook._items[px];
-			volume = curTick->askqty(i);
+			volume = curTick->bidqty(i);
 		}
 	}
 
@@ -215,13 +215,24 @@ void MatchEngine::update_lob(WTSTickData* curTick)
 	if (!curBook._items.empty())
 	{
 		auto sit = curBook._items.lower_bound(curBook._bid_px);
-		if (sit->first == curBook._bid_px)
+		if (sit != curBook._items.end() && sit->first == curBook._bid_px)
 			sit++;
 
-		auto eit = curBook._items.lower_bound(curBook._ask_px);
-
-		if (sit->first <= eit->first)
-			curBook._items.erase(sit, eit);
+		// 涨跌停封板时 ask_px 可能为 0，eit 会落在 begin()；sit 也可能已经是 end()。
+		// 原实现直接解引用 sit->first/eit->first，这两种情况下会越界访问。
+		if (sit != curBook._items.end())
+		{
+			if (curBook._ask_px == 0 || curBook._ask_px <= sit->first)
+			{
+				curBook._items.erase(sit, curBook._items.end());
+			}
+			else
+			{
+				auto eit = curBook._items.lower_bound(curBook._ask_px);
+				if (eit == curBook._items.end() || eit->first >= sit->first)
+					curBook._items.erase(sit, eit);
+			}
+		}
 	}
 }
 
