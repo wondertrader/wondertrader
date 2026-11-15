@@ -107,8 +107,13 @@ int main(int argc, char* argv[])
 		const char* stra_id = cfg->get("sel")->get("strategy")->getCString("id");
 		replayer.register_sink(mocker, stra_id);
 
-		replayer.register_task(mocker->id(), cfg->get("sel")->get("task")->getUInt32("date"),
-			cfg->get("sel")->get("task")->getUInt32("time"), cfg->get("sel")->get("task")->getCString("period"));
+		//透传 trdtpl/session, 与 WtBtPorter 对齐。
+		//原实现漏传 session, 默认 "TRADING" 在 A股 sessions(如 SD0930) 下
+		//getSession 返回 NULL, 任务触发即崩溃。
+		WTSVariant* cfgTask = cfg->get("sel")->get("task");
+		replayer.register_task(mocker->id(), cfgTask->getUInt32("date"),
+			cfgTask->getUInt32("time"), cfgTask->getCString("period"),
+			cfgTask->getCString("trdtpl"), cfgTask->getCString("session"));
 	}
 	else if (strcmp(mode, "exec") == 0)
 	{

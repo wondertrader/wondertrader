@@ -1098,10 +1098,43 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 		{
 			//要考虑到跨日的情况
 			uint32_t mins = sInfo->timeToMinutes(_cur_time);
-			//如果一开始不能整除,则直接修正一下
-			if (mins % _task->_time != 0 && mins < sInfo->getTradingMins())
+			bool bInvalidStart = false;
+			if (mins == INVALID_UINT32)
 			{
-				mins = mins / _task->_time + _task->_time;
+				/*
+				 *	起始时间不在交易时段(如午休 12:00)时, 原逻辑会直接落到"收盘"分支,
+				 *	把当天整个下午跳过并滚到下一交易日。
+				 *	这里顺延到下一个交易分钟, 并把首个调度点取到该分钟之后的对齐点
+				 *	(避免用尚未闭合的 bar 触发)。
+				 */
+				uint32_t t = _cur_time;
+				for (uint32_t i = 0; i < 1440 && mins == INVALID_UINT32; i++)
+				{
+					t = TimeUtils::getNextMinute(t, 1);
+					if (t == 0)
+						break;
+					mins = sInfo->timeToMinutes(t);
+				}
+				if (mins == INVALID_UINT32)
+					mins = 0;	//兜底: 仍非法则按开盘处理
+				else
+					bInvalidStart = true;
+				_cur_time = t;
+			}
+			//如果一开始不能整除,则直接修正一下
+			/*
+			 *	_task->_time 是"分钟间隔"(1/5/15/30...)。
+			 *	1) mins==0 表示开盘第一分钟, 尚无闭合K线, 与实盘
+			 *	   WtSelEngine::on_minute_end 的 minutes != 0 语义对齐, 直接跳到第一个对齐点;
+			 *	2) 原公式 mins/time + time 在 mins > time 时算错(如 22/15+15=16, 时间倒退),
+			 *	   修正为 (mins/time + 1) * time;
+			 *	3) _time 为 0 时兜底为 1, 避免除零。
+			 */
+			uint32_t interval = _task->_time == 0 ? 1 : _task->_time;
+			if (mins < sInfo->getTradingMins() && (bInvalidStart || mins == 0 || mins % interval != 0))
+			{
+				uint32_t aligned = (mins / interval + 1) * interval;
+				mins = aligned < sInfo->getTradingMins() ? aligned : sInfo->getTradingMins();
 				_cur_time = sInfo->minuteToTime(mins);
 			}
 
@@ -1153,7 +1186,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			if (bNewTDate)
 			{
 				//换日了
-				mins = _task->_time;
+				mins = interval;
 				uint32_t nextTDate = _bd_mgr.getNextTDate(_task->_trdtpl, _cur_tdate, 1, true);
 
 				if (sInfo->getOffsetMins() != 0)
@@ -1171,6 +1204,13 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 						_cur_date = _cur_tdate;
 					}
 				}
+				else
+				{
+					//白盘会话(时间偏移为0): 交易日必须整体推进,
+					//否则 _cur_date 停留在旧交易日, nextTime 永不前进, 回测死循环
+					_cur_date = nextTDate;
+					_cur_tdate = nextTDate;
+				}
 
 				_cur_time = sInfo->minuteToTime(mins);
 
@@ -1181,7 +1221,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			}
 			else
 			{
-				mins += _task->_time;
+				mins += interval;
 				if (mins > sInfo->getTradingMins())
 					mins = sInfo->getTradingMins();
 
@@ -2358,7 +2398,8 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		uint32_t curMin = (_cur_date - 19900000) * 10000 + _cur_time;
 		if (isDay)
 		{
-			if (kBlkPair->_cursor <= kBlkPair->_count)
+			//首次定位为未上市/未来标的时 _cursor 可能为0, 避免 _bars[-1] 越界
+			if (kBlkPair->_cursor > 0 && kBlkPair->_cursor <= kBlkPair->_count)
 			{
 				if(!isClosed)
 				{
@@ -2382,7 +2423,8 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		}
 		else
 		{
-			if (kBlkPair->_cursor <= kBlkPair->_count)
+			//同上, 分钟线首次定位为未上市/未来标的时 _cursor 也可能为0, 避免 _bars[-1] 越界
+			if (kBlkPair->_cursor > 0 && kBlkPair->_cursor <= kBlkPair->_count)
 			{
 				while (kBlkPair->_bars[kBlkPair->_cursor-1].time < curMin && kBlkPair->_cursor < kBlkPair->_count)
 				{
