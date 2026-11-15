@@ -68,11 +68,13 @@ WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchgpid)
 
 WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchg, const char* pid)
 {
-	if (m_mapCommodities == NULL)
+	if (m_mapCommodities == NULL || exchg == NULL || pid == NULL)
 		return NULL;
 
 	char key[64] = { 0 };
-	fmt::format_to(key, "{}.{}", exchg, pid);
+	// 限长写入：超长 pid 截断后查不到（返回 NULL），不会越界
+	auto ret = fmt::format_to_n(key, sizeof(key) - 1, "{}.{}", exchg, pid);
+	*ret.out = '\0';
 
 	return (WTSCommodityInfo*)m_mapCommodities->get(key);
 }
@@ -865,7 +867,15 @@ CodeSet* WTSBaseDataMgr::getSessionComms(const char* sid)
 
 const char* WTSBaseDataMgr::getTplIDByPID(const char* pid)
 {
+	// pid 必须是 EXCHG.COMM 形式；只给交易所（如 "SSE"）时 split 只有一段，
+	// 越界取 ay[1] 属于未定义行为（读到野指针），随后 fmt 格式化空指针会抛异常
+	if (pid == NULL)
+		return "";
+
 	const StringVector& ay = StrUtil::split(pid, ".");
+	if (ay.size() < 2)
+		return "";
+
 	WTSCommodityInfo* commInfo = getCommodity(ay[0].c_str(), ay[1].c_str());
 	if (commInfo == NULL)
 		return "";
