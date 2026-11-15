@@ -218,7 +218,28 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 	for (auto& v : _tasks)
 	{
 		TaskInfoPtr& tInfo = (TaskInfoPtr&)v.second;
-		if (tInfo->_time != nextTime)
+		/*
+		 *	TPT_Minute 的 _time 是"分钟间隔"(1/5/15/30...), 不是触发时刻 HHMM
+		 *	（与回测 HisDataReplayer::run_by_tasks 中 `mins % _task->_time` /
+		 *	`mins += _task->_time` 的语义一致）。
+		 *	原实现先按 `_time == nextTime` 过滤, 分钟任务永远不会命中, 下面的
+		 *	TPT_Minute 分支成了死代码。分钟任务先按分钟数取模, 不命中直接跳过,
+		 *	避免每分钟都做节假日/上一交易日计算。
+		 */
+		if (tInfo->_period == TPT_Minute)
+		{
+			WTSSessionInfo* sInfo = get_session_info(tInfo->_session, false);
+			if (sInfo == NULL)
+				continue;
+
+			uint32_t interval = tInfo->_time == 0 ? 1 : tInfo->_time;
+			uint32_t minutes = sInfo->timeToMinutes(curTime);
+			// minutes==0: 开盘/竞价段; INVALID_UINT32: 非交易时段(如午休)。
+			// 注意 0xFFFFFFFF 能被 1/5/15 整除, 必须显式排除, 否则午休会误触发。
+			if (minutes == 0 || minutes == INVALID_UINT32 || minutes % interval != 0)
+				continue;
+		}
+		else if (tInfo->_time != nextTime)
 			continue;
 
 		uint64_t now = (uint64_t)curDate * 10000 + nextTime;
@@ -240,8 +261,6 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 		}
 		uint32_t preWD = TimeUtils::getWeekDay(preTDate);
 
-		WTSSessionInfo* sInfo = get_session_info(tInfo->_session, false);
-
 		bool bIgnore = true;
 		switch (tInfo->_period)
 		{
@@ -249,13 +268,8 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 			bIgnore = false;
 			break;
 		case TPT_Minute:
-			{
-				uint32_t minutes = sInfo->timeToMinutes(curTime);	//先将时间转换成分钟数
-				if(minutes != 0 && (minutes%tInfo->_time == 0))		//如果分钟数能被整除,且不为0,则可以触发
-				{
-					bIgnore = false;
-				}
-			}
+			//已在循环头部按分钟间隔过滤, 走到这里即为命中
+			bIgnore = false;
 			break;
 		case TPT_Monthly:
 			//if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 >= _task->_day)
