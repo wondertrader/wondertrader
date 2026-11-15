@@ -80,14 +80,16 @@ void WtStockMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTS
 	if (cfg->has("max_cancel_time"))
 		_max_cancel_time = cfg->getInt32("max_cancel_time");
 
-	int code = std::stoi(StrUtil::split(stdCode, ".")[2]);
-	if (code >= 688000)
+	int code = extract_code_num(stdCode);
+	if (code >= 688000 && code < 690000)
 	{
 		_is_KC = true;
 	}
 	_min_hands = get_minOrderQty(stdCode);
 	if (cfg->has("min_order"))					//最小下单数
 		_min_order = cfg->getDouble("min_order");
+	if (_min_order <= 0)
+		_min_order = _min_hands;				// 未配置时按品种最小下单量兜底，避免 round_hands 除零
 
 	if (_min_order != 0)
 	{
@@ -185,7 +187,9 @@ void WtStockMinImpactExeUnit::check_unmanager_order()
 
 void WtStockMinImpactExeUnit::on_tick(WTSTickData* newTick)
 {
-	_now = TimeUtils::getLocalTimeNow();
+	// 统一时间轴：实盘为真实时间，回测为回放时间。
+	// 用墙钟会让 span/expire 在回测里按真实耗时计，整段行情几秒跑完 → 卡在首单
+	_now = (_ctx != NULL) ? _ctx->getCurTime() : TimeUtils::getLocalTimeNow();
 	if (newTick == NULL || _code.compare(newTick->code()) != 0)
 		return;
 
