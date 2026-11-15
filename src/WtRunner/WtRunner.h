@@ -59,6 +59,7 @@ private:
 	bool initEvtNotifier();
 	bool initCtaStrategies();
 	bool initHftStrategies();
+	bool initSelStrategies();
 	bool initActionPolicy();
 
 	bool initEngine();
