@@ -16,6 +16,7 @@
 
 NS_WTP_BEGIN
 class WTSCommodityInfo;
+class WTSContractInfo;
 class WTSTickSlice;
 class WTSKlineSlice;
 class WTSTickData;
@@ -128,6 +129,7 @@ public:
 	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false, int flag = 0) { return 0; }
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) = 0;
+	virtual WTSContractInfo* stra_get_contractinfo(const char* stdCode) = 0;
 	virtual WTSKlineSlice*	stra_get_bars(const char* stdCode, const char* period, uint32_t count) = 0;
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) = 0;
 	virtual WTSOrdDtlSlice*	stra_get_order_detail(const char* stdCode, uint32_t count) = 0;

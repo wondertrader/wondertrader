@@ -2859,6 +2859,12 @@ WTSCommodityInfo* HisDataReplayer::get_commodity_info(const char* stdCode)
 	return _bd_mgr.getCommodity(codeInfo._exchg, codeInfo._product);
 }
 
+WTSContractInfo* HisDataReplayer::get_contract_info(const char* stdCode)
+{
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
+	return _bd_mgr.getContract(codeInfo._code, codeInfo._exchg);
+}
+
 std::string HisDataReplayer::get_rawcode(const char* stdCode)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);

@@ -413,6 +413,11 @@ WTSCommodityInfo* HftStraBaseCtx::stra_get_comminfo(const char* stdCode)
 	return _engine->get_commodity_info(stdCode);
 }
 
+WTSContractInfo* HftStraBaseCtx::stra_get_contractinfo(const char* stdCode)
+{
+	return _engine->get_contract_info(stdCode);
+}
+
 std::string HftStraBaseCtx::stra_get_rawcode(const char* stdCode)
 {
 	return _engine->get_rawcode(stdCode);
