@@ -839,6 +839,11 @@ WTSCommodityInfo* HftMocker::stra_get_comminfo(const char* stdCode)
 	return _replayer->get_commodity_info(stdCode);
 }
 
+WTSContractInfo* HftMocker::stra_get_contractinfo(const char* stdCode)
+{
+	return _replayer->get_contract_info(stdCode);
+}
+
 std::string HftMocker::stra_get_rawcode(const char* stdCode)
 {
 	return _replayer->get_rawcode(stdCode);

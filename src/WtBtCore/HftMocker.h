@@ -102,6 +102,7 @@ public:
 	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
+	virtual WTSContractInfo* stra_get_contractinfo(const char* stdCode) override;
 
 	virtual WTSKlineSlice* stra_get_bars(const char* stdCode, const char* period, uint32_t count) override;
 
