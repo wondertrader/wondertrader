@@ -39,6 +39,12 @@ void WtFilterMgr::load_filters(const char* fileName)
 
 	_filter_timestamp = lastModTime;
 
+	if (cfg == NULL)
+	{
+		WTSLogger::error("Filters configuration file {} is malformed, current filters remain unchanged", _filter_file);
+		return;
+	}
+
 	_stra_filters.clear();
 	_code_filters.clear();
 	_exec_filters.clear();
